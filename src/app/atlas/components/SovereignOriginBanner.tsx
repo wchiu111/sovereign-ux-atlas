@@ -1,189 +1,270 @@
 import { motion, useReducedMotion } from "motion/react";
 
-const particles = [
-  { x: 10, y: 48, r: 1.4, delay: 0.00, drift: -6 },
-  { x: 17, y: 35, r: 1.0, delay: 0.12, drift: -14 },
-  { x: 22, y: 61, r: 1.3, delay: 0.18, drift: 12 },
-  { x: 29, y: 45, r: 0.9, delay: 0.28, drift: -8 },
-  { x: 35, y: 26, r: 1.1, delay: 0.34, drift: -18 },
-  { x: 41, y: 68, r: 1.0, delay: 0.40, drift: 15 },
-  { x: 47, y: 39, r: 1.5, delay: 0.48, drift: -10 },
-  { x: 54, y: 56, r: 1.1, delay: 0.58, drift: 9 },
-  { x: 61, y: 30, r: 0.9, delay: 0.66, drift: -12 },
-  { x: 67, y: 65, r: 1.2, delay: 0.74, drift: 14 },
-  { x: 74, y: 45, r: 1.0, delay: 0.84, drift: -6 },
-  { x: 81, y: 24, r: 1.3, delay: 0.92, drift: -15 },
-  { x: 87, y: 59, r: 0.9, delay: 1.02, drift: 10 },
-  { x: 93, y: 39, r: 1.1, delay: 1.10, drift: -8 },
-];
+const COLOR = "#E8C86D";
+const LIGHT = "#FFF1B8";
+const MUTED = "#8D7538";
 
-const constellations = [
-  "M42 31 L50 42 L58 30 L66 46",
-  "M61 61 L70 50 L78 59 L87 42",
-  "M28 53 L37 44 L46 60",
-];
+const nodes = [
+  { x: 42, y: 30, delay: 0.12, r: 2.2 },
+  { x: 92, y: 72, delay: 0.26, r: 2.5 },
+  { x: 144, y: 34, delay: 0.4, r: 2.1 },
+  { x: 276, y: 32, delay: 0.18, r: 2.4 },
+  { x: 324, y: 76, delay: 0.34, r: 2.2 },
+  { x: 378, y: 38, delay: 0.5, r: 2.5 },
+] as const;
+
+const relationships = [
+  "M 210 56 C 176 52, 134 36, 92 30",
+  "M 210 56 C 170 62, 130 72, 92 72",
+  "M 210 56 C 184 44, 164 36, 144 34",
+  "M 210 56 C 238 42, 254 34, 276 32",
+  "M 210 56 C 246 64, 282 72, 324 76",
+  "M 210 56 C 264 48, 324 42, 378 38",
+] as const;
+
+const crossLinks = [
+  "M 92 30 C 112 28, 128 30, 144 34",
+  "M 276 32 C 314 28, 344 30, 378 38",
+  "M 92 72 C 120 78, 154 72, 178 64",
+  "M 242 64 C 270 76, 296 80, 324 76",
+] as const;
 
 export default function SovereignOriginBanner() {
   const reduceMotion = useReducedMotion();
-  const duration = reduceMotion ? 0.01 : 8;
+  const duration = reduceMotion ? 0.01 : 4.4;
 
   return (
-    <div
+    <svg
+      viewBox="0 0 420 112"
+      width="100%"
+      height="100%"
+      preserveAspectRatio="xMidYMid meet"
       aria-hidden="true"
-      style={{
-        position: "relative",
-        height: 112,
-        margin: "-4px -8px 22px",
-        overflow: "hidden",
-        WebkitMaskImage:
-          "linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%)",
-        maskImage:
-          "linear-gradient(90deg, transparent 0%, black 7%, black 93%, transparent 100%)",
-      }}
+      style={{ display: "block", overflow: "visible" }}
     >
-      <svg
-        viewBox="0 0 100 80"
-        preserveAspectRatio="none"
-        style={{ width: "100%", height: "100%", display: "block" }}
-      >
-        <defs>
-          <radialGradient id="origin-core" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FFF7D0" stopOpacity="1" />
-            <stop offset="36%" stopColor="#E8C86D" stopOpacity="0.95" />
-            <stop offset="100%" stopColor="#E8C86D" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="energy-streak" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#E8C86D" stopOpacity="0" />
-            <stop offset="25%" stopColor="#F6E2A0" stopOpacity="0.86" />
-            <stop offset="70%" stopColor="#E8C86D" stopOpacity="0.24" />
-            <stop offset="100%" stopColor="#E8C86D" stopOpacity="0" />
-          </linearGradient>
-          <filter id="origin-glow" x="-100%" y="-100%" width="300%" height="300%">
-            <feGaussianBlur stdDeviation="2.5" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        <motion.g
-          initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 1, 0] }}
-          transition={{ duration, times: [0, 0.08, 0.76, 0.9], repeat: Infinity, ease: "easeInOut" }}
+      <defs>
+        <filter
+          id="sovereign-field-glow"
+          x="-100%"
+          y="-100%"
+          width="300%"
+          height="300%"
         >
-          <motion.circle
-            cx="5"
-            cy="40"
-            r="1"
-            fill="url(#origin-core)"
-            filter="url(#origin-glow)"
-            animate={{ r: [1, 10, 5, 0], opacity: [0, 1, 0.42, 0] }}
-            transition={{ duration, times: [0, 0.1, 0.28, 0.42], repeat: Infinity, ease: "easeOut" }}
-          />
+          <feGaussianBlur stdDeviation="3.2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
 
-          {[0, 1, 2].map((ring) => (
-            <motion.ellipse
-              key={ring}
-              cx="7"
-              cy="40"
-              rx="2"
-              ry="2"
-              fill="none"
-              stroke="#E8C86D"
-              strokeWidth={ring === 0 ? 0.5 : 0.25}
-              animate={{
-                rx: [2, 10 + ring * 6, 22 + ring * 12],
-                ry: [2, 8 + ring * 4, 17 + ring * 7],
-                opacity: [0, 0.62 - ring * 0.12, 0],
-              }}
-              transition={{
-                duration,
-                delay: ring * 0.12,
-                times: [0.02, 0.18, 0.46],
-                repeat: Infinity,
-                ease: "easeOut",
-              }}
-            />
-          ))}
+        <radialGradient id="sovereign-core-fill" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={LIGHT} stopOpacity="1" />
+          <stop offset="45%" stopColor={COLOR} stopOpacity="0.9" />
+          <stop offset="100%" stopColor={COLOR} stopOpacity="0" />
+        </radialGradient>
+      </defs>
 
-          <motion.path
-            d="M 4 40 C 24 27, 48 54, 100 39"
-            fill="none"
-            stroke="url(#energy-streak)"
-            strokeWidth="0.8"
-            strokeLinecap="round"
-            pathLength="1"
-            animate={{ pathLength: [0, 1, 1], pathOffset: [0, 0, 1], opacity: [0, 0.85, 0] }}
-            transition={{ duration, times: [0.04, 0.42, 0.78], repeat: Infinity, ease: "easeInOut" }}
-          />
+      {[
+        [24, 54],
+        [66, 50],
+        [116, 48],
+        [164, 76],
+        [256, 78],
+        [304, 48],
+        [354, 56],
+        [400, 64],
+      ].map(([x, y], index) => (
+        <motion.circle
+          key={`${x}-${y}`}
+          cx={x}
+          cy={y}
+          r={1.1}
+          fill={index % 2 === 0 ? COLOR : MUTED}
+          animate={
+            reduceMotion
+              ? undefined
+              : {
+                  opacity: [0.08, 0.24, 0.08],
+                  scale: [0.92, 1.08, 0.92],
+                }
+          }
+          transition={{
+            duration,
+            delay: index * 0.12,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          style={{ transformOrigin: `${x}px ${y}px` }}
+        />
+      ))}
 
-          <motion.path
-            d="M 3 43 C 28 56, 51 21, 100 48"
-            fill="none"
-            stroke="url(#energy-streak)"
-            strokeWidth="0.42"
-            strokeLinecap="round"
-            pathLength="1"
-            animate={{ pathLength: [0, 1, 1], pathOffset: [0, 0, 1], opacity: [0, 0.46, 0] }}
-            transition={{ duration, delay: 0.25, times: [0.04, 0.4, 0.78], repeat: Infinity, ease: "easeInOut" }}
-          />
+      {relationships.map((path) => (
+        <path
+          key={path}
+          d={path}
+          fill="none"
+          stroke={COLOR}
+          strokeWidth="0.65"
+          strokeOpacity="0.11"
+          strokeLinecap="round"
+        />
+      ))}
 
-          {particles.map((particle, index) => (
-            <motion.circle
-              key={index}
-              cx={particle.x}
-              cy={particle.y}
-              r={particle.r}
-              fill={index % 4 === 0 ? "#FFF1B8" : "#E8C86D"}
-              filter={index % 3 === 0 ? "url(#origin-glow)" : undefined}
-              animate={{
-                x: [-14, 8, 28],
-                y: [0, particle.drift * 0.28, particle.drift],
-                opacity: [0, 0.95, 0.62, 0],
-                scale: [0.4, 1.2, 0.9, 0.2],
-              }}
-              transition={{
-                duration,
-                delay: particle.delay,
-                times: [0.04, 0.22, 0.58, 0.82],
-                repeat: Infinity,
-                ease: "easeOut",
-              }}
-            />
-          ))}
+      {crossLinks.map((path) => (
+        <path
+          key={path}
+          d={path}
+          fill="none"
+          stroke={COLOR}
+          strokeWidth="0.48"
+          strokeOpacity="0.07"
+          strokeLinecap="round"
+          strokeDasharray="3 7"
+        />
+      ))}
 
-          {constellations.map((path, index) => (
-            <motion.path
-              key={path}
-              d={path}
-              fill="none"
-              stroke="#E8C86D"
-              strokeWidth="0.26"
-              strokeDasharray="1.5 1.5"
-              pathLength="1"
-              animate={{ pathLength: [0, 1, 1], opacity: [0, 0.4, 0.4, 0] }}
-              transition={{
-                duration,
-                delay: 1.4 + index * 0.2,
-                times: [0.2, 0.38, 0.58, 0.72],
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </motion.g>
-      </svg>
-
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(180deg, rgba(232,200,109,0.025), transparent 55%, rgba(232,200,109,0.035))",
-          pointerEvents: "none",
+      <motion.g
+        animate={
+          reduceMotion
+            ? undefined
+            : {
+                scale: [1, 1.14, 1.03, 1],
+                opacity: [0.78, 1, 0.9, 0.78],
+              }
+        }
+        transition={{
+          duration,
+          times: [0, 0.14, 0.34, 1],
+          repeat: Infinity,
+          ease: "easeInOut",
         }}
-      />
-    </div>
+        style={{ transformOrigin: "210px 56px" }}
+      >
+        <circle cx="210" cy="56" r="22" fill={COLOR} opacity="0.035" />
+        <circle
+          cx="210"
+          cy="56"
+          r="13"
+          fill="none"
+          stroke={COLOR}
+          strokeOpacity="0.3"
+          strokeWidth="0.9"
+        />
+        <circle
+          cx="210"
+          cy="56"
+          r="7"
+          fill="none"
+          stroke={COLOR}
+          strokeOpacity="0.44"
+          strokeWidth="0.8"
+          strokeDasharray="2.5 3.5"
+        />
+        <circle
+          cx="210"
+          cy="56"
+          r="5"
+          fill="url(#sovereign-core-fill)"
+          filter="url(#sovereign-field-glow)"
+        />
+      </motion.g>
+
+      {relationships.map((path, index) => (
+        <motion.path
+          key={`active-${path}`}
+          d={path}
+          fill="none"
+          stroke={LIGHT}
+          strokeWidth="1.55"
+          strokeLinecap="round"
+          pathLength="1"
+          strokeDasharray="0.18 0.82"
+          initial={{ strokeDashoffset: 0.98, opacity: 0 }}
+          animate={
+            reduceMotion
+              ? { opacity: 0 }
+              : {
+                  strokeDashoffset: [0.98, -0.18],
+                  opacity: [0, 0.8, 0.52, 0],
+                }
+          }
+          transition={{
+            duration: 2.5,
+            delay: 0.16 + index * 0.11,
+            times: [0, 0.18, 0.72, 1],
+            repeat: Infinity,
+            repeatDelay: 1.45,
+            ease: "linear",
+          }}
+          filter="url(#sovereign-field-glow)"
+        />
+      ))}
+
+      {nodes.map((node) => (
+        <motion.g
+          key={`${node.x}-${node.y}`}
+          animate={
+            reduceMotion
+              ? undefined
+              : {
+                  opacity: [0.4, 0.96, 0.52, 0.4],
+                  scale: [0.94, 1.18, 1.02, 0.94],
+                }
+          }
+          transition={{
+            duration,
+            delay: node.delay,
+            times: [0, 0.22, 0.52, 1],
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+        >
+          <circle
+            cx={node.x}
+            cy={node.y}
+            r={node.r + 6}
+            fill={COLOR}
+            opacity="0.035"
+          />
+          <circle
+            cx={node.x}
+            cy={node.y}
+            r={node.r}
+            fill={node.delay > 0.3 ? COLOR : LIGHT}
+            opacity="0.84"
+            filter={
+              node.delay <= 0.3 ? "url(#sovereign-field-glow)" : undefined
+            }
+          />
+        </motion.g>
+      ))}
+
+      {crossLinks.map((path, index) => (
+        <motion.path
+          key={`cross-${path}`}
+          d={path}
+          fill="none"
+          stroke={COLOR}
+          strokeWidth="0.9"
+          strokeLinecap="round"
+          strokeDasharray="2.5 5.5"
+          animate={
+            reduceMotion
+              ? undefined
+              : {
+                  opacity: [0.04, 0.34, 0.18, 0.04],
+                }
+          }
+          transition={{
+            duration,
+            delay: 0.7 + index * 0.16,
+            times: [0, 0.26, 0.6, 1],
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </svg>
   );
 }
