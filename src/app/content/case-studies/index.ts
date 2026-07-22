@@ -1,11 +1,11 @@
 import agenticInsurance from "./agentic-insurance";
 import globality from "./globality";
 import oracle from "./oracle";
-import sovereignAtlasCs from "./sovereign-atlas-cs";
+import sovereignAtlas from "./sovereign-atlas";
 
 export const entries = [
   agenticInsurance,
   globality,
   oracle,
-  sovereignAtlasCs,
+  sovereignAtlas,
 ] as const;

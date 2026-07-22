@@ -43,6 +43,7 @@ export interface AtlasEntry {
   subtitle: string;
   overview: AtlasEntryOverview;
   orbit: AtlasEntryOrbit;
+  overviewStars?: AtlasOverviewStar[];
   sections?: AtlasEntrySection[];
   caseStudyId?: string;
   tags?: string[];
@@ -50,4 +51,10 @@ export interface AtlasEntry {
   role?: string;
   year?: number;
   status?: string;
+}
+
+export interface AtlasOverviewStar {
+  id: string;
+  label: string;
+  angle: number;
 }
