@@ -19,6 +19,14 @@ export default defineAtlasEntry({
     keyDiscovery:
       "Human authority does not require manual control over every decision. It requires meaningful control over purpose, boundaries, and the conditions under which decisions are made.",
   },
+  presentation: {
+    mode: "map-led",
+    sequenceLabel: "AUTHORITY PATH",
+    railLabel: "MAPS & TOOLS",
+    artifactLabel: "TOOL",
+    emptyRailMessage:
+      "Maps and application tools will appear here as the framework develops.",
+  },
   orbit: {
     angle: -90,
     radius: 112,
@@ -75,5 +83,46 @@ export default defineAtlasEntry({
       { from: "ai-decision", to: "human-approval", strength: "secondary" },
     ],
   },
-  sections: undefined,
+  sections: [
+    {
+      id: "system-purpose",
+      label: "System Purpose",
+      subtitle: "Why authority begins upstream.",
+      readingTime: 2,
+      content:
+        "Before an AI system makes a decision, someone has already decided what the system is trying to accomplish. System purpose defines the intended outcome, who the system is meant to serve, which values must be protected, and what the system should never optimize for.\n\nThis is the deepest layer of authority because every downstream strategy and decision inherits its direction from here. If the purpose is incomplete, misaligned, or invisible, adding human review later cannot repair the foundation.\n\nThe practical question is not whether a person touches every output. It is whether people can still examine, challenge, and change the purpose governing those outputs.",
+      insight:
+        "If people do not control the system's purpose, reviewing its outputs does not restore meaningful authority.",
+    },
+    {
+      id: "system-strategy",
+      label: "System Strategy",
+      subtitle: "How human intent becomes operating logic.",
+      readingTime: 2,
+      content:
+        "System strategy translates purpose into policies, constraints, thresholds, evidence requirements, and acceptable methods. It determines how competing goals are weighed and which conditions require escalation.\n\nThis is often the least visible layer. Teams may agree on a responsible purpose while allowing implementation choices, optimization targets, or model behavior to quietly redefine it. The system still appears aligned because the stated goal has not changed, but its operating logic has.\n\nStrategy is usually a shared layer. AI can recommend methods and adapt within context, but the boundaries governing those adaptations must remain visible and contestable.",
+      insight:
+        "Strategy is where human intent either becomes structural or quietly disappears.",
+    },
+    {
+      id: "ai-decision",
+      label: "AI Decision",
+      subtitle: "What can be delegated without surrendering the system.",
+      readingTime: 2,
+      content:
+        "AI decisions include classification, routing, prioritization, recommendations, and routine actions made within established boundaries. These are the moments most people notice because they produce visible outcomes.\n\nDelegation at this layer can be useful. A system does not need human permission for every low-risk decision if its purpose, constraints, confidence thresholds, and escalation conditions are well governed.\n\nThe danger appears when repeated execution begins changing the rules that were meant to contain it. Decision authority has expanded into strategic authority, often without an explicit handoff.",
+      insight:
+        "Delegating a decision is not the same as delegating the authority to define the conditions under which it is made.",
+    },
+    {
+      id: "human-approval",
+      label: "Human Approval",
+      subtitle: "Why a final review can create the appearance of control.",
+      readingTime: 2,
+      content:
+        "Human-in-the-loop is often treated as a safety guarantee: the AI proposes and a person approves. But approval only preserves authority when the reviewer has enough context, time, alternatives, and permission to meaningfully disagree.\n\nWhen people review too many outputs, inherit invisible assumptions, or can only accept and reject what the system has already framed, approval becomes ceremonial. A human is present, but the consequential choices were made earlier.\n\nSome integrity and review steps may eventually be automated as well. That does not automatically make the system unsafe. It makes the upstream questions more important: who defined the evaluator's purpose, which standards govern it, and where can a person still redirect the system?",
+      insight:
+        "A person can approve every output while controlling none of the assumptions that produced it.",
+    },
+  ],
 });

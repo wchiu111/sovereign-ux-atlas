@@ -79,6 +79,14 @@ export default function FocusedOverview({
       maxY: dims.h - 88,
     },
   });
+  const relatedStarIds = new Set<string>();
+
+  if (hoveredStarId) {
+    planet.constellationConnections?.forEach((connection) => {
+      if (connection.from === hoveredStarId) relatedStarIds.add(connection.to);
+      if (connection.to === hoveredStarId) relatedStarIds.add(connection.from);
+    });
+  }
 
   return (
     <div
@@ -234,6 +242,7 @@ export default function FocusedOverview({
           centerY={centerY}
           domainColor={system.color}
           showCenterConnections={planet.showCenterConnections ?? true}
+          activeStarId={hoveredStarId}
         />
 
         <circle
@@ -292,6 +301,8 @@ export default function FocusedOverview({
         {nodes.map((node, index) => {
           const { star, x, y, angle } = node;
           const active = hoveredStarId === star.id;
+          const related = relatedStarIds.has(star.id);
+          const dimmed = Boolean(hoveredStarId) && !active && !related;
           const applicationKitFamily = applicationKitFamilies.find(
             (family) =>
               star.id === family.id || star.id.endsWith(`-${family.id}`),
@@ -303,6 +314,8 @@ export default function FocusedOverview({
               node={node}
               domainColor={system.color}
               active={active}
+              related={related}
+              dimmed={dimmed}
               pulseDelay={`${index * 0.32}s`}
               reducedMotion={reducedMotion}
               showOpenCue={!applicationKitFamily}

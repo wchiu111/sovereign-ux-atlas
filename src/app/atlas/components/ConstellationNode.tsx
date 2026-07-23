@@ -10,6 +10,8 @@ interface ConstellationNodeProps {
   node: ResolvedConstellationNode;
   domainColor: string;
   active: boolean;
+  related?: boolean;
+  dimmed?: boolean;
   pulseDelay: string;
   reducedMotion: boolean;
   showOpenCue?: boolean;
@@ -23,6 +25,8 @@ export default function ConstellationNode({
   node,
   domainColor,
   active,
+  related = false,
+  dimmed = false,
   pulseDelay,
   reducedMotion,
   showOpenCue = true,
@@ -65,14 +69,15 @@ export default function ConstellationNode({
       }}
       onFocus={onAwaken}
       onBlur={onRest}
-      style={{ cursor: "crosshair", outline: "none" }}
+      opacity={dimmed ? 0.52 : 1}
+      style={{ cursor: "crosshair", outline: "none", transition }}
     >
       <circle
         cx={x}
         cy={y}
         r={20 * nodeScale}
         fill={nodeColor}
-        opacity={active ? 0 : 0.055 * intensity}
+        opacity={active ? 0 : related ? 0.09 * intensity : 0.055 * intensity}
         filter="url(#fo-glow-sm)"
         style={{ transition }}
       >
@@ -101,7 +106,7 @@ export default function ConstellationNode({
         cy={y}
         r={(active ? 42 : 26) * nodeScale}
         fill={nodeColor}
-        opacity={active ? 0.15 : 0}
+        opacity={active ? 0.15 : related ? 0.045 : 0}
         style={{ transition }}
       />
 
@@ -123,7 +128,7 @@ export default function ConstellationNode({
         stroke={domainColor}
         strokeWidth={active ? 1.05 : 0.8}
         strokeDasharray="3 6"
-        strokeOpacity={active ? 0.78 : 0.32}
+        strokeOpacity={active ? 0.78 : related ? 0.5 : 0.32}
         style={{ transition }}
       >
         {!active && !reducedMotion && (
@@ -211,7 +216,7 @@ export default function ConstellationNode({
         fontFamily="'DM Mono',monospace"
         letterSpacing="1.6"
         fill={domainColor}
-        opacity={active ? 0.98 : 0.74}
+        opacity={active ? 0.98 : related ? 0.94 : 0.74}
         style={{ transition, pointerEvents: "none" }}
       >
         {star.label}

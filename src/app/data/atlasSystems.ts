@@ -73,6 +73,12 @@ export const SYSTEMS: StarSystem[] = ATLAS_SYSTEM_CONFIGS.map((config) => ({
       orbitOffsetX: orbitPlane * 7,
       orbitOffsetY: orbitPlane * 15,
       signatureStellarType: entry.signatureStellarType,
+      showCenterConnections: entry.constellation?.showCenterConnections,
+      constellationConnections: entry.constellation?.connections?.map((connection) => ({
+        from: `${entry.orbit.starPrefix}-${connection.from}`,
+        to: `${entry.orbit.starPrefix}-${connection.to}`,
+        strength: connection.strength ?? "primary",
+      })),
       stars:
         entry.overviewStars?.map((star) => ({
           id: `${entry.orbit.starPrefix}-${star.id}`,
@@ -83,6 +89,7 @@ export const SYSTEMS: StarSystem[] = ATLAS_SYSTEM_CONFIGS.map((config) => ({
           scale: star.scale,
           stellarType: star.stellarType,
           intensity: star.intensity,
+          labelPosition: star.labelPosition,
         })) ?? STAR_FACTORIES[entry.category](entry.orbit.starPrefix),
       what: entry.overview.what,
       why: entry.overview.why,

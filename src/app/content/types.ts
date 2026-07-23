@@ -32,6 +32,21 @@ export interface AtlasConstellation {
   showCenterConnections?: boolean;
 }
 
+export type AtlasFrameworkPresentationMode =
+  | "map-led"
+  | "example-led"
+  | "practice-led"
+  | "speculative"
+  | "collection";
+
+export interface AtlasEntryPresentation {
+  mode: AtlasFrameworkPresentationMode;
+  sequenceLabel?: string;
+  railLabel?: string;
+  artifactLabel?: string;
+  emptyRailMessage?: string;
+}
+
 export interface AtlasApplicationModule {
   id: string;
   title: string;
@@ -109,6 +124,7 @@ export interface AtlasEntry {
   frameworkKind?: AtlasFrameworkKind;
   signatureStellarType?: AtlasStellarType;
   constellation?: AtlasConstellation;
+  presentation?: AtlasEntryPresentation;
   collection?: AtlasFrameworkCollection;
 }
 

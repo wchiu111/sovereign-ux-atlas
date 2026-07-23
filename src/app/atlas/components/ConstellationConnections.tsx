@@ -9,6 +9,7 @@ interface ConstellationConnectionsProps {
   centerY: number;
   domainColor: string;
   showCenterConnections?: boolean;
+  activeStarId?: string | null;
 }
 
 function connectionPath(
@@ -32,6 +33,7 @@ export default function ConstellationConnections({
   centerY,
   domainColor,
   showCenterConnections = true,
+  activeStarId,
 }: ConstellationConnectionsProps) {
   const idPrefix = useId().replace(/:/g, "");
   const nodeMap = new Map(nodes.map((node) => [node.star.id, node]));
@@ -64,30 +66,57 @@ export default function ConstellationConnections({
       )}
 
       {showCenterConnections &&
-        nodes.map(({ star, x, y, nodeColor }) => (
-          <line
-            key={`center-${star.id}`}
-            x1={centerX}
-            y1={centerY}
-            x2={x}
-            y2={y}
-            stroke={nodeColor}
-            strokeWidth="0.55"
-            strokeOpacity="0.11"
-            strokeDasharray="2 9"
-          />
-        ))}
+        nodes.map(({ star, x, y, nodeColor }) => {
+          const focused = activeStarId === star.id;
+          const dimmed = Boolean(activeStarId) && !focused;
+          return (
+            <line
+              key={`center-${star.id}`}
+              x1={centerX}
+              y1={centerY}
+              x2={x}
+              y2={y}
+              stroke={nodeColor}
+              strokeWidth={focused ? 1.15 : 0.55}
+              strokeOpacity={dimmed ? 0.025 : focused ? 0.62 : 0.11}
+              strokeDasharray="2 9"
+              style={{
+                transition:
+                  "stroke-opacity 0.3s cubic-bezier(0.16,1,0.3,1), stroke-width 0.3s cubic-bezier(0.16,1,0.3,1)",
+              }}
+            />
+          );
+        })}
 
       {resolvedConnections.map(({ connection, from, to, index }) => {
         const primary = connection.strength === "primary";
+        const focused =
+          activeStarId === connection.from || activeStarId === connection.to;
+        const dimmed = Boolean(activeStarId) && !focused;
         return (
           <path
             key={`${connection.from}-${connection.to}`}
             d={connectionPath(from, to)}
             stroke={`url(#${idPrefix}-connection-${index})`}
-            strokeWidth={primary ? 1 : 0.65}
-            strokeOpacity={primary ? 0.34 : 0.18}
+            strokeWidth={
+              focused ? (primary ? 1.6 : 1.1) : primary ? 1 : 0.65
+            }
+            strokeOpacity={
+              dimmed
+                ? 0.035
+                : focused
+                  ? primary
+                    ? 0.82
+                    : 0.52
+                  : primary
+                    ? 0.34
+                    : 0.18
+            }
             strokeDasharray={primary ? undefined : "3 7"}
+            style={{
+              transition:
+                "stroke-opacity 0.3s cubic-bezier(0.16,1,0.3,1), stroke-width 0.3s cubic-bezier(0.16,1,0.3,1)",
+            }}
           />
         );
       })}

@@ -52,6 +52,10 @@ export function atlasEntryToReadingDocument(entry: AtlasEntry): ReadingDocument 
     subtitle: entry.subtitle,
     categoryLabel: CATEGORY_LABEL[entry.category],
     meta: entry.meta ?? defaultMeta ?? "",
+    sequenceLabel: entry.presentation?.sequenceLabel,
+    railLabel: entry.presentation?.railLabel ?? "EVIDENCE",
+    artifactLabel: entry.presentation?.artifactLabel ?? "ARTIFACT",
+    emptyRailMessage: entry.presentation?.emptyRailMessage,
     sections,
   };
 }

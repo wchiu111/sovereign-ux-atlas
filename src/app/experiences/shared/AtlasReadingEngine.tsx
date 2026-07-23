@@ -211,7 +211,10 @@ function LeftNav({
           textTransform:"uppercase",
         }}>
           <div>{caseStudy.sections.length} Sections</div>
-          <div>{totalArtifacts} Artifacts</div>
+          <div>
+            {totalArtifacts} {caseStudy.artifactLabel}
+            {totalArtifacts === 1 ? "" : "S"}
+          </div>
         </div>
       </div>
     </nav>
@@ -225,6 +228,7 @@ function SectionContent({
   color,
   sectionCount,
   categoryLabel,
+  sequenceLabel,
   askOpen,
   onToggleAsk,
 }: {
@@ -232,6 +236,7 @@ function SectionContent({
   color: string;
   sectionCount: number;
   categoryLabel: string;
+  sequenceLabel?: string;
   askOpen: boolean;
   onToggleAsk: () => void;
 }) {
@@ -251,7 +256,7 @@ function SectionContent({
         <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
           letterSpacing:"0.28em", color:"rgba(200,180,130,0.40)",
           marginBottom:"3px" }}>
-          {categoryLabel}
+          {sequenceLabel ?? categoryLabel}
         </div>
         <div style={{ display:"flex", alignItems:"baseline", gap:"9px" }}>
           <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
@@ -514,9 +519,19 @@ function AskPanel({ caseStudy, section, color, onClose }: {
 
 // ─── Evidence Rail ─────────────────────────────────────────────────────────
 
-function EvidenceRail({ section, color, onOpenEvidence }: {
+function EvidenceRail({
+  section,
+  color,
+  railLabel,
+  artifactLabel,
+  emptyMessage,
+  onOpenEvidence,
+}: {
   section: Section;
   color: string;
+  railLabel: string;
+  artifactLabel: string;
+  emptyMessage?: string;
   onOpenEvidence: (item: EvidenceItem) => void;
 }) {
   const [hoveredId, setHoveredId] = useState<string|null>(null);
@@ -536,16 +551,36 @@ function EvidenceRail({ section, color, onOpenEvidence }: {
         <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"11px",
           letterSpacing:"0.32em", color:"rgba(200,180,130,0.60)",
           textTransform:"uppercase" }}>
-          EVIDENCE
+          {railLabel}
         </div>
         <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
           letterSpacing:"0.18em", color:"rgba(200,180,130,0.48)", marginTop:"3px" }}>
-          {section.evidence.length} ARTIFACT{section.evidence.length !== 1 ? "S" : ""}
+          {section.evidence.length} {artifactLabel}
+          {section.evidence.length !== 1 ? "S" : ""}
         </div>
       </div>
 
       {/* Evidence cards */}
       <div style={{ padding:"16px 16px", flex:1 }}>
+        {section.evidence.length === 0 && emptyMessage && (
+          <div style={{
+            margin:"8px 2px",
+            padding:"18px 16px",
+            border:`1px solid ${color}22`,
+            background:`${color}08`,
+          }}>
+            <div style={{
+              fontFamily:"'DM Mono',monospace",
+              fontSize:"8.5px",
+              lineHeight:1.8,
+              letterSpacing:"0.14em",
+              color:"rgba(200,180,130,0.52)",
+              textTransform:"uppercase",
+            }}>
+              {emptyMessage}
+            </div>
+          </div>
+        )}
         {section.evidence.map(item => {
           const isHov = hoveredId === item.id;
           return (
@@ -982,6 +1017,7 @@ export default function AtlasReadingEngine({
         color={color}
         sectionCount={caseStudy.sections.length}
         categoryLabel={caseStudy.categoryLabel}
+        sequenceLabel={caseStudy.sequenceLabel}
         askOpen={askOpen}
         onToggleAsk={() => setAskOpen(open => !open)}
         />
@@ -1006,6 +1042,9 @@ export default function AtlasReadingEngine({
           <EvidenceRail
             section={activeSection}
             color={color}
+            railLabel={caseStudy.railLabel}
+            artifactLabel={caseStudy.artifactLabel}
+            emptyMessage={caseStudy.emptyRailMessage}
             onOpenEvidence={handleOpenEvidence}
           />
         </aside>

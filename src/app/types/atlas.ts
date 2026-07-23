@@ -1,4 +1,9 @@
-import type { AtlasStarIntensity, AtlasStellarType } from "../content/types";
+import type {
+  AtlasConnectionStrength,
+  AtlasStarIntensity,
+  AtlasStarLabelPosition,
+  AtlasStellarType,
+} from "../content/types";
 
 export interface StarNode {
   id: string;
@@ -9,6 +14,13 @@ export interface StarNode {
   scale?: number;
   stellarType?: AtlasStellarType;
   intensity?: AtlasStarIntensity;
+  labelPosition?: AtlasStarLabelPosition;
+}
+
+export interface ConstellationConnection {
+  from: string;
+  to: string;
+  strength: AtlasConnectionStrength;
 }
 
 export interface Planet {
@@ -21,6 +33,8 @@ export interface Planet {
   orbitOffsetY: number;
   stars: StarNode[];
   signatureStellarType?: AtlasStellarType;
+  constellationConnections?: ConstellationConnection[];
+  showCenterConnections?: boolean;
   what: string; why: string; researchFocus: string; keyDiscovery: string;
 }
 

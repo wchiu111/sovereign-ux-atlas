@@ -28,5 +28,9 @@ export interface ReadingDocument {
   subtitle: string;
   categoryLabel: string;
   meta: string;
+  sequenceLabel?: string;
+  railLabel: string;
+  artifactLabel: string;
+  emptyRailMessage?: string;
   sections: ReadingSection[];
 }
