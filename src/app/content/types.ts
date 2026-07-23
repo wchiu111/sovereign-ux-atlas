@@ -12,6 +12,26 @@ export type AtlasStellarType =
 
 export type AtlasStarIntensity = "dim" | "balanced" | "bright";
 
+export type AtlasLabelSide = "auto" | "top" | "right" | "bottom" | "left";
+
+export interface AtlasStarLabelPosition {
+  side?: AtlasLabelSide;
+  offset?: number;
+}
+
+export type AtlasConnectionStrength = "primary" | "secondary";
+
+export interface AtlasConstellationConnection {
+  from: string;
+  to: string;
+  strength?: AtlasConnectionStrength;
+}
+
+export interface AtlasConstellation {
+  connections?: AtlasConstellationConnection[];
+  showCenterConnections?: boolean;
+}
+
 export interface AtlasApplicationModule {
   id: string;
   title: string;
@@ -88,6 +108,7 @@ export interface AtlasEntry {
   status?: string;
   frameworkKind?: AtlasFrameworkKind;
   signatureStellarType?: AtlasStellarType;
+  constellation?: AtlasConstellation;
   collection?: AtlasFrameworkCollection;
 }
 
@@ -102,4 +123,5 @@ export interface AtlasOverviewStar {
   scale?: number;
   stellarType?: AtlasStellarType;
   intensity?: AtlasStarIntensity;
+  labelPosition?: AtlasStarLabelPosition;
 }

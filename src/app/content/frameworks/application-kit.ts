@@ -97,7 +97,7 @@ export default defineAtlasEntry({
               "Designing conversational systems, recommendations, or adaptive flows.",
             watchFor:
               "A system that sounds appropriately cautious while still making consequential assumptions invisibly.",
-            relatedFrameworks: ["model-design", "reverse-pyramid"],
+            relatedFrameworks: ["model-design", "authority-gradient"],
           },
           {
             id: "multi-user-co-sovereignty",
@@ -114,7 +114,7 @@ export default defineAtlasEntry({
               "Designing platforms, marketplaces, or admin-user environments.",
             watchFor:
               "Presenting unequal power relationships as though every participant has equivalent agency.",
-            relatedFrameworks: ["reverse-pyramid"],
+            relatedFrameworks: ["authority-gradient"],
           },
           {
             id: "constraint-scope-design",
@@ -131,7 +131,7 @@ export default defineAtlasEntry({
               "Designing AI systems, assistants, or any experience where capability may be overestimated.",
             watchFor:
               "Limitations that are technically disclosed but practically invisible or difficult to understand.",
-            relatedFrameworks: ["model-design", "reverse-pyramid"],
+            relatedFrameworks: ["model-design", "authority-gradient"],
           },
         ],
       },
@@ -172,7 +172,7 @@ export default defineAtlasEntry({
               "Designing for healthcare, finance, crisis-adjacent, or care-related flows.",
             watchFor:
               "Treating interface safeguards as substitutes for qualified professional support.",
-            relatedFrameworks: ["reverse-pyramid", "presence-navigation"],
+            relatedFrameworks: ["authority-gradient", "presence-navigation"],
           },
           {
             id: "signal-fidelity",
@@ -288,7 +288,7 @@ export default defineAtlasEntry({
               "Systems begin influencing identity, long-term behavior, or emotional state.",
             watchFor:
               "Treating an observed signal as permission to diagnose, intervene, or claim authority.",
-            relatedFrameworks: ["reverse-pyramid"],
+            relatedFrameworks: ["authority-gradient"],
           },
           {
             id: "simulation-based-validation",
