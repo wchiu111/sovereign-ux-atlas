@@ -4,7 +4,10 @@ import AtlasExperienceRouter from "../experiences/AtlasExperienceRouter";
 import AtlasCommandPalette from "../components/AtlasCommandPalette";
 import AtlasIntelligenceDrawer from "../components/AtlasIntelligenceDrawer";
 import AtlasProjectIntelligenceDrawer from "../components/AtlasProjectIntelligenceDrawer";
-import FocusPullTransition from "./components/FocusPullTransition";
+import FocusPullTransition, {
+  FOCUS_TRANSITION_DURATION,
+  REDUCED_FOCUS_TRANSITION_DURATION,
+} from "./components/FocusPullTransition";
 import FocusedOverview from "./components/FocusedOverview";
 import AtlasSystemPreview from "./components/AtlasSystemPreview";
 import type { AtlasPreviewId } from "./components/AtlasPreviewContent";
@@ -19,6 +22,7 @@ import {
 } from "./hooks/useAtlasAnimation";
 import type { Planet, StarSystem, ViewLevel } from "../types/atlas";
 import { useAtlasState } from "../state";
+import { resolveStellarColor } from "./constellation/stellarPalette";
 
 interface AtlasExplorerProps {
   active?: boolean;
@@ -68,6 +72,7 @@ export default function AtlasExplorer({
   // Local render-only state. Navigation and overlays live in the Atlas state engine.
   const [dims, setDims] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
   const [hoveredNexus, setHoveredNexus] = useState(false);
+  const [reduceFocusMotion, setReduceFocusMotion] = useState(false);
   const [hoveredSystemPreview, setHoveredSystemPreview] = useState<{
     id: AtlasPreviewId;
     x: number;
@@ -84,6 +89,14 @@ export default function AtlasExplorer({
   useEffect(() => { activeSysRef.current = activeSystemId; }, [activeSystemId]);
   useEffect(() => { activePlanetRef.current = activePlanetId; }, [activePlanetId]);
   useEffect(() => { dimsRef.current = dims; }, [dims]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncPreference = () => setReduceFocusMotion(media.matches);
+    syncPreference();
+    media.addEventListener?.("change", syncPreference);
+    return () => media.removeEventListener?.("change", syncPreference);
+  }, []);
 
   useEffect(() => {
     revealTimersRef.current.forEach(window.clearTimeout);
@@ -440,18 +453,26 @@ useEffect(() => {
               label: selectedStar?.label ?? "Section",
               x: anchor.x,
               y: anchor.y,
-              color: activeSystem.color,
+              color: resolveStellarColor(
+                selectedStar?.stellarType,
+                activeSystem.color,
+              ),
             });
 
             window.setTimeout(() => {
               actions.enterFocusMode(index);
-            }, 760);
+            }, reduceFocusMotion
+              ? REDUCED_FOCUS_TRANSITION_DURATION
+              : FOCUS_TRANSITION_DURATION);
           }}
         />
       )}
 
       {focusTransition && level === 2 && (
-        <FocusPullTransition transition={focusTransition} />
+        <FocusPullTransition
+          transition={focusTransition}
+          reducedMotion={reduceFocusMotion}
+        />
       )}
 
       {/* ── Fixed UI ─────────────────────────────────────────────────── */}
@@ -669,4 +690,3 @@ useEffect(() => {
 
 
 // ─── Focus Pull Transition ─────────────────────────────────────────────────
-

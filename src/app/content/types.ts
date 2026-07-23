@@ -92,6 +92,7 @@ export interface AtlasEntrySection {
   id: string;
   label: string;
   content: string;
+  accentStellarType?: AtlasStellarType;
   subtitle?: string;
   insight?: string;
   readingTime?: number;

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { STAR_ORBIT_R } from "../../data/atlasSystems";
 import { planetLocalPos, starLocalPos } from "../../utils/atlasGeometry";
 import type { Planet, StarSystem, ViewLevel } from "../../types/atlas";
+import { resolveDepthColor } from "../constellation/depthColor";
+import { resolveStellarColor } from "../constellation/stellarPalette";
 
 interface AtlasPlanetProps {
   system: StarSystem;
@@ -28,6 +30,13 @@ export default function AtlasPlanet({
   const active = activePlanetId === planet.id;
   const enabled = level >= 1 && activeSystemId === system.id;
   const initial = planetLocalPos(planet, 0);
+  const depthColor = resolveDepthColor({
+    domainColor: system.color,
+    stellarType: planet.signatureStellarType,
+    level,
+    hovered,
+    active,
+  });
   const foregroundBoost = Math.max(
     -0.08,
     Math.min(0.12, planet.orbitPlane * 0.045),
@@ -86,7 +95,7 @@ export default function AtlasPlanet({
           cx={0}
           cy={0}
           r={active ? 32 : hovered && enabled ? 42 : 27}
-          fill={system.color}
+          fill={depthColor.atmosphereColor}
           opacity={active ? 0.08 : hovered && enabled ? 0.12 : 0.018}
           style={{
             transition: "r 0.45s ease-out, opacity 0.45s ease-out",
@@ -97,8 +106,11 @@ export default function AtlasPlanet({
           cx={0}
           cy={0}
           r={active ? 19 : hovered && enabled ? 25 : 14}
-          fill={system.color}
-          opacity={active ? 0.3 : hovered && enabled ? 0.58 : 0.25}
+          fill={depthColor.semanticColor}
+          opacity={
+            (active ? 0.3 : hovered && enabled ? 0.58 : 0.25) *
+            depthColor.semanticStrength
+          }
           filter={
             hovered || active
               ? `url(#glow-${system.id})`
@@ -113,8 +125,8 @@ export default function AtlasPlanet({
           cx={0}
           cy={0}
           r={active ? 6.4 : hovered && enabled ? 5.8 : 4.2}
-          fill={system.color}
-          opacity="0.98"
+          fill={depthColor.semanticColor}
+          opacity={depthColor.coreOpacity}
           filter={
             hovered || active
               ? `url(#glow-${system.id})`
@@ -128,7 +140,7 @@ export default function AtlasPlanet({
           cy={0}
           r={hovered && enabled ? 20 : 0}
           fill="none"
-          stroke={system.color}
+          stroke={depthColor.stateColor}
           strokeWidth="0.65"
           strokeOpacity={hovered && enabled ? 0.62 : 0}
           strokeDasharray="3 6"
@@ -167,7 +179,7 @@ export default function AtlasPlanet({
           fontFamily="'DM Mono',monospace"
           fontWeight="500"
           letterSpacing="1.45"
-          fill={system.color}
+          fill={depthColor.labelColor}
           opacity={labelOpacity}
           paintOrder="stroke"
           stroke="#070811"
@@ -198,6 +210,10 @@ export default function AtlasPlanet({
 
             {planet.stars.map((star) => {
               const position = starLocalPos(star);
+              const starColor = resolveStellarColor(
+                star.stellarType,
+                system.color,
+              );
 
               return (
                 <g key={star.id}>
@@ -216,7 +232,7 @@ export default function AtlasPlanet({
                     cx={position.x}
                     cy={position.y}
                     r={8}
-                    fill={system.color}
+                    fill={starColor}
                     opacity="0.05"
                   />
 
@@ -224,7 +240,7 @@ export default function AtlasPlanet({
                     cx={position.x}
                     cy={position.y}
                     r={2.5}
-                    fill={system.color}
+                    fill={starColor}
                     opacity="0.62"
                     filter="url(#glow-sm)"
                   />

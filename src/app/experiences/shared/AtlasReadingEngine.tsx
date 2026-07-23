@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Share2, X, ZoomIn, Minimize2 } from "lucide-react";
 import type { ReadingDocument as CaseStudy, ReadingEvidenceItem as EvidenceItem, ReadingSection as Section } from "./types";
 import { EvidenceThumbnail, EvidenceLargeView } from "../../case-study/components/EvidenceArtwork";
+import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
 
 function LeftNav({
   caseStudy, activeSection, onSection, onExit, color,
@@ -849,6 +850,10 @@ export default function AtlasReadingEngine({
   const [activeEvidence, setActiveEvidence] = useState<EvidenceItem|null>(null);
   const [shareConfirm, setShareConfirm] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
+  const sectionColor = resolveStellarColor(
+    activeSection.accentStellarType,
+    color,
+  );
 
   // Browser back/forward support
   useEffect(() => {
@@ -1014,7 +1019,7 @@ export default function AtlasReadingEngine({
         />
         <SectionContent
           section={activeSection}
-        color={color}
+        color={sectionColor}
         sectionCount={caseStudy.sections.length}
         categoryLabel={caseStudy.categoryLabel}
         sequenceLabel={caseStudy.sequenceLabel}
@@ -1035,7 +1040,7 @@ export default function AtlasReadingEngine({
             <AskPanel
               caseStudy={caseStudy}
               section={activeSection}
-              color={color}
+              color={sectionColor}
               onClose={() => setAskOpen(false)}
             />
           )}

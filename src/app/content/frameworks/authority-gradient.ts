@@ -87,6 +87,7 @@ export default defineAtlasEntry({
     {
       id: "system-purpose",
       label: "System Purpose",
+      accentStellarType: "purpose",
       subtitle: "Why authority begins upstream.",
       readingTime: 2,
       content:
@@ -97,6 +98,7 @@ export default defineAtlasEntry({
     {
       id: "system-strategy",
       label: "System Strategy",
+      accentStellarType: "strategy",
       subtitle: "How human intent becomes operating logic.",
       readingTime: 2,
       content:
@@ -107,6 +109,7 @@ export default defineAtlasEntry({
     {
       id: "ai-decision",
       label: "AI Decision",
+      accentStellarType: "agentic",
       subtitle: "What can be delegated without surrendering the system.",
       readingTime: 2,
       content:
@@ -117,6 +120,7 @@ export default defineAtlasEntry({
     {
       id: "human-approval",
       label: "Human Approval",
+      accentStellarType: "judgment",
       subtitle: "Why a final review can create the appearance of control.",
       readingTime: 2,
       content:

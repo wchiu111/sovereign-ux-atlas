@@ -20,6 +20,7 @@ export interface ReadingSection {
   keyInsight: string;
   readingTime: number;
   evidence: ReadingEvidenceItem[];
+  accentStellarType?: import("../../content/types").AtlasStellarType;
 }
 
 export interface ReadingDocument {

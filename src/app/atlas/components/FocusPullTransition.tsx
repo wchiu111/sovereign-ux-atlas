@@ -1,6 +1,20 @@
 import type { FocusTransition } from "../../types/atlas";
 
-export default function FocusPullTransition({ transition }: { transition: FocusTransition }) {
+export const FOCUS_TRANSITION_DURATION = 760;
+export const REDUCED_FOCUS_TRANSITION_DURATION = 180;
+
+export default function FocusPullTransition({
+  transition,
+  reducedMotion = false,
+}: {
+  transition: FocusTransition;
+  reducedMotion?: boolean;
+}) {
+  const duration = reducedMotion
+    ? REDUCED_FOCUS_TRANSITION_DURATION
+    : FOCUS_TRANSITION_DURATION;
+  const easing = "cubic-bezier(0.16,1,0.3,1)";
+
   return (
     <div
       className="absolute inset-0 pointer-events-none"
@@ -8,7 +22,7 @@ export default function FocusPullTransition({ transition }: { transition: FocusT
         zIndex: 44,
         overflow: "hidden",
         background: "rgba(3,4,10,0)",
-        animation: "atlasFocusVeil 760ms cubic-bezier(0.22,1,0.36,1) forwards",
+        animation: `atlasFocusVeil ${duration}ms ${easing} forwards`,
       }}
     >
       <style>{`
@@ -97,7 +111,7 @@ export default function FocusPullTransition({ transition }: { transition: FocusT
             ${transition.color}18 54%,
             rgba(3,4,10,0) 72%)`,
           boxShadow: `0 0 38px ${transition.color}55, 0 0 120px ${transition.color}22`,
-          animation: "atlasFocusBloom 760ms cubic-bezier(0.22,1,0.36,1) forwards",
+          animation: `atlasFocusBloom ${duration}ms ${easing} forwards`,
         }}
       />
 
@@ -111,7 +125,7 @@ export default function FocusPullTransition({ transition }: { transition: FocusT
           borderRadius: "9999px",
           background: transition.color,
           boxShadow: `0 0 24px ${transition.color}AA, 0 0 80px ${transition.color}55`,
-          animation: "atlasFocusCore 760ms cubic-bezier(0.22,1,0.36,1) forwards",
+          animation: `atlasFocusCore ${duration}ms ${easing} forwards`,
         }}
       />
 
@@ -127,7 +141,7 @@ export default function FocusPullTransition({ transition }: { transition: FocusT
           textTransform: "uppercase",
           whiteSpace: "nowrap",
           textShadow: `0 0 22px ${transition.color}55`,
-          animation: "atlasFocusLabel 760ms cubic-bezier(0.22,1,0.36,1) forwards",
+          animation: `atlasFocusLabel ${duration}ms ${easing} forwards`,
         }}
       >
         Entering {transition.label}

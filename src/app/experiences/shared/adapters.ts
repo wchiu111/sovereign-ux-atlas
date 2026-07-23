@@ -27,6 +27,7 @@ function sectionFromEntry(section: AtlasEntrySection, index: number): ReadingSec
     keyInsight: section.insight ?? "",
     readingTime: section.readingTime ?? estimateReadingTime(section.content),
     evidence: section.evidence ?? [],
+    accentStellarType: section.accentStellarType,
   };
 }
 
