@@ -9,9 +9,12 @@ export const ATLAS_ENTRIES: AtlasEntry[] = [
   ...frameworks,
 ];
 
-export const ATLAS_ENTRY_MAP = new Map(
-  ATLAS_ENTRIES.map((entry) => [entry.id, entry] as const),
-);
+export const ATLAS_ENTRY_MAP = new Map<string, AtlasEntry>();
+
+ATLAS_ENTRIES.forEach((entry) => {
+  ATLAS_ENTRY_MAP.set(entry.id, entry);
+  entry.aliases?.forEach((alias) => ATLAS_ENTRY_MAP.set(alias, entry));
+});
 
 export function getAtlasEntry(id: string): AtlasEntry | undefined {
   return ATLAS_ENTRY_MAP.get(id);

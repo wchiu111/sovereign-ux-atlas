@@ -72,11 +72,17 @@ export const SYSTEMS: StarSystem[] = ATLAS_SYSTEM_CONFIGS.map((config) => ({
       orbitPlane,
       orbitOffsetX: orbitPlane * 7,
       orbitOffsetY: orbitPlane * 15,
+      signatureStellarType: entry.signatureStellarType,
       stars:
         entry.overviewStars?.map((star) => ({
           id: `${entry.orbit.starPrefix}-${star.id}`,
           label: star.label,
           angle: star.angle,
+          x: star.x,
+          y: star.y,
+          scale: star.scale,
+          stellarType: star.stellarType,
+          intensity: star.intensity,
         })) ?? STAR_FACTORIES[entry.category](entry.orbit.starPrefix),
       what: entry.overview.what,
       why: entry.overview.why,

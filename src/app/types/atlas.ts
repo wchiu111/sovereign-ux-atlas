@@ -1,4 +1,15 @@
-export interface StarNode { id: string; label: string; angle: number; }
+import type { AtlasStarIntensity, AtlasStellarType } from "../content/types";
+
+export interface StarNode {
+  id: string;
+  label: string;
+  angle: number;
+  x?: number;
+  y?: number;
+  scale?: number;
+  stellarType?: AtlasStellarType;
+  intensity?: AtlasStarIntensity;
+}
 
 export interface Planet {
   id: string; label: string;
@@ -9,6 +20,7 @@ export interface Planet {
   orbitOffsetX: number;
   orbitOffsetY: number;
   stars: StarNode[];
+  signatureStellarType?: AtlasStellarType;
   what: string; why: string; researchFocus: string; keyDiscovery: string;
 }
 

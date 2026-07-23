@@ -1,7 +1,21 @@
 import { useEffect, useState } from "react";
 import AtlasProjectIntelligenceDrawer, { PROJECT_DRAWER_WIDTH } from "../../components/AtlasProjectIntelligenceDrawer";
 import applicationKitEntry from "../../content/frameworks/application-kit";
+import type { AtlasStellarType } from "../../content/types";
 import type { Planet, StarSystem } from "../../types/atlas";
+
+const STELLAR_COLORS: Record<AtlasStellarType, string> = {
+  purpose: "#E8C86D",
+  strategy: "#F4EBD0",
+  agentic: "#8AAEC8",
+  judgment: "#D4916A",
+  risk: "#D86C61",
+  relational: "#A68BD4",
+};
+
+function resolveStellarColor(stellarType: AtlasStellarType | undefined, fallback: string) {
+  return stellarType ? STELLAR_COLORS[stellarType] : fallback;
+}
 
 function wrapModuleTitle(title: string, maxCharacters = 18) {
   const words = title.split(" ");
@@ -48,10 +62,23 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
   const orbitR = Math.min(availW * 0.25, dims.h * 0.30, 215);
   const applicationKitFamilies =
     planet.id === "application-kit" ? applicationKitEntry.collection?.families ?? [] : [];
+  const planetColor = resolveStellarColor(planet.signatureStellarType, system.color);
 
   const starPositions = planet.stars.map((star, i) => {
-    const angle = (i / planet.stars.length) * Math.PI * 2 - Math.PI / 2;
-    return { star, x: cx + Math.cos(angle) * orbitR, y: cy + Math.sin(angle) * orbitR, angle };
+    const fallbackAngle = (i / planet.stars.length) * Math.PI * 2 - Math.PI / 2;
+    const hasAuthoredPosition = typeof star.x === "number" && typeof star.y === "number";
+    const x = hasAuthoredPosition ? cx + star.x! * orbitR : cx + Math.cos(fallbackAngle) * orbitR;
+    const y = hasAuthoredPosition ? cy + star.y! * orbitR : cy + Math.sin(fallbackAngle) * orbitR;
+    const angle = hasAuthoredPosition ? Math.atan2(star.y!, star.x!) : fallbackAngle;
+
+    return {
+      star,
+      x,
+      y,
+      angle,
+      nodeColor: resolveStellarColor(star.stellarType, system.color),
+      nodeScale: star.scale ?? 1,
+    };
   });
 
   return (
@@ -125,26 +152,27 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
 
         {/* Structural connectors make the section nodes read as one project system. */}
         <g stroke={system.color} fill="none" pointerEvents="none">
-          {starPositions.map(({ star, x, y }) => (
+          {starPositions.map(({ star, x, y, nodeColor }) => (
             <line
               key={`connector-${star.id}`}
               x1={cx}
               y1={cy}
               x2={x}
               y2={y}
+              stroke={nodeColor}
               strokeWidth="0.55"
-              strokeOpacity="0.075"
+              strokeOpacity="0.11"
               strokeDasharray="2 9"
             />
           ))}
         </g>
 
         {/* Central planet — layered glow, larger and more authoritative */}
-        <circle cx={cx} cy={cy} r={orbitR * 0.42} fill={system.color} opacity="0.035" />
-        <circle cx={cx} cy={cy} r={orbitR * 0.28} fill={system.color} opacity="0.08"  filter="url(#fo-glow-lg)" />
-        <circle cx={cx} cy={cy} r={orbitR * 0.16} fill={system.color} opacity="0.20"  filter="url(#fo-glow-lg)" />
-        <circle cx={cx} cy={cy} r={orbitR * 0.08} fill={system.color} opacity="0.55"  filter="url(#fo-glow)" />
-        <circle cx={cx} cy={cy} r={orbitR * 0.04} fill={system.color} opacity="0.92"  filter="url(#fo-glow)" />
+        <circle cx={cx} cy={cy} r={orbitR * 0.42} fill={planetColor} opacity="0.035" />
+        <circle cx={cx} cy={cy} r={orbitR * 0.28} fill={planetColor} opacity="0.08"  filter="url(#fo-glow-lg)" />
+        <circle cx={cx} cy={cy} r={orbitR * 0.16} fill={planetColor} opacity="0.20"  filter="url(#fo-glow-lg)" />
+        <circle cx={cx} cy={cy} r={orbitR * 0.08} fill={planetColor} opacity="0.55"  filter="url(#fo-glow)" />
+        <circle cx={cx} cy={cy} r={orbitR * 0.04} fill={planetColor} opacity="0.92"  filter="url(#fo-glow)" />
 
         {/* Planet name — below the node, readable and bright */}
         <text
@@ -157,15 +185,17 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
         </text>
 
         {/* Star child nodes */}
-        {starPositions.map(({ star, x, y, angle }, index) => {
+        {starPositions.map(({ star, x, y, angle, nodeColor, nodeScale }, index) => {
           const isHov = hoveredStarId === star.id;
           const applicationKitFamily = applicationKitFamilies.find(
             family => star.id === family.id || star.id.endsWith(`-${family.id}`),
           );
           const pulseDelay = `${index * 0.32}s`;
+          const intensityMultiplier =
+            star.intensity === "bright" ? 1.12 : star.intensity === "dim" ? 0.72 : 1;
 
           // Label placed radially outside, pushed further from node center
-          const labelDist = 30;
+          const labelDist = 28 + nodeScale * 6;
           const lx = x + Math.cos(angle) * labelDist;
           const ly = y + Math.sin(angle) * labelDist;
           const anchor =
@@ -189,9 +219,9 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
               <circle
                 cx={x}
                 cy={y}
-                r={20}
-                fill={system.color}
-                opacity={isHov ? 0 : 0.055}
+                r={20 * nodeScale}
+                fill={nodeColor}
+                opacity={isHov ? 0 : 0.055 * intensityMultiplier}
                 filter="url(#fo-glow-sm)"
                 style={{ transition: "opacity 0.25s ease-out" }}
               >
@@ -199,14 +229,14 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
                   <>
                     <animate
                       attributeName="r"
-                      values="18;24;18"
+                      values={`${18 * nodeScale};${24 * nodeScale};${18 * nodeScale}`}
                       dur="3.8s"
                       begin={pulseDelay}
                       repeatCount="indefinite"
                     />
                     <animate
                       attributeName="opacity"
-                      values="0.045;0.12;0.045"
+                      values={`${0.045 * intensityMultiplier};${0.12 * intensityMultiplier};${0.045 * intensityMultiplier}`}
                       dur="3.8s"
                       begin={pulseDelay}
                       repeatCount="indefinite"
@@ -219,8 +249,8 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
               <circle
                 cx={x}
                 cy={y}
-                r={isHov ? 42 : 26}
-                fill={system.color}
+                r={(isHov ? 42 : 26) * nodeScale}
+                fill={nodeColor}
                 opacity={isHov ? 0.15 : 0}
                 style={{ transition: "r 0.35s ease-out, opacity 0.35s ease-out" }}
               />
@@ -229,8 +259,8 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
               <circle
                 cx={x}
                 cy={y}
-                r={isHov ? 25 : 12}
-                fill={system.color}
+                r={(isHov ? 25 : 12) * nodeScale}
+                fill={nodeColor}
                 opacity={isHov ? 0.34 : 0}
                 filter="url(#fo-glow-sm)"
                 style={{ transition: "r 0.30s ease-out, opacity 0.30s ease-out" }}
@@ -240,7 +270,7 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
               <circle
                 cx={x}
                 cy={y}
-                r={isHov ? 18 : 14}
+                r={(isHov ? 18 : 14) * nodeScale}
                 fill="none"
                 stroke={system.color}
                 strokeWidth="0.8"
@@ -263,8 +293,8 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
               <circle
                 cx={x}
                 cy={y}
-                r={isHov ? 10 : 9}
-                fill={system.color}
+                r={(isHov ? 10 : 9) * nodeScale}
+                fill={nodeColor}
                 opacity={isHov ? 0.26 : 0.18}
                 filter="url(#fo-glow-sm)"
                 style={{ transition: "r 0.30s ease-out, opacity 0.30s ease-out" }}
@@ -273,7 +303,7 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
                   <>
                     <animate
                       attributeName="r"
-                      values="8;11;8"
+                      values={`${8 * nodeScale};${11 * nodeScale};${8 * nodeScale}`}
                       dur="3.8s"
                       begin={pulseDelay}
                       repeatCount="indefinite"
@@ -293,9 +323,9 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
               <circle
                 cx={x}
                 cy={y}
-                r={isHov ? 6.2 : 4.7}
-                fill={system.color}
-                opacity={isHov ? 0.98 : 0.86}
+                r={(isHov ? 6.2 : 4.7) * nodeScale}
+                fill={nodeColor}
+                opacity={Math.min(1, (isHov ? 0.98 : 0.86) * intensityMultiplier)}
                 filter="url(#fo-glow-sm)"
                 style={{ transition: "r 0.25s ease-out, opacity 0.25s ease-out" }}
               >
@@ -303,14 +333,14 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
                   <>
                     <animate
                       attributeName="r"
-                      values="4.3;5.4;4.3"
+                      values={`${4.3 * nodeScale};${5.4 * nodeScale};${4.3 * nodeScale}`}
                       dur="3.8s"
                       begin={pulseDelay}
                       repeatCount="indefinite"
                     />
                     <animate
                       attributeName="opacity"
-                      values="0.72;0.96;0.72"
+                      values={`${0.72 * intensityMultiplier};${Math.min(1, 0.96 * intensityMultiplier)};${0.72 * intensityMultiplier}`}
                       dur="3.8s"
                       begin={pulseDelay}
                       repeatCount="indefinite"
@@ -323,7 +353,7 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
               <circle
                 cx={x}
                 cy={y}
-                r={34}
+                r={Math.max(34, 34 * nodeScale)}
                 fill="transparent"
                 style={{ cursor: "crosshair" }}
               />
