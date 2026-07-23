@@ -3,6 +3,7 @@ import { defineAtlasEntry } from "../defineAtlasEntry";
 export default defineAtlasEntry({
   id: "regenerative-systems",
   category: "framework",
+  frameworkKind: "core",
   title: "REGENERATIVE SYSTEMS",
   subtitle: "A framework for designing systems that recover from misalignment and drift without requiring external intervention.",
   overview: {
@@ -12,7 +13,7 @@ export default defineAtlasEntry({
     keyDiscovery: "Regeneration requires three designed elements: a clear values baseline, drift sensing, and explicit recovery pathways.",
   },
   orbit: {
-    angle: 138,
+    angle: 150,
     radius: 112,
     speed: 1.05e-4,
     starPrefix: "rs",

@@ -1,5 +1,29 @@
 export type AtlasCategory = "case-study" | "experiment" | "framework";
 
+export type AtlasFrameworkKind = "core" | "collection";
+
+export interface AtlasApplicationModule {
+  id: string;
+  title: string;
+  purpose: string;
+  includes: string[];
+  useWhen: string;
+  watchFor?: string;
+  relatedFrameworks?: string[];
+}
+
+export interface AtlasModuleFamily {
+  id: string;
+  title: string;
+  description: string;
+  modules: AtlasApplicationModule[];
+}
+
+export interface AtlasFrameworkCollection {
+  moduleCount: number;
+  families: AtlasModuleFamily[];
+}
+
 export interface AtlasEntryOverview {
   what: string;
   why: string;
@@ -51,6 +75,8 @@ export interface AtlasEntry {
   role?: string;
   year?: number;
   status?: string;
+  frameworkKind?: AtlasFrameworkKind;
+  collection?: AtlasFrameworkCollection;
 }
 
 export interface AtlasOverviewStar {

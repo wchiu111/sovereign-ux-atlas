@@ -6,6 +6,7 @@ import AtlasIntelligenceDrawer from "../components/AtlasIntelligenceDrawer";
 import AtlasProjectIntelligenceDrawer from "../components/AtlasProjectIntelligenceDrawer";
 import FocusPullTransition from "./components/FocusPullTransition";
 import FocusedOverview from "./components/FocusedOverview";
+import ApplicationKitOverview from "./components/ApplicationKitOverview";
 import AtlasSystemPreview from "./components/AtlasSystemPreview";
 import type { AtlasPreviewId } from "./components/AtlasPreviewContent";
 import { SYSTEMS, SYSTEM_MAP } from "../data/atlasSystems";
@@ -246,16 +247,20 @@ useEffect(() => {
   }, [actions, zoomWithTransition]);
 
   const goToPlanet = useCallback((sys: StarSystem, planet: Planet) => {
-  // Enter Focused Overview — no camera zoom; atlas fades, isolated view overlays
-  isFollowingRef.current = false;
-  if (followTimerRef.current) clearTimeout(followTimerRef.current);
+    // Enter Focused Overview — no camera zoom; atlas fades, isolated view overlays.
+    isFollowingRef.current = false;
+    if (followTimerRef.current) clearTimeout(followTimerRef.current);
 
-  actions.openPlanet(sys.id, planet.id);
+    actions.openPlanet(sys.id, planet.id);
 
-  requestAnimationFrame(() => {
-    actions.openProjectDrawer();
-  });
-}, []);
+    // Collections use the full canvas as their focused overview. Ordinary entries
+    // retain the contextual project drawer.
+    if (planet.id !== "application-kit") {
+      requestAnimationFrame(() => {
+        actions.openProjectDrawer();
+      });
+    }
+  }, [actions]);
 
   const goToAtlas = useCallback(() => {
     isFollowingRef.current = false;
@@ -427,27 +432,36 @@ useEffect(() => {
 
       {/* ── Focused Overview ─────────────────────────────────────────── */}
       {level === 2 && activePlanet && activeSystem && (
-        <FocusedOverview
-          system={activeSystem}
-          planet={activePlanet}
-          onBack={backToSystem}
-          transitioning={!!focusTransition}
-          onOpenStar={(index, anchor) => {
-            const selectedStar = activePlanet.stars[index];
+        activePlanet.id === "application-kit" ? (
+          <ApplicationKitOverview
+            system={activeSystem}
+            planet={activePlanet}
+            onBack={backToSystem}
+            transitioning={!!focusTransition}
+          />
+        ) : (
+          <FocusedOverview
+            system={activeSystem}
+            planet={activePlanet}
+            onBack={backToSystem}
+            transitioning={!!focusTransition}
+            onOpenStar={(index, anchor) => {
+              const selectedStar = activePlanet.stars[index];
 
-            actions.beginFocusTransition({
-              index,
-              label: selectedStar?.label ?? "Section",
-              x: anchor.x,
-              y: anchor.y,
-              color: activeSystem.color,
-            });
+              actions.beginFocusTransition({
+                index,
+                label: selectedStar?.label ?? "Section",
+                x: anchor.x,
+                y: anchor.y,
+                color: activeSystem.color,
+              });
 
-            window.setTimeout(() => {
-              actions.enterFocusMode(index);
-            }, 760);
-          }}
-        />
+              window.setTimeout(() => {
+                actions.enterFocusMode(index);
+              }, 760);
+            }}
+          />
+        )
       )}
 
       {focusTransition && level === 2 && (

@@ -3,6 +3,7 @@ import { defineAtlasEntry } from "../defineAtlasEntry";
 export default defineAtlasEntry({
   id: "model-design",
   category: "framework",
+  frameworkKind: "core",
   title: "MODEL DESIGN",
   subtitle: "A framework for designing the governance, constraints, and recovery mechanisms that give AI systems stable, trustworthy character.",
   overview: {
@@ -12,7 +13,7 @@ export default defineAtlasEntry({
     keyDiscovery: "Four predictive factors for alignment: explicit governance, named constraints, regenerative capacity, behavioral integrity.",
   },
   orbit: {
-    angle: 65,
+    angle: 30,
     radius: 112,
     speed: 0.92e-4,
     starPrefix: "md",

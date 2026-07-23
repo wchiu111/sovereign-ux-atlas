@@ -1,13 +1,15 @@
+import applicationKit from "./application-kit";
 import modelDesign from "./model-design";
 import presenceNavigation from "./presence-navigation";
 import regenerativeSystems from "./regenerative-systems";
 import relationalAiLiteracy from "./relational-ai-literacy";
-import sovereignUx from "./sovereign-ux";
+import reversePyramid from "./reverse-pyramid";
 
 export const entries = [
-  modelDesign,
-  presenceNavigation,
-  regenerativeSystems,
+  reversePyramid,
   relationalAiLiteracy,
-  sovereignUx,
+  modelDesign,
+  applicationKit,
+  regenerativeSystems,
+  presenceNavigation,
 ] as const;
