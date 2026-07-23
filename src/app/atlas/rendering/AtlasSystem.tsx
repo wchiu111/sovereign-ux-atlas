@@ -97,10 +97,24 @@ export default function AtlasSystem({
           onSystemHoverChange?.(null);
         }}
         style={{ cursor: "crosshair" }} />
-      <text x={0} y={baseRadius * 2.2 + 14} textAnchor="middle" fontSize="12"
-        fontFamily="'DM Mono',monospace" letterSpacing="1.8" fill={system.color}
+      <text
+        data-atlas-attention-label
+        data-atlas-relation={system.id}
+        x={0}
+        y={baseRadius * 2.2 + 14}
+        textAnchor="middle"
+        fontSize="12"
+        fontFamily="'DM Mono',monospace"
+        letterSpacing="1.8"
+        fill={system.color}
         opacity={active ? 0.75 : hovered && interactive ? 0.85 : level === 0 ? 0.55 : 0.25}
-        style={{ transition: "opacity 0.35s ease-out", pointerEvents: "none" }}>
+        style={{
+          transition:
+            "opacity 180ms ease-out, filter 180ms ease-out, transform 180ms ease-out",
+          pointerEvents: "none",
+          willChange: "opacity, filter, transform",
+        }}
+      >
         {system.label}
       </text>
 

@@ -1,6 +1,23 @@
 import { useEffect, useState } from "react";
 import AtlasProjectIntelligenceDrawer, { PROJECT_DRAWER_WIDTH } from "../../components/AtlasProjectIntelligenceDrawer";
+import applicationKitEntry from "../../content/frameworks/application-kit";
 import type { Planet, StarSystem } from "../../types/atlas";
+
+function wrapModuleTitle(title: string, maxCharacters = 18) {
+  const words = title.split(" ");
+  const lines: string[] = [];
+
+  words.forEach(word => {
+    const current = lines[lines.length - 1];
+    if (!current || current.length + word.length + 1 > maxCharacters) {
+      lines.push(word);
+    } else {
+      lines[lines.length - 1] = `${current} ${word}`;
+    }
+  });
+
+  return lines.slice(0, 3);
+}
 
 interface FocusedOverviewProps {
   system: StarSystem;
@@ -29,6 +46,8 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
   const cy = dims.h * 0.50;
   // Preserve generous spacing while preventing the outer nodes from colliding with the drawer.
   const orbitR = Math.min(availW * 0.25, dims.h * 0.30, 215);
+  const applicationKitFamilies =
+    planet.id === "application-kit" ? applicationKitEntry.collection?.families ?? [] : [];
 
   const starPositions = planet.stars.map((star, i) => {
     const angle = (i / planet.stars.length) * Math.PI * 2 - Math.PI / 2;
@@ -140,6 +159,9 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
         {/* Star child nodes */}
         {starPositions.map(({ star, x, y, angle }, index) => {
           const isHov = hoveredStarId === star.id;
+          const applicationKitFamily = applicationKitFamilies.find(
+            family => star.id === family.id || star.id.endsWith(`-${family.id}`),
+          );
           const pulseDelay = `${index * 0.32}s`;
 
           // Label placed radially outside, pushed further from node center
@@ -321,8 +343,96 @@ export default function FocusedOverview({ system, planet, onBack, onOpenStar, tr
                 {star.label}
               </text>
 
+              {/* Application Kit families preview their modules as a local outward arc. */}
+              {isHov && applicationKitFamily && (
+                <g
+                  onClick={event => event.stopPropagation()}
+                  style={{ cursor: "default" }}
+                >
+                  {applicationKitFamily.modules.map((module, moduleIndex) => {
+                    const moduleCount = applicationKitFamily.modules.length;
+                    const arcSweep = moduleCount > 3 ? Math.PI * 0.82 : Math.PI * 0.68;
+                    const moduleAngle =
+                      angle +
+                      (moduleCount === 1
+                        ? 0
+                        : -arcSweep / 2 + (moduleIndex / (moduleCount - 1)) * arcSweep);
+                    const arcRadius = Math.min(82, orbitR * 0.43);
+                    const moduleX = x + Math.cos(moduleAngle) * arcRadius;
+                    const moduleY = y + Math.sin(moduleAngle) * arcRadius;
+                    const labelX = moduleX + Math.cos(moduleAngle) * 15;
+                    const labelY = moduleY + Math.sin(moduleAngle) * 15;
+                    const labelAnchor =
+                      Math.cos(moduleAngle) > 0.25
+                        ? "start"
+                        : Math.cos(moduleAngle) < -0.25
+                          ? "end"
+                          : "middle";
+                    const labelLines = wrapModuleTitle(module.title);
+
+                    return (
+                      <g key={module.id}>
+                        <path
+                          d={`M ${x + Math.cos(moduleAngle) * 25} ${y + Math.sin(moduleAngle) * 25} L ${moduleX} ${moduleY}`}
+                          fill="none"
+                          stroke={system.color}
+                          strokeWidth="0.55"
+                          strokeOpacity="0.28"
+                          strokeDasharray="2 5"
+                          style={{ pointerEvents: "none" }}
+                        />
+                        <circle
+                          cx={moduleX}
+                          cy={moduleY}
+                          r="13"
+                          fill={system.color}
+                          opacity="0.055"
+                          filter="url(#fo-glow-sm)"
+                        />
+                        <circle
+                          cx={moduleX}
+                          cy={moduleY}
+                          r="7.5"
+                          fill="none"
+                          stroke={system.color}
+                          strokeWidth="0.65"
+                          strokeOpacity="0.42"
+                          strokeDasharray="2 4"
+                        />
+                        <circle
+                          cx={moduleX}
+                          cy={moduleY}
+                          r="3.2"
+                          fill={system.color}
+                          opacity="0.94"
+                          filter="url(#fo-glow-sm)"
+                        />
+                        <circle cx={moduleX} cy={moduleY} r="14" fill="transparent" />
+                        <text
+                          x={labelX}
+                          y={labelY - ((labelLines.length - 1) * 4)}
+                          textAnchor={labelAnchor}
+                          fontSize="6.2"
+                          fontFamily="'DM Mono',monospace"
+                          letterSpacing="0.65"
+                          fill={system.color}
+                          opacity="0.78"
+                          style={{ pointerEvents: "none" }}
+                        >
+                          {labelLines.map((line, lineIndex) => (
+                            <tspan key={line} x={labelX} dy={lineIndex === 0 ? 0 : 8}>
+                              {line}
+                            </tspan>
+                          ))}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </g>
+              )}
+
               {/* Tiny hover cue */}
-              {isHov && (
+              {isHov && !applicationKitFamily && (
                 <g opacity="0.82" style={{ pointerEvents: "none" }}>
                   <rect
                     x={x - 18}

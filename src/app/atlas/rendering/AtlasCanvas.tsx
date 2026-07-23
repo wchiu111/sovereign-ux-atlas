@@ -1,6 +1,8 @@
+import { useRef } from "react";
 import { SYSTEMS } from "../../data/atlasSystems";
 import { sysOrbitPos, systemOrbitPath } from "../../utils/atlasGeometry";
 import type { Planet, StarSystem, ViewLevel } from "../../types/atlas";
+import useAtlasCursorAttention from "../hooks/useAtlasCursorAttention";
 import AtlasNexus from "./AtlasNexus";
 import AtlasSystem from "./AtlasSystem";
 
@@ -43,10 +45,16 @@ export default function AtlasCanvas({
   onSystemHoverChange,
   revealStage = 6,
 }: AtlasCanvasProps) {
+  const svgRef = useRef<SVGSVGElement>(null);
   const nexusX = width * 0.5;
   const nexusY = height * 0.48;
   const initialSystemPosition = (system: StarSystem) =>
     sysOrbitPos(system, 0, nexusX, nexusY);
+
+  useAtlasCursorAttention({
+    rootRef: svgRef,
+    enabled: level <= 1,
+  });
 
   return (
     <div
@@ -60,6 +68,7 @@ export default function AtlasCanvas({
       }}
     >
       <svg
+        ref={svgRef}
         className="absolute inset-0 w-full h-full"
         viewBox={`0 0 ${width} ${height}`}
         overflow="visible"

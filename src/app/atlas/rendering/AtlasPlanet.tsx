@@ -158,6 +158,8 @@ export default function AtlasPlanet({
         />
 
         <text
+          data-atlas-attention-label
+          data-atlas-relation={system.id}
           x={planet.orbitPlane * 1.5}
           y={labelY}
           textAnchor="middle"
@@ -172,8 +174,10 @@ export default function AtlasPlanet({
           strokeWidth="1.8"
           strokeOpacity="0.88"
           style={{
-            transition: "opacity 0.35s ease-out",
+            transition:
+              "opacity 180ms ease-out, filter 180ms ease-out, transform 180ms ease-out",
             pointerEvents: "none",
+            willChange: "opacity, filter, transform",
           }}
         >
           {planet.label}

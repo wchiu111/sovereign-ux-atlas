@@ -51,35 +51,37 @@ export const SYSTEMS: StarSystem[] = ATLAS_SYSTEM_CONFIGS.map((config) => ({
   orbitDepth: config.orbitDepth,
   orbitPhase0: config.orbitPhase0,
   orbitSpeed: config.orbitSpeed,
+  driftRadiusX: config.driftRadiusX,
+  driftRadiusY: config.driftRadiusY,
+  driftDurationMs: config.driftDurationMs,
+  driftDirection: config.driftDirection,
+  driftPhase: config.driftPhase,
+  driftAngleOffset: config.driftAngleOffset,
   pulseSpeed: config.pulseSpeed,
   pulsePhase: config.pulsePhase,
   planets: getEntriesByCategory(config.category).map((entry, index) => {
-    // Stagger nearby concepts across shallow orbital planes. The sequence keeps
-    // the composition balanced while ensuring adjacent hit areas do not sit on
-    // exactly the same visual plane.
     const planeSequence = [0, 1, -1, 2, -2, 1, -1, 2, -2];
     const orbitPlane = planeSequence[index % planeSequence.length];
 
     return {
-    id: entry.id,
-    label: entry.title,
-    angle: entry.orbit.angle,
-    orbitR: entry.orbit.radius,
-    orbitSpeed: entry.orbit.speed,
-    orbitPlane,
-    orbitOffsetX: orbitPlane * 7,
-    orbitOffsetY: orbitPlane * 15,
-    stars:
-      entry.overviewStars?.map((star) => ({
-        id: `${entry.orbit.starPrefix}-${star.id}`,
-        label: star.label,
-        angle: star.angle,
-      })) ??
-      STAR_FACTORIES[entry.category](entry.orbit.starPrefix),
-    what: entry.overview.what,
-    why: entry.overview.why,
-    researchFocus: entry.overview.researchFocus,
-    keyDiscovery: entry.overview.keyDiscovery,
+      id: entry.id,
+      label: entry.title,
+      angle: entry.orbit.angle,
+      orbitR: entry.orbit.radius,
+      orbitSpeed: entry.orbit.speed,
+      orbitPlane,
+      orbitOffsetX: orbitPlane * 7,
+      orbitOffsetY: orbitPlane * 15,
+      stars:
+        entry.overviewStars?.map((star) => ({
+          id: `${entry.orbit.starPrefix}-${star.id}`,
+          label: star.label,
+          angle: star.angle,
+        })) ?? STAR_FACTORIES[entry.category](entry.orbit.starPrefix),
+      what: entry.overview.what,
+      why: entry.overview.why,
+      researchFocus: entry.overview.researchFocus,
+      keyDiscovery: entry.overview.keyDiscovery,
     };
   }),
 }));

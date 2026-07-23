@@ -7,6 +7,8 @@ export interface AtlasSystemConfig {
   subtitle: string;
   color: string;
   size: number;
+
+  // Authored placement. These values preserve the existing Atlas composition.
   orbitA: number;
   orbitB: number;
   orbitOffsetX: number;
@@ -15,10 +17,24 @@ export interface AtlasSystemConfig {
   orbitTilt: number;
   orbitDepth: number;
   orbitPhase0: number;
+
+  // Retained for compatibility with the current StarSystem type. The new
+  // gravitational drift model does not use this as the system travel speed.
   orbitSpeed: number;
+
+  // Local gravitational drift around the authored position.
+  driftRadiusX: number;
+  driftRadiusY: number;
+  driftDurationMs: number;
+  driftDirection: 1 | -1;
+  driftPhase: number;
+  driftAngleOffset: number;
+
   pulseSpeed: number;
   pulsePhase: number;
 }
+
+const degrees = (value: number) => (value * Math.PI) / 180;
 
 export const ATLAS_SYSTEM_CONFIGS: AtlasSystemConfig[] = [
   {
@@ -28,7 +44,13 @@ export const ATLAS_SYSTEM_CONFIGS: AtlasSystemConfig[] = [
     orbitA: 326, orbitB: 210,
     orbitOffsetX: 22, orbitOffsetY: -18,
     orbitRotation: 0.12, orbitTilt: 0.72, orbitDepth: 18,
-    orbitPhase0: -0.42, orbitSpeed: 1.58e-5, pulseSpeed: 0.00082, pulsePhase: 0,
+    orbitPhase0: -0.42, orbitSpeed: 0,
+    driftRadiusX: 16, driftRadiusY: 7,
+    driftDurationMs: 148_000,
+    driftDirection: 1,
+    driftPhase: 0.35,
+    driftAngleOffset: degrees(-4),
+    pulseSpeed: 0.00082, pulsePhase: 0,
   },
   {
     id: "experiments", category: "experiment", label: "EXPERIMENTS",
@@ -37,7 +59,13 @@ export const ATLAS_SYSTEM_CONFIGS: AtlasSystemConfig[] = [
     orbitA: 276, orbitB: 244,
     orbitOffsetX: -6, orbitOffsetY: 24,
     orbitRotation: -0.08, orbitTilt: 0.84, orbitDepth: 48,
-    orbitPhase0: Math.PI / 2 + 0.16, orbitSpeed: 1.42e-5, pulseSpeed: 0.00070, pulsePhase: 2.1,
+    orbitPhase0: Math.PI / 2 + 0.16, orbitSpeed: 0,
+    driftRadiusX: 13, driftRadiusY: 8,
+    driftDurationMs: 171_000,
+    driftDirection: -1,
+    driftPhase: 2.15,
+    driftAngleOffset: degrees(5),
+    pulseSpeed: 0.00070, pulsePhase: 2.1,
   },
   {
     id: "frameworks", category: "framework", label: "FRAMEWORKS",
@@ -46,6 +74,12 @@ export const ATLAS_SYSTEM_CONFIGS: AtlasSystemConfig[] = [
     orbitA: 354, orbitB: 184,
     orbitOffsetX: -28, orbitOffsetY: -10,
     orbitRotation: -0.18, orbitTilt: 0.64, orbitDepth: -24,
-    orbitPhase0: Math.PI + 0.46, orbitSpeed: 1.78e-5, pulseSpeed: 0.00090, pulsePhase: 4.2,
+    orbitPhase0: Math.PI + 0.46, orbitSpeed: 0,
+    driftRadiusX: 18, driftRadiusY: 5,
+    driftDurationMs: 126_000,
+    driftDirection: 1,
+    driftPhase: 4.4,
+    driftAngleOffset: degrees(-2),
+    pulseSpeed: 0.00090, pulsePhase: 4.2,
   },
 ];

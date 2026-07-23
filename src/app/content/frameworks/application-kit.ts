@@ -23,6 +23,13 @@ export default defineAtlasEntry({
     speed: 0.96e-4,
     starPrefix: "ak",
   },
+  overviewStars: [
+    { id: "adoption-sustainability", label: "ADOPTION & SUSTAINABILITY", angle: -90 },
+    { id: "behavior-authority", label: "BEHAVIOR & AUTHORITY", angle: -18 },
+    { id: "integrity-safety", label: "INTEGRITY & SAFETY", angle: 54 },
+    { id: "ethical-experience", label: "ETHICAL EXPERIENCE", angle: 126 },
+    { id: "validation-governance", label: "VALIDATION & GOVERNANCE", angle: 198 },
+  ],
   collection: {
     moduleCount: 14,
     families: [
@@ -308,3 +315,4 @@ export default defineAtlasEntry({
   },
   sections: undefined,
 });
+

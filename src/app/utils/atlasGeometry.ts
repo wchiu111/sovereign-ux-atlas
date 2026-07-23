@@ -2,6 +2,7 @@ import type { Planet, StarNode, StarSystem } from "../types/atlas";
 import { STAR_ORBIT_R } from "../data/atlasSystems";
 
 const ATLAS_PERSPECTIVE = 1280;
+const GRAVITATIONAL_BIAS = (27 * Math.PI) / 180;
 
 export interface ProjectedOrbitPosition {
   x: number;
@@ -10,30 +11,52 @@ export interface ProjectedOrbitPosition {
   depth: number;
 }
 
+/**
+ * Keeps each constellation near its authored position while applying a shallow,
+ * deterministic elliptical drift oriented around the Sovereign Design nexus.
+ *
+ * The authored layout is derived from orbitPhase0. Time only affects the small
+ * local drift, so constellations no longer circle the entire canvas.
+ */
 export function sysOrbitPos(
   sys: StarSystem,
   elapsed: number,
   nexX: number,
   nexY: number,
 ): ProjectedOrbitPosition {
-  const phase = sys.orbitPhase0 + elapsed * sys.orbitSpeed;
-  const ellipseX = Math.cos(phase) * sys.orbitA;
-  const ellipseY = Math.sin(phase) * sys.orbitB;
+  // Preserve the composition authored by the original orbital configuration.
+  const authoredEllipseX = Math.cos(sys.orbitPhase0) * sys.orbitA;
+  const authoredEllipseY = Math.sin(sys.orbitPhase0) * sys.orbitB;
 
   const cosRotation = Math.cos(sys.orbitRotation);
   const sinRotation = Math.sin(sys.orbitRotation);
-  const rotatedX = ellipseX * cosRotation - ellipseY * sinRotation;
-  const rotatedY = ellipseX * sinRotation + ellipseY * cosRotation;
+  const authoredX = authoredEllipseX * cosRotation - authoredEllipseY * sinRotation;
+  const authoredY = authoredEllipseX * sinRotation + authoredEllipseY * cosRotation;
 
-  const projectedY = rotatedY * Math.cos(sys.orbitTilt);
-  const depth = sys.orbitDepth + rotatedY * Math.sin(sys.orbitTilt);
-  const scale = ATLAS_PERSPECTIVE / (ATLAS_PERSPECTIVE - depth);
+  const authoredProjectedY = authoredY * Math.cos(sys.orbitTilt);
+  const authoredDepth = sys.orbitDepth + authoredY * Math.sin(sys.orbitTilt);
+  const authoredScale = ATLAS_PERSPECTIVE / (ATLAS_PERSPECTIVE - authoredDepth);
+
+  const anchorX = nexX + sys.orbitOffsetX + authoredX * authoredScale;
+  const anchorY = nexY + sys.orbitOffsetY + authoredProjectedY * authoredScale;
+
+  // Orient the local ellipse relative to the nexus, then add the Sovereign 27° bias.
+  const radialAngle = Math.atan2(anchorY - nexY, anchorX - nexX);
+  const driftAngle = radialAngle + GRAVITATIONAL_BIAS + sys.driftAngleOffset;
+  const driftPhase =
+    sys.driftPhase +
+    sys.driftDirection * (elapsed / sys.driftDurationMs) * Math.PI * 2;
+
+  const localX = Math.cos(driftPhase) * sys.driftRadiusX;
+  const localY = Math.sin(driftPhase) * sys.driftRadiusY;
+  const driftX = localX * Math.cos(driftAngle) - localY * Math.sin(driftAngle);
+  const driftY = localX * Math.sin(driftAngle) + localY * Math.cos(driftAngle);
 
   return {
-    x: nexX + sys.orbitOffsetX + rotatedX * scale,
-    y: nexY + sys.orbitOffsetY + projectedY * scale,
-    scale,
-    depth,
+    x: anchorX + driftX,
+    y: anchorY + driftY,
+    scale: authoredScale,
+    depth: authoredDepth,
   };
 }
 
@@ -46,8 +69,7 @@ export function systemOrbitPath(
   const points: string[] = [];
 
   for (let index = 0; index <= steps; index += 1) {
-    const phase = (index / steps) * Math.PI * 2;
-    const elapsed = (phase - sys.orbitPhase0) / sys.orbitSpeed;
+    const elapsed = (index / steps) * sys.driftDurationMs;
     const point = sysOrbitPos(sys, elapsed, nexX, nexY);
     points.push(`${index === 0 ? "M" : "L"}${point.x.toFixed(2)},${point.y.toFixed(2)}`);
   }
@@ -70,8 +92,6 @@ export function planetLocalPos(planet: Planet, elapsed: number): ProjectedPlanet
   const orbitX = Math.cos(phase) * planet.orbitR;
   const orbitY = Math.sin(phase) * planet.orbitR;
 
-  // A shallow local projection preserves the observatory view while giving
-  // neighboring concepts distinct foreground/background planes.
   const orbitalDepth = orbitY * Math.sin(LOCAL_ORBIT_TILT);
   const depth = planet.orbitPlane * 34 + orbitalDepth;
   const scale = LOCAL_PLANET_PERSPECTIVE / (LOCAL_PLANET_PERSPECTIVE - depth);

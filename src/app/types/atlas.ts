@@ -2,10 +2,10 @@ export interface StarNode { id: string; label: string; angle: number; }
 
 export interface Planet {
   id: string; label: string;
-  angle: number;       // initial orbit angle (degrees)
-  orbitR: number;      // orbit radius around system hub (px in SVG coords)
-  orbitSpeed: number;  // rad/ms
-  orbitPlane: number;  // local 2.5D plane: negative recedes, positive advances
+  angle: number;
+  orbitR: number;
+  orbitSpeed: number;
+  orbitPlane: number;
   orbitOffsetX: number;
   orbitOffsetY: number;
   stars: StarNode[];
@@ -15,14 +15,19 @@ export interface Planet {
 export interface StarSystem {
   id: string; label: string; subtitle: string; color: string;
   size: number;
-  // Orbital params — system orbits Atlas nexus
   orbitA: number; orbitB: number;
   orbitOffsetX: number; orbitOffsetY: number;
-  orbitRotation: number; // radians around the screen-facing axis
-  orbitTilt: number;     // radians away from the viewer
-  orbitDepth: number;    // px depth offset used by the perspective projection
-  orbitPhase0: number; // radians
-  orbitSpeed: number;  // rad/ms
+  orbitRotation: number;
+  orbitTilt: number;
+  orbitDepth: number;
+  orbitPhase0: number;
+  orbitSpeed: number;
+  driftRadiusX: number;
+  driftRadiusY: number;
+  driftDurationMs: number;
+  driftDirection: 1 | -1;
+  driftPhase: number;
+  driftAngleOffset: number;
   pulseSpeed: number; pulsePhase: number;
   planets: Planet[];
 }
