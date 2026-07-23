@@ -21,10 +21,26 @@ export interface AtlasStarLabelPosition {
 
 export type AtlasConnectionStrength = "primary" | "secondary";
 
+export type AtlasSemanticRelationshipType =
+  | "extends"
+  | "applies"
+  | "guards"
+  | "contrasts"
+  | "evidences"
+  | "related";
+
+export interface AtlasConceptSemantics {
+  keywords: string[];
+  aliases?: string[];
+  summary?: string;
+}
+
 export interface AtlasConstellationConnection {
   from: string;
   to: string;
   strength?: AtlasConnectionStrength;
+  type?: AtlasSemanticRelationshipType;
+  rationale?: string;
 }
 
 export interface AtlasConstellation {
@@ -93,6 +109,7 @@ export interface AtlasEntrySection {
   label: string;
   content: string;
   accentStellarType?: AtlasStellarType;
+  semantics?: AtlasConceptSemantics;
   subtitle?: string;
   insight?: string;
   readingTime?: number;
@@ -109,6 +126,7 @@ export interface AtlasEntryOrbit {
 export interface AtlasEntry {
   id: string;
   aliases?: string[];
+  semantics?: AtlasConceptSemantics;
   category: AtlasCategory;
   title: string;
   subtitle: string;

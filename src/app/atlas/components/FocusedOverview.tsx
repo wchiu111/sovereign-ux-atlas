@@ -5,6 +5,7 @@ import type { Planet, StarSystem } from "../../types/atlas";
 import {
   resolveConstellationNodes,
 } from "../constellation/constellationGeometry";
+import { resolveRelationshipTrace } from "../constellation/relationshipTrace";
 import { resolveStellarColor } from "../constellation/stellarPalette";
 import ApplicationKitModuleArc from "./ApplicationKitModuleArc";
 import ConstellationConnections from "./ConstellationConnections";
@@ -79,14 +80,12 @@ export default function FocusedOverview({
       maxY: dims.h - 88,
     },
   });
-  const relatedStarIds = new Set<string>();
-
-  if (hoveredStarId) {
-    planet.constellationConnections?.forEach((connection) => {
-      if (connection.from === hoveredStarId) relatedStarIds.add(connection.to);
-      if (connection.to === hoveredStarId) relatedStarIds.add(connection.from);
-    });
-  }
+  const relationshipTrace = resolveRelationshipTrace(
+    hoveredStarId,
+    planet.constellationConnections,
+  );
+  const relatedStarIds = new Set(relationshipTrace.nodeIds);
+  if (hoveredStarId) relatedStarIds.delete(hoveredStarId);
 
   return (
     <div
@@ -243,6 +242,8 @@ export default function FocusedOverview({
           domainColor={system.color}
           showCenterConnections={planet.showCenterConnections ?? true}
           activeStarId={hoveredStarId}
+          trace={relationshipTrace}
+          reducedMotion={reducedMotion}
         />
 
         <circle

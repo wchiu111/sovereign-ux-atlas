@@ -3,6 +3,18 @@ import { defineAtlasEntry } from "../defineAtlasEntry";
 export default defineAtlasEntry({
   id: "authority-gradient",
   aliases: ["reverse-pyramid"],
+  semantics: {
+    keywords: [
+      "authority",
+      "human authority",
+      "human in the loop",
+      "AI governance",
+      "delegation",
+    ],
+    aliases: ["authority model", "delegation model", "HITL"],
+    summary:
+      "A framework for locating meaningful human authority as AI systems move from purpose to execution.",
+  },
   category: "framework",
   frameworkKind: "core",
   signatureStellarType: "purpose",
@@ -78,9 +90,30 @@ export default defineAtlasEntry({
   constellation: {
     showCenterConnections: false,
     connections: [
-      { from: "system-purpose", to: "system-strategy", strength: "primary" },
-      { from: "system-strategy", to: "ai-decision", strength: "primary" },
-      { from: "ai-decision", to: "human-approval", strength: "secondary" },
+      {
+        from: "system-purpose",
+        to: "system-strategy",
+        strength: "primary",
+        type: "extends",
+        rationale:
+          "Strategy translates the system's purpose into operating logic, constraints, and acceptable methods.",
+      },
+      {
+        from: "system-strategy",
+        to: "ai-decision",
+        strength: "primary",
+        type: "applies",
+        rationale:
+          "AI decisions apply the policies, thresholds, and boundaries established at the strategy layer.",
+      },
+      {
+        from: "ai-decision",
+        to: "human-approval",
+        strength: "secondary",
+        type: "guards",
+        rationale:
+          "Human approval can guard consequential decisions when reviewers retain context, alternatives, and permission to disagree.",
+      },
     ],
   },
   sections: [
@@ -88,6 +121,19 @@ export default defineAtlasEntry({
       id: "system-purpose",
       label: "System Purpose",
       accentStellarType: "purpose",
+      semantics: {
+        keywords: [
+          "purpose",
+          "intent",
+          "outcomes",
+          "values",
+          "operating boundaries",
+          "authority",
+        ],
+        aliases: ["system intent", "why"],
+        summary:
+          "The intended outcome, protected values, and boundaries that govern every downstream system decision.",
+      },
       subtitle: "Why authority begins upstream.",
       readingTime: 2,
       content:
@@ -99,6 +145,19 @@ export default defineAtlasEntry({
       id: "system-strategy",
       label: "System Strategy",
       accentStellarType: "strategy",
+      semantics: {
+        keywords: [
+          "strategy",
+          "policy",
+          "constraints",
+          "thresholds",
+          "escalation",
+          "governance",
+        ],
+        aliases: ["operating logic", "how"],
+        summary:
+          "The policies, constraints, thresholds, and acceptable methods that translate purpose into operating logic.",
+      },
       subtitle: "How human intent becomes operating logic.",
       readingTime: 2,
       content:
@@ -110,6 +169,19 @@ export default defineAtlasEntry({
       id: "ai-decision",
       label: "AI Decision",
       accentStellarType: "agentic",
+      semantics: {
+        keywords: [
+          "AI decision",
+          "automation",
+          "delegation",
+          "classification",
+          "routing",
+          "recommendation",
+        ],
+        aliases: ["agentic decision", "automated decision", "decide"],
+        summary:
+          "A decision delegated to AI within visible purpose, constraints, confidence thresholds, and escalation conditions.",
+      },
       subtitle: "What can be delegated without surrendering the system.",
       readingTime: 2,
       content:
@@ -121,6 +193,19 @@ export default defineAtlasEntry({
       id: "human-approval",
       label: "Human Approval",
       accentStellarType: "judgment",
+      semantics: {
+        keywords: [
+          "human approval",
+          "oversight",
+          "review",
+          "accountability",
+          "judgment",
+          "human in the loop",
+        ],
+        aliases: ["human review", "HITL", "approval step"],
+        summary:
+          "The conditions under which human review preserves meaningful authority instead of merely performing approval.",
+      },
       subtitle: "Why a final review can create the appearance of control.",
       readingTime: 2,
       content:
