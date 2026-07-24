@@ -1,4 +1,6 @@
 import { useState } from "react";
+import type { AtlasStellarType } from "../content/types";
+import { resolveStellarColor } from "../atlas/constellation/stellarPalette";
 
 export const PROJECT_DRAWER_WIDTH = 420;
 
@@ -15,6 +17,8 @@ interface PlanetLike {
   why: string;
   researchFocus: string;
   keyDiscovery: string;
+  signatureStellarType?: AtlasStellarType;
+  tags?: string[];
 }
 
 interface AtlasProjectIntelligenceDrawerProps {
@@ -122,6 +126,82 @@ function DrawerHeader({ system }: { system: SystemLike }) {
   );
 }
 
+const STELLAR_TYPE_LABELS: Record<AtlasStellarType, string> = {
+  purpose: "Purpose",
+  strategy: "Strategy",
+  agentic: "Agentic",
+  judgment: "Judgment",
+  risk: "Risk",
+  relational: "Relational",
+};
+
+const STELLAR_TYPE_EXPLANATIONS: Record<AtlasStellarType, string> = {
+  purpose:
+    "Gold marks purpose: ideas concerned with intent, direction, and the conditions governing downstream decisions.",
+  strategy:
+    "Ivory marks strategy: ideas that translate intent into policy, constraints, and operating logic.",
+  agentic:
+    "Blue marks agentic behavior: ideas concerned with delegated action, execution, and machine decision-making.",
+  judgment:
+    "Orange marks judgment: ideas concerned with human interpretation, oversight, and consequential review.",
+  risk:
+    "Red marks risk: ideas concerned with harm, drift, failure, and protective intervention.",
+  relational:
+    "Purple marks relational context: ideas concerned with interaction, interpretation, and shared meaning.",
+};
+
+function SemanticTags({
+  system,
+  planet,
+}: {
+  system: SystemLike;
+  planet: PlanetLike;
+}) {
+  const stellarType = planet.signatureStellarType;
+  if (!stellarType && !planet.tags?.length) return null;
+
+  const stellarColor = resolveStellarColor(stellarType, system.color);
+
+  return (
+    <div
+      aria-label="Framework characteristics"
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 7,
+        marginTop: -10,
+        marginBottom: 27,
+      }}
+    >
+      {stellarType && (
+        <span
+          title={STELLAR_TYPE_EXPLANATIONS[stellarType]}
+          aria-label={STELLAR_TYPE_EXPLANATIONS[stellarType]}
+          style={semanticChipStyle(stellarColor)}
+        >
+          <span
+            aria-hidden="true"
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: stellarColor,
+              boxShadow: `0 0 9px ${stellarColor}`,
+            }}
+          />
+          {STELLAR_TYPE_LABELS[stellarType]}
+        </span>
+      )}
+
+      {planet.tags?.slice(0, 3).map((tag) => (
+        <span key={tag} style={facetChipStyle}>
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function InfoBlock({
   label,
   text,
@@ -164,6 +244,7 @@ function OverviewLayer({
     <div style={layerStyle}>
       <div style={scrollLayerStyle}>
         <DrawerHeader system={system} />
+        <SemanticTags system={system} planet={planet} />
 
         <h1 style={titleStyle}>{planet.label}</h1>
         <p style={introStyle}>{planet.what}</p>
@@ -406,6 +487,40 @@ const chipStyle = {
   fontFamily: "'EB Garamond', serif",
   fontSize: 13,
   cursor: "pointer",
+};
+
+const semanticChipStyle = (color: string) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 7,
+  minHeight: 25,
+  padding: "5px 9px",
+  borderRadius: 999,
+  border: `1px solid ${color}66`,
+  background: `${color}12`,
+  color,
+  fontFamily: "'DM Mono', monospace",
+  fontSize: 8,
+  lineHeight: 1,
+  letterSpacing: "0.18em",
+  textTransform: "uppercase" as const,
+  cursor: "help",
+});
+
+const facetChipStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  minHeight: 25,
+  padding: "5px 9px",
+  borderRadius: 999,
+  border: "1px solid rgba(245,235,210,0.12)",
+  background: "rgba(255,255,255,0.025)",
+  color: "rgba(245,235,210,0.56)",
+  fontFamily: "'DM Mono', monospace",
+  fontSize: 8,
+  lineHeight: 1,
+  letterSpacing: "0.14em",
+  textTransform: "uppercase" as const,
 };
 
 const askBoxStyle = {

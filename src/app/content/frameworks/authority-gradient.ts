@@ -2,30 +2,37 @@ import { defineAtlasEntry } from "../defineAtlasEntry";
 
 export default defineAtlasEntry({
   id: "authority-gradient",
-  aliases: ["reverse-pyramid"],
+  aliases: ["reverse-pyramid", "decision-rights"],
   semantics: {
     keywords: [
+      "decision rights",
       "authority",
       "human authority",
       "human in the loop",
       "AI governance",
       "delegation",
     ],
-    aliases: ["authority model", "delegation model", "HITL"],
+    aliases: [
+      "authority gradient",
+      "authority model",
+      "delegation model",
+      "HITL",
+    ],
     summary:
-      "A framework for locating meaningful human authority as AI systems move from purpose to execution.",
+      "A framework for mapping who defines purpose, sets strategy, delegates AI decisions, and retains meaningful review authority.",
   },
   category: "framework",
   frameworkKind: "core",
   signatureStellarType: "purpose",
-  title: "AUTHORITY GRADIENT",
+  title: "DECISION RIGHTS",
   subtitle:
-    "A framework for determining where human authority should remain as AI systems move from purpose to execution.",
+    "A framework for mapping who defines purpose, sets strategy, delegates AI decisions, and retains meaningful review authority.",
+  tags: ["HUMAN AUTHORITY", "DELEGATION", "GOVERNANCE"],
   overview: {
     what:
-      "A framework for locating human authority across system purpose, strategy, AI decisions, and human approval.",
+      "A framework for mapping who holds decision rights across system purpose, strategy, AI execution, and human review.",
     why:
-      "Human-in-the-loop patterns often add approval steps without clarifying whether people still control the system's purpose, strategy, or operating boundaries.",
+      "Human-in-the-loop patterns often add approval without clarifying who controls the choices that shape the system upstream.",
     researchFocus:
       "How can individual decisions be delegated to AI without quietly delegating the authority to define what the system is trying to accomplish?",
     keyDiscovery:

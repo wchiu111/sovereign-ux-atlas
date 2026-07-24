@@ -73,6 +73,7 @@ export const SYSTEMS: StarSystem[] = ATLAS_SYSTEM_CONFIGS.map((config) => ({
       orbitOffsetX: orbitPlane * 7,
       orbitOffsetY: orbitPlane * 15,
       signatureStellarType: entry.signatureStellarType,
+      tags: entry.tags,
       showCenterConnections: entry.constellation?.showCenterConnections,
       constellationConnections: entry.constellation?.connections?.map((connection) => ({
         from: `${entry.orbit.starPrefix}-${connection.from}`,

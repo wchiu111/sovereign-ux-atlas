@@ -33,6 +33,7 @@ export interface Planet {
   orbitOffsetY: number;
   stars: StarNode[];
   signatureStellarType?: AtlasStellarType;
+  tags?: string[];
   constellationConnections?: ConstellationConnection[];
   showCenterConnections?: boolean;
   what: string; why: string; researchFocus: string; keyDiscovery: string;

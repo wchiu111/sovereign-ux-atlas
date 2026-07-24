@@ -97,7 +97,7 @@ export default defineAtlasEntry({
               "Designing conversational systems, recommendations, or adaptive flows.",
             watchFor:
               "A system that sounds appropriately cautious while still making consequential assumptions invisibly.",
-            relatedFrameworks: ["model-design", "authority-gradient"],
+            relatedFrameworks: ["behavioral-architecture", "authority-gradient"],
           },
           {
             id: "multi-user-co-sovereignty",
@@ -131,7 +131,7 @@ export default defineAtlasEntry({
               "Designing AI systems, assistants, or any experience where capability may be overestimated.",
             watchFor:
               "Limitations that are technically disclosed but practically invisible or difficult to understand.",
-            relatedFrameworks: ["model-design", "authority-gradient"],
+            relatedFrameworks: ["behavioral-architecture", "authority-gradient"],
           },
         ],
       },
@@ -307,7 +307,7 @@ export default defineAtlasEntry({
               "Data is incomplete but system behavior must be understood.",
             watchFor:
               "Presenting simulated behavior as evidence of how real people will respond.",
-            relatedFrameworks: ["model-design", "regenerative-systems"],
+            relatedFrameworks: ["behavioral-architecture", "regenerative-systems"],
           },
         ],
       },
@@ -315,4 +315,3 @@ export default defineAtlasEntry({
   },
   sections: undefined,
 });
-
