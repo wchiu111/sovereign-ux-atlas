@@ -1,5 +1,8 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
 
+import recommendationLast from "../../../imports/frameworks/decision-rights/01-system-purpose/1-recommendation-last.png";
+import recommendationFirst from "../../../imports/frameworks/decision-rights/01-system-purpose/2-recommendation-first.png";
+
 export default defineAtlasEntry({
   id: "authority-gradient",
   aliases: ["reverse-pyramid", "decision-rights"],
@@ -147,6 +150,36 @@ export default defineAtlasEntry({
         "Before an AI system makes a decision, someone has already decided what the system is trying to accomplish. System purpose defines the intended outcome, who the system is meant to serve, which values must be protected, and what the system should never optimize for.\n\nThis is the deepest layer of authority because every downstream strategy and decision inherits its direction from here. If the purpose is incomplete, misaligned, or invisible, adding human review later cannot repair the foundation.\n\nThe practical question is not whether a person touches every output. It is whether people can still examine, challenge, and change the purpose governing those outputs.",
       insight:
         "If people do not control the system's purpose, reviewing its outputs does not restore meaningful authority.",
+      evidence: [
+        {
+          id: "recommendation-last",
+          image: recommendationLast,
+          alt:
+            "Meeting scheduling interface that presents availability and preferences before placing the recommended time at the bottom of the page.",
+          imageFit: "contain",
+          number: "01",
+          title: "Recommendation Last",
+          type: "UX Comparison",
+          description:
+            "The person receives the underlying availability, constraints, and alternatives first, then must scan and synthesize them before reaching the system's recommendation.",
+          caption:
+            "The system preserves the final choice but leaves the comparison work with the person.",
+        },
+        {
+          id: "recommendation-first",
+          image: recommendationFirst,
+          alt:
+            "Meeting scheduling interface that presents the recommended time first, followed by its reasoning, alternatives, and final scheduling controls.",
+          imageFit: "contain",
+          number: "02",
+          title: "Recommendation First",
+          type: "UX Comparison",
+          description:
+            "The system synthesizes the same constraints into a recommended time, explains why it fits, and keeps alternatives and the final scheduling action available to the person.",
+          caption:
+            "AI performs the synthesis it is suited for while the person retains the authority to accept, change, or reject the recommendation.",
+        },
+      ],
     },
     {
       id: "system-strategy",
