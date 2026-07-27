@@ -15,9 +15,10 @@ import type {
 import type { ReadingEvidenceItem } from "../shared/types";
 
 const WORLD_WIDTH = 2700;
-const WORLD_HEIGHT = 1160;
+const WORLD_HEIGHT = 1960;
 const BOARD_WIDTH = 1050;
-const BOARD_HEIGHT = 656;
+const BOARD_HEIGHT = Math.round((BOARD_WIDTH * 2023) / 1374);
+const OPENING_SCALE = 0.73;
 const MIN_SCALE = 0.28;
 const MAX_SCALE = 2;
 
@@ -415,6 +416,7 @@ export default function FrameworkEvidenceCanvas({
   onClose,
 }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const hasInteractedRef = useRef(false);
   const dragRef = useRef<{
     pointerId: number;
     startX: number;
@@ -422,7 +424,11 @@ export default function FrameworkEvidenceCanvas({
     originX: number;
     originY: number;
   } | null>(null);
-  const [view, setView] = useState<ViewState>({ x: 0, y: 0, scale: 0.5 });
+  const [view, setView] = useState<ViewState>({
+    x: 32 - BOARD_POSITIONS[0].x * OPENING_SCALE,
+    y: 198 - BOARD_POSITIONS[0].y * OPENING_SCALE,
+    scale: OPENING_SCALE,
+  });
   const [dragging, setDragging] = useState(false);
   const [active, setActive] = useState<ActiveAnnotation | null>(null);
   const [locked, setLocked] = useState(false);
@@ -432,6 +438,20 @@ export default function FrameworkEvidenceCanvas({
     [items],
   );
   const canvasMeta = canvasItems[0]?.canvas;
+
+  const setOpeningView = useCallback(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const rect = viewport.getBoundingClientRect();
+    const scale = rect.width < 900 ? 0.58 : OPENING_SCALE;
+    const boardLeft = rect.width < 900 ? 20 : 32;
+    const boardLabelTop = rect.width < 900 ? 174 : 198;
+    setView({
+      scale,
+      x: boardLeft - BOARD_POSITIONS[0].x * scale,
+      y: boardLabelTop - BOARD_POSITIONS[0].y * scale,
+    });
+  }, []);
 
   const fitAll = useCallback(() => {
     const viewport = viewportRef.current;
@@ -448,6 +468,7 @@ export default function FrameworkEvidenceCanvas({
       MIN_SCALE,
       0.82,
     );
+    hasInteractedRef.current = true;
     setView({
       scale,
       x: (rect.width - WORLD_WIDTH * scale) / 2,
@@ -456,11 +477,13 @@ export default function FrameworkEvidenceCanvas({
   }, []);
 
   useEffect(() => {
-    fitAll();
-    const handleResize = () => fitAll();
+    setOpeningView();
+    const handleResize = () => {
+      if (!hasInteractedRef.current) setOpeningView();
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [fitAll]);
+  }, [setOpeningView]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -481,6 +504,7 @@ export default function FrameworkEvidenceCanvas({
 
       if (event.key === "+" || event.key === "=") {
         event.preventDefault();
+        hasInteractedRef.current = true;
         setView((current) => ({
           ...current,
           scale: clamp(current.scale * 1.18, MIN_SCALE, MAX_SCALE),
@@ -489,6 +513,7 @@ export default function FrameworkEvidenceCanvas({
 
       if (event.key === "-") {
         event.preventDefault();
+        hasInteractedRef.current = true;
         setView((current) => ({
           ...current,
           scale: clamp(current.scale / 1.18, MIN_SCALE, MAX_SCALE),
@@ -504,6 +529,7 @@ export default function FrameworkEvidenceCanvas({
     const viewport = viewportRef.current;
     if (!viewport) return;
     const rect = viewport.getBoundingClientRect();
+    hasInteractedRef.current = true;
     setView((current) => {
       const scale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
       const anchorX =
@@ -529,6 +555,7 @@ export default function FrameworkEvidenceCanvas({
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
     if (target.closest("[data-canvas-control]")) return;
+    hasInteractedRef.current = true;
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = {
       pointerId: event.pointerId,
@@ -576,6 +603,7 @@ export default function FrameworkEvidenceCanvas({
 
   return (
     <div
+      data-framework-canvas-root
       style={{
         position: "absolute",
         inset: 0,
@@ -620,9 +648,8 @@ export default function FrameworkEvidenceCanvas({
         }}
       >
         <div>
-    <div
-      data-framework-canvas-root
-      style={{
+          <div
+            style={{
               fontFamily: "'DM Mono', monospace",
               fontSize: 9,
               letterSpacing: "0.25em",

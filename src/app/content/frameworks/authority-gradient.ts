@@ -1,7 +1,7 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
 
-import recommendationLast from "../../../imports/frameworks/decision-rights/01-system-purpose/1-recommendation-last.png";
-import recommendationFirst from "../../../imports/frameworks/decision-rights/01-system-purpose/2-recommendation-first.png";
+import recommendationLast from "../../../imports/frameworks/decision-rights/01-system-purpose/1-recommendation-last.jpg";
+import recommendationFirst from "../../../imports/frameworks/decision-rights/01-system-purpose/2-recommendation-first.jpg";
 import systemPurposePortal from "../../../imports/frameworks/decision-rights/01-system-purpose/system-purpose-portal.png";
 
 export default defineAtlasEntry({
@@ -178,8 +178,8 @@ export default defineAtlasEntry({
               {
                 id: "human-searches-options",
                 number: "01",
-                x: 69,
-                y: 47,
+                x: 56,
+                y: 38,
                 category: "human-authority",
                 title: "Human searches the options",
                 observation:
@@ -192,8 +192,8 @@ export default defineAtlasEntry({
               {
                 id: "rules-unsynthesized",
                 number: "02",
-                x: 28,
-                y: 62,
+                x: 36,
+                y: 61,
                 category: "visible-reasoning",
                 title: "Rules remain unsynthesized",
                 observation:
@@ -206,8 +206,8 @@ export default defineAtlasEntry({
               {
                 id: "recommendation-arrives-last",
                 number: "03",
-                x: 28,
-                y: 87,
+                x: 54,
+                y: 88,
                 category: "authority-problem",
                 title: "Recommendation arrives last",
                 observation:
@@ -246,8 +246,8 @@ export default defineAtlasEntry({
               {
                 id: "ai-recommends-best-match",
                 number: "01",
-                x: 60,
-                y: 28,
+                x: 57,
+                y: 20,
                 category: "ai-delegation",
                 title: "AI recommends the best match",
                 observation:
@@ -260,8 +260,8 @@ export default defineAtlasEntry({
               {
                 id: "reasoning-inspectable",
                 number: "02",
-                x: 67,
-                y: 59,
+                x: 66,
+                y: 42,
                 category: "visible-reasoning",
                 title: "Reasoning remains inspectable",
                 observation:
@@ -274,8 +274,8 @@ export default defineAtlasEntry({
               {
                 id: "alternatives-available",
                 number: "03",
-                x: 29,
-                y: 72,
+                x: 48,
+                y: 70,
                 category: "human-authority",
                 title: "Alternatives remain available",
                 observation:
@@ -288,7 +288,7 @@ export default defineAtlasEntry({
               {
                 id: "human-final-decision",
                 number: "04",
-                x: 29,
+                x: 58,
                 y: 88,
                 category: "human-authority",
                 title: "Human makes the final decision",
