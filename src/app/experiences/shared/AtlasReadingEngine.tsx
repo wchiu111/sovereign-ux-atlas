@@ -589,11 +589,13 @@ function EvidenceRail({
           textTransform:"uppercase" }}>
           {railLabel}
         </div>
-        <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-          letterSpacing:"0.18em", color:"rgba(200,180,130,0.48)", marginTop:"3px" }}>
-          {railItemCount} {artifactLabel}
-          {railItemCount !== 1 ? "S" : ""}
-        </div>
+        {artifactLabel && (
+          <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
+            letterSpacing:"0.18em", color:"rgba(200,180,130,0.48)", marginTop:"3px" }}>
+            {railItemCount} {artifactLabel}
+            {railItemCount !== 1 ? "S" : ""}
+          </div>
+        )}
       </div>
 
       {/* Evidence cards */}

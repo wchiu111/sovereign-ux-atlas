@@ -45,10 +45,10 @@ export default defineAtlasEntry({
   presentation: {
     mode: "map-led",
     sequenceLabel: "AUTHORITY PATH",
-    railLabel: "MAPS & TOOLS",
-    artifactLabel: "TOOL",
+    railLabel: "EXPLORE THE CANVAS",
+    artifactLabel: "",
     emptyRailMessage:
-      "Maps and application tools will appear here as the framework develops.",
+      "Interactive evidence will appear here as the framework develops.",
   },
   orbit: {
     angle: -90,

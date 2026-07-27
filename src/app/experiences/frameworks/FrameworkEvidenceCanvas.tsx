@@ -48,6 +48,8 @@ interface ViewState {
   scale: number;
 }
 
+type TransitionPhase = "entering" | "open" | "exiting";
+
 interface Props {
   items: ReadingEvidenceItem[];
   frameworkTitle: string;
@@ -420,6 +422,8 @@ export default function FrameworkEvidenceCanvas({
 }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const hasInteractedRef = useRef(false);
+  const closeTimerRef = useRef<number | null>(null);
+  const resolveTimerRef = useRef<number | null>(null);
   const dragRef = useRef<{
     pointerId: number;
     startX: number;
@@ -435,6 +439,8 @@ export default function FrameworkEvidenceCanvas({
   const [dragging, setDragging] = useState(false);
   const [active, setActive] = useState<ActiveAnnotation | null>(null);
   const [locked, setLocked] = useState(false);
+  const [transitionPhase, setTransitionPhase] =
+    useState<TransitionPhase>("entering");
 
   const canvasItems = useMemo(
     () => items.filter((item) => item.canvas && item.image).slice(0, 2),
@@ -489,13 +495,47 @@ export default function FrameworkEvidenceCanvas({
   }, [setOpeningView]);
 
   useEffect(() => {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    resolveTimerRef.current = window.setTimeout(
+      () => setTransitionPhase("open"),
+      reducedMotion ? 240 : 1260,
+    );
+
+    return () => {
+      if (resolveTimerRef.current !== null) {
+        window.clearTimeout(resolveTimerRef.current);
+      }
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const requestClose = useCallback(() => {
+    if (transitionPhase === "exiting") return;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    setActive(null);
+    setLocked(false);
+    setTransitionPhase("exiting");
+    closeTimerRef.current = window.setTimeout(
+      onClose,
+      reducedMotion ? 240 : 920,
+    );
+  }, [onClose, transitionPhase]);
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         if (active) {
           setActive(null);
           setLocked(false);
         } else {
-          onClose();
+          requestClose();
         }
         return;
       }
@@ -526,7 +566,7 @@ export default function FrameworkEvidenceCanvas({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [active, fitAll, onClose]);
+  }, [active, fitAll, requestClose]);
 
   const zoomAt = useCallback((nextScale: number, clientX?: number, clientY?: number) => {
     const viewport = viewportRef.current;
@@ -607,25 +647,78 @@ export default function FrameworkEvidenceCanvas({
   return (
     <div
       data-framework-canvas-root
+      data-transition-phase={transitionPhase}
       style={{
         position: "absolute",
         inset: 0,
         zIndex: 80,
-        background:
-          "radial-gradient(circle at 18% 22%, rgba(45,33,68,0.18), transparent 34%), radial-gradient(circle at 78% 30%, rgba(20,65,68,0.12), transparent 35%), #04060B",
+        background: "#000",
         color: "rgba(255,248,230,0.94)",
         overflow: "hidden",
-        animation:
-          "frameworkCanvasResolve 620ms cubic-bezier(0.16,1,0.3,1) both",
       }}
     >
       <style>{`
-        @keyframes frameworkCanvasResolve {
-          from { opacity: 0; transform: scale(1.018); }
-          to { opacity: 1; transform: scale(1); }
+        @keyframes portalThresholdEnter {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes portalCanvasReveal {
+          0%, 18% {
+            opacity: 0;
+            transform: scale(.972);
+            filter: blur(9px) brightness(.34);
+          }
+          62% {
+            opacity: .72;
+            filter: blur(2px) brightness(.72);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0) brightness(1);
+          }
+        }
+        @keyframes portalCanvasRecede {
+          from {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0) brightness(1);
+          }
+          to {
+            opacity: 0;
+            transform: scale(.974);
+            filter: blur(8px) brightness(.32);
+          }
+        }
+        @keyframes portalThresholdExit {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        [data-framework-canvas-root][data-transition-phase="entering"] {
+          animation: portalThresholdEnter 320ms ease-out both;
+        }
+        [data-framework-canvas-root][data-transition-phase="entering"]
+          [data-portal-content] {
+          animation:
+            portalCanvasReveal 900ms 320ms cubic-bezier(.16,1,.3,1) both;
+        }
+        [data-framework-canvas-root][data-transition-phase="exiting"] {
+          animation: portalThresholdExit 300ms 590ms ease-in both;
+          pointer-events: none;
+        }
+        [data-framework-canvas-root][data-transition-phase="exiting"]
+          [data-portal-content] {
+          animation:
+            portalCanvasRecede 560ms cubic-bezier(.4,0,.7,.2) both;
         }
         @media (prefers-reduced-motion: reduce) {
-          [data-framework-canvas-root] { animation: none !important; }
+          [data-framework-canvas-root],
+          [data-portal-content] {
+            animation-duration: 220ms !important;
+            animation-delay: 0ms !important;
+            filter: none !important;
+            transform: none !important;
+          }
         }
         [data-framework-canvas] button:focus-visible {
           outline: 2px solid rgba(255,248,230,0.92);
@@ -633,6 +726,18 @@ export default function FrameworkEvidenceCanvas({
         }
       `}</style>
 
+      <div
+        data-portal-content
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          background:
+            "radial-gradient(circle at 18% 22%, rgba(45,33,68,0.18), transparent 34%), radial-gradient(circle at 78% 30%, rgba(20,65,68,0.12), transparent 35%), #04060B",
+          transformOrigin: "50% 46%",
+          willChange: "opacity, transform, filter",
+        }}
+      >
       <header
         data-canvas-control
         style={{
@@ -689,7 +794,7 @@ export default function FrameworkEvidenceCanvas({
         <button
           type="button"
           data-canvas-control
-          onClick={onClose}
+          onClick={requestClose}
           style={{
             pointerEvents: "auto",
             display: "flex",
@@ -706,7 +811,9 @@ export default function FrameworkEvidenceCanvas({
             cursor: "pointer",
           }}
         >
-          BACK TO FRAMEWORK
+          <span style={{ lineHeight: 1, transform: "translateY(1px)" }}>
+            BACK TO FRAMEWORK
+          </span>
           <X size={13} />
         </button>
       </header>
@@ -876,6 +983,7 @@ export default function FrameworkEvidenceCanvas({
         >
           1:1
         </button>
+      </div>
       </div>
     </div>
   );
