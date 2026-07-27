@@ -537,6 +537,38 @@ function EvidenceRail({
   onOpenEvidence: (item: EvidenceItem) => void;
 }) {
   const [hoveredId, setHoveredId] = useState<string|null>(null);
+  const portalRef = useRef<HTMLButtonElement>(null);
+  const portalItems = section.evidence.filter(
+    (item) => item.canvas?.portalImage,
+  );
+  const portalItem = portalItems[0];
+  const portalSignalCount = portalItems.reduce(
+    (total, item) => total + (item.canvas?.annotations.length ?? 0),
+    0,
+  );
+
+  const handlePortalPointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const portal = portalRef.current;
+    if (!portal) return;
+    const rect = portal.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const normalizedX = x / rect.width - 0.5;
+    const normalizedY = y / rect.height - 0.5;
+    portal.style.setProperty("--portal-x", `${x}px`);
+    portal.style.setProperty("--portal-y", `${y}px`);
+    portal.style.setProperty("--portal-dx", `${normalizedX * 8}px`);
+    portal.style.setProperty("--portal-dy", `${normalizedY * 6}px`);
+  };
+
+  const resetPortalPointer = () => {
+    const portal = portalRef.current;
+    if (!portal) return;
+    portal.style.setProperty("--portal-x", "50%");
+    portal.style.setProperty("--portal-y", "42%");
+    portal.style.setProperty("--portal-dx", "0px");
+    portal.style.setProperty("--portal-dy", "0px");
+  };
 
   return (
     <div style={{
@@ -564,6 +596,57 @@ function EvidenceRail({
 
       {/* Evidence cards */}
       <div style={{ padding:"16px 16px", flex:1 }}>
+        <style>{`
+          @keyframes portalWave {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(.22); }
+            22% { opacity: .58; }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.9); }
+          }
+          @keyframes portalOrbit {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+          }
+          [data-cinematic-portal]:hover [data-portal-wave],
+          [data-cinematic-portal]:focus-visible [data-portal-wave] {
+            animation: portalWave 1.9s cubic-bezier(.16,1,.3,1) infinite;
+          }
+          [data-cinematic-portal]:hover [data-portal-wave="2"],
+          [data-cinematic-portal]:focus-visible [data-portal-wave="2"] {
+            animation-delay: .48s;
+          }
+          [data-cinematic-portal]:hover [data-portal-wave="3"],
+          [data-cinematic-portal]:focus-visible [data-portal-wave="3"] {
+            animation-delay: .96s;
+          }
+          [data-cinematic-portal]:hover [data-portal-orbit],
+          [data-cinematic-portal]:focus-visible [data-portal-orbit] {
+            opacity: .72;
+            animation: portalOrbit 8s linear infinite;
+          }
+          [data-cinematic-portal]:hover [data-portal-image],
+          [data-cinematic-portal]:focus-visible [data-portal-image] {
+            transform: translate3d(var(--portal-dx), var(--portal-dy), 0) scale(1.035);
+            filter: saturate(1.08) contrast(1.04) brightness(1.04);
+          }
+          [data-cinematic-portal]:hover [data-portal-cta-default],
+          [data-cinematic-portal]:focus-visible [data-portal-cta-default] {
+            opacity: 0;
+            transform: translateY(-5px);
+          }
+          [data-cinematic-portal]:hover [data-portal-cta-active],
+          [data-cinematic-portal]:focus-visible [data-portal-cta-active] {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          @media (prefers-reduced-motion: reduce) {
+            [data-portal-wave], [data-portal-orbit] { display: none !important; }
+            [data-portal-image] { transform: none !important; transition: opacity 180ms ease !important; }
+            [data-cinematic-portal]:hover [data-portal-image],
+            [data-cinematic-portal]:focus-visible [data-portal-image] {
+              filter: brightness(1.05);
+            }
+          }
+        `}</style>
         {section.evidence.length === 0 && emptyMessage && (
           <div style={{
             margin:"8px 2px",
@@ -583,7 +666,191 @@ function EvidenceRail({
             </div>
           </div>
         )}
-        {section.evidence.map(item => {
+        {portalItem && (
+          <button
+            ref={portalRef}
+            type="button"
+            data-cinematic-portal
+            aria-label={`Enter interactive canvas: ${portalItem.canvas?.title}`}
+            onClick={() => onOpenEvidence(portalItem)}
+            onPointerMove={handlePortalPointerMove}
+            onPointerLeave={resetPortalPointer}
+            onBlur={resetPortalPointer}
+            style={{
+              ["--portal-x" as string]:"50%",
+              ["--portal-y" as string]:"42%",
+              ["--portal-dx" as string]:"0px",
+              ["--portal-dy" as string]:"0px",
+              position:"relative",
+              display:"block",
+              width:"100%",
+              marginBottom:"12px",
+              padding:0,
+              overflow:"hidden",
+              textAlign:"left",
+              color:"inherit",
+              border:`1px solid ${color}42`,
+              background:"rgba(6,12,15,0.94)",
+              boxShadow:`0 18px 50px rgba(0,0,0,.28), inset 0 0 0 1px ${color}08`,
+              cursor:"pointer",
+              outline:"none",
+              isolation:"isolate",
+              transition:
+                "border-color 220ms cubic-bezier(.16,1,.3,1), box-shadow 220ms cubic-bezier(.16,1,.3,1), transform 220ms cubic-bezier(.16,1,.3,1)",
+            }}
+            onMouseEnter={(event) => {
+              event.currentTarget.style.borderColor = `${color}9A`;
+              event.currentTarget.style.boxShadow =
+                `0 22px 64px rgba(0,0,0,.38), 0 0 32px ${color}20, inset 0 0 0 1px ${color}16`;
+              event.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(event) => {
+              resetPortalPointer();
+              event.currentTarget.style.borderColor = `${color}42`;
+              event.currentTarget.style.boxShadow =
+                `0 18px 50px rgba(0,0,0,.28), inset 0 0 0 1px ${color}08`;
+              event.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <div style={{
+              position:"relative",
+              width:"100%",
+              aspectRatio:"4/5",
+              maxHeight:"390px",
+              overflow:"hidden",
+              background:"#05080d",
+            }}>
+              <img
+                data-portal-image
+                src={portalItem.canvas?.portalImage}
+                alt=""
+                aria-hidden="true"
+                style={{
+                  width:"100%",
+                  height:"100%",
+                  objectFit:"cover",
+                  objectPosition:"center 44%",
+                  display:"block",
+                  transition:
+                    "transform 720ms cubic-bezier(.16,1,.3,1), filter 520ms cubic-bezier(.16,1,.3,1)",
+                  willChange:"transform",
+                }}
+              />
+              <div aria-hidden style={{
+                position:"absolute",
+                inset:0,
+                background:
+                  "linear-gradient(180deg, transparent 48%, rgba(5,9,12,.42) 72%, rgba(5,9,12,.96) 100%)",
+                pointerEvents:"none",
+              }}/>
+              {[1,2,3].map((wave) => (
+                <span
+                  key={wave}
+                  data-portal-wave={String(wave)}
+                  aria-hidden
+                  style={{
+                    position:"absolute",
+                    left:"var(--portal-x)",
+                    top:"var(--portal-y)",
+                    width:170,
+                    height:170,
+                    borderRadius:"50%",
+                    border:`1px solid ${wave === 2 ? "rgba(225,195,92,.56)" : color + "70"}`,
+                    boxShadow:`0 0 32px ${color}18, inset 0 0 30px ${color}10`,
+                    opacity:0,
+                    pointerEvents:"none",
+                  }}
+                />
+              ))}
+              <span
+                data-portal-orbit
+                aria-hidden
+                style={{
+                  position:"absolute",
+                  left:"var(--portal-x)",
+                  top:"var(--portal-y)",
+                  width:230,
+                  height:118,
+                  borderRadius:"50%",
+                  border:"1px solid rgba(225,195,92,.34)",
+                  borderLeftColor:"transparent",
+                  borderBottomColor:`${color}58`,
+                  opacity:0,
+                  pointerEvents:"none",
+                  transition:"opacity 350ms ease",
+                }}
+              />
+            </div>
+
+            <div style={{
+              position:"relative",
+              zIndex:2,
+              padding:"14px 16px 16px",
+              background:
+                "linear-gradient(180deg, rgba(6,12,15,.92), rgba(5,10,13,.99))",
+            }}>
+              <div style={{
+                fontFamily:"'DM Mono',monospace",
+                fontSize:"8.5px",
+                letterSpacing:"0.18em",
+                color,
+                textTransform:"uppercase",
+                marginBottom:"8px",
+              }}>
+                Interactive comparison
+              </div>
+              <div style={{
+                fontFamily:"'EB Garamond',serif",
+                fontSize:"19px",
+                lineHeight:1.25,
+                color:"rgba(255,248,230,.94)",
+                marginBottom:"7px",
+                fontWeight:500,
+              }}>
+                {portalItem.canvas?.title}
+              </div>
+              <div style={{
+                fontFamily:"'EB Garamond',serif",
+                fontSize:"14px",
+                lineHeight:1.5,
+                color:"rgba(200,180,130,.62)",
+              }}>
+                {portalItem.canvas?.description}
+              </div>
+              <div style={{
+                position:"relative",
+                minHeight:"18px",
+                marginTop:"12px",
+                paddingTop:"10px",
+                borderTop:"1px solid rgba(200,180,130,.10)",
+                fontFamily:"'DM Mono',monospace",
+                fontSize:"8.5px",
+                letterSpacing:"0.16em",
+                color,
+                textTransform:"uppercase",
+              }}>
+                <span data-portal-cta-default style={{
+                  position:"absolute",
+                  inset:"10px auto auto 0",
+                  opacity:.76,
+                  transition:"opacity 220ms ease, transform 220ms cubic-bezier(.16,1,.3,1)",
+                }}>
+                  {portalSignalCount} framework signals · Open canvas
+                </span>
+                <span data-portal-cta-active style={{
+                  position:"absolute",
+                  inset:"10px auto auto 0",
+                  opacity:0,
+                  transform:"translateY(5px)",
+                  transition:"opacity 220ms ease, transform 220ms cubic-bezier(.16,1,.3,1)",
+                }}>
+                  Enter interactive canvas →
+                </span>
+              </div>
+            </div>
+          </button>
+        )}
+        {section.evidence.filter(item => !item.canvas?.portalImage).map(item => {
           const isHov = hoveredId === item.id;
           return (
             <button key={item.id}

@@ -2,6 +2,7 @@ import { defineAtlasEntry } from "../defineAtlasEntry";
 
 import recommendationLast from "../../../imports/frameworks/decision-rights/01-system-purpose/1-recommendation-last.png";
 import recommendationFirst from "../../../imports/frameworks/decision-rights/01-system-purpose/2-recommendation-first.png";
+import systemPurposePortal from "../../../imports/frameworks/decision-rights/01-system-purpose/system-purpose-portal.png";
 
 export default defineAtlasEntry({
   id: "authority-gradient",
@@ -170,6 +171,7 @@ export default defineAtlasEntry({
             title: "Where synthesis authority belongs",
             description:
               "The same scheduling information produces two different experiences depending on where synthesis authority belongs.",
+            portalImage: systemPurposePortal,
             boardLabel: "RECOMMENDATION LAST",
             boardSubtitle: "Human searches the options",
             annotations: [
@@ -237,6 +239,7 @@ export default defineAtlasEntry({
             title: "Where synthesis authority belongs",
             description:
               "The same scheduling information produces two different experiences depending on where synthesis authority belongs.",
+            portalImage: systemPurposePortal,
             boardLabel: "RECOMMENDATION FIRST",
             boardSubtitle: "AI synthesizes the options",
             annotations: [

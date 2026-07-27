@@ -118,6 +118,7 @@ export interface AtlasEvidenceCanvas {
   eyebrow: string;
   title: string;
   description: string;
+  portalImage?: string;
   boardLabel: string;
   boardSubtitle: string;
   annotations: AtlasEvidenceAnnotation[];
