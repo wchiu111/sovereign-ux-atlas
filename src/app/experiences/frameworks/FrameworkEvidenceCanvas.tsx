@@ -15,7 +15,7 @@ import type {
 import type { ReadingEvidenceItem } from "../shared/types";
 
 const WORLD_WIDTH = 2700;
-const WORLD_HEIGHT = 1960;
+const WORLD_HEIGHT = 2080;
 const BOARD_WIDTH = 1050;
 const BOARD_HEIGHT = Math.round((BOARD_WIDTH * 2023) / 1374);
 const OPENING_SCALE = 0.73;
@@ -160,6 +160,7 @@ function EvidenceBoard({
   item,
   position,
   boardIndex,
+  viewScale,
   active,
   locked,
   onPreview,
@@ -169,6 +170,7 @@ function EvidenceBoard({
   item: ReadingEvidenceItem;
   position: { x: number; y: number };
   boardIndex: number;
+  viewScale: number;
   active: ActiveAnnotation | null;
   locked: boolean;
   onPreview: (next: ActiveAnnotation) => void;
@@ -290,7 +292,8 @@ function EvidenceBoard({
                 left: `${annotation.x}%`,
                 top: `${annotation.y}%`,
                 zIndex: annotationActive ? 6 : 3,
-                transform: "translate(-50%, -50%)",
+                transform: `translate(-50%, -50%) scale(${1 / viewScale})`,
+                transformOrigin: "50% 50%",
               }}
             >
               {annotationActive && (
@@ -745,9 +748,9 @@ export default function FrameworkEvidenceCanvas({
           <div
             style={{
               position: "absolute",
-              left: 1040,
-              top: 1038,
-              width: 620,
+              left: 930,
+              top: 1900,
+              width: 840,
               display: "flex",
               alignItems: "center",
               gap: 24,
@@ -777,6 +780,7 @@ export default function FrameworkEvidenceCanvas({
               item={item}
               position={BOARD_POSITIONS[index] ?? BOARD_POSITIONS[0]}
               boardIndex={index}
+              viewScale={view.scale}
               active={active}
               locked={locked}
               onPreview={setActive}
