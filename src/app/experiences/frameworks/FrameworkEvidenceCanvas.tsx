@@ -198,6 +198,7 @@ function EvidenceBoard({
         left: position.x,
         top: position.y,
         width: BOARD_WIDTH,
+        zIndex: active?.boardId === item.id ? 10 : 1,
       }}
     >
       <div
@@ -756,18 +757,6 @@ export default function FrameworkEvidenceCanvas({
         }}
       >
         <div>
-          <div
-            style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: 9,
-              letterSpacing: "0.25em",
-              color: "rgba(200,180,130,0.48)",
-              marginBottom: 15,
-            }}
-          >
-            ATLAS&nbsp;&nbsp;·&nbsp;&nbsp;FRAMEWORKS&nbsp;&nbsp;·&nbsp;&nbsp;
-            {frameworkTitle}&nbsp;&nbsp;·&nbsp;&nbsp;{sectionTitle}
-          </div>
           <div
             style={{
               fontFamily: "'DM Mono', monospace",

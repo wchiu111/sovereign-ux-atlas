@@ -213,10 +213,14 @@ function LeftNav({
           textTransform:"uppercase",
         }}>
           <div>{caseStudy.sections.length} Sections</div>
-          <div>
-            {totalArtifacts} {caseStudy.artifactLabel}
-            {totalArtifacts === 1 ? "" : "S"}
-          </div>
+
+            {caseStudy.artifactLabel && (
+              <div>
+                {totalArtifacts} {caseStudy.artifactLabel}
+                {totalArtifacts === 1 ? "" : "S"}
+              </div>
+            )}
+          
         </div>
       </div>
     </nav>
