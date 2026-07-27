@@ -159,11 +159,64 @@ export default defineAtlasEntry({
           imageFit: "contain",
           number: "01",
           title: "Recommendation Last",
-          type: "UX Comparison",
+          type: "Interactive Example",
           description:
             "The person receives the underlying availability, constraints, and alternatives first, then must scan and synthesize them before reaching the system's recommendation.",
           caption:
             "The system preserves the final choice but leaves the comparison work with the person.",
+          canvas: {
+            id: "system-purpose-comparison",
+            eyebrow: "INTERACTIVE COMPARISON",
+            title: "Where synthesis authority belongs",
+            description:
+              "The same scheduling information produces two different experiences depending on where synthesis authority belongs.",
+            boardLabel: "RECOMMENDATION LAST",
+            boardSubtitle: "Human searches the options",
+            annotations: [
+              {
+                id: "human-searches-options",
+                number: "01",
+                x: 69,
+                y: 47,
+                category: "human-authority",
+                title: "Human searches the options",
+                observation:
+                  "The person must scan the schedule and compare possible times manually.",
+                meaning:
+                  "The human retains both final authority and the comparison work the AI could have performed.",
+                rightHolder: "Human",
+                cardSide: "right",
+              },
+              {
+                id: "rules-unsynthesized",
+                number: "02",
+                x: 28,
+                y: 62,
+                category: "visible-reasoning",
+                title: "Rules remain unsynthesized",
+                observation:
+                  "Working hours, time zones, lunch periods, and meeting density are visible, but the person must determine how they affect the answer.",
+                meaning:
+                  "The system exposes its inputs without applying them on the person's behalf.",
+                rightHolder: "Human",
+                cardSide: "right",
+              },
+              {
+                id: "recommendation-arrives-last",
+                number: "03",
+                x: 28,
+                y: 87,
+                category: "authority-problem",
+                title: "Recommendation arrives last",
+                observation:
+                  "The system reveals its conclusion only after the person has already searched for it.",
+                meaning:
+                  "AI is under-delegated. Human control is preserved, but unnecessary cognitive work remains human.",
+                rightHolder: "Human",
+                cardSide: "right",
+              },
+            ],
+          },
         },
         {
           id: "recommendation-first",
@@ -173,11 +226,78 @@ export default defineAtlasEntry({
           imageFit: "contain",
           number: "02",
           title: "Recommendation First",
-          type: "UX Comparison",
+          type: "Interactive Example",
           description:
             "The system synthesizes the same constraints into a recommended time, explains why it fits, and keeps alternatives and the final scheduling action available to the person.",
           caption:
             "AI performs the synthesis it is suited for while the person retains the authority to accept, change, or reject the recommendation.",
+          canvas: {
+            id: "system-purpose-comparison",
+            eyebrow: "INTERACTIVE COMPARISON",
+            title: "Where synthesis authority belongs",
+            description:
+              "The same scheduling information produces two different experiences depending on where synthesis authority belongs.",
+            boardLabel: "RECOMMENDATION FIRST",
+            boardSubtitle: "AI synthesizes the options",
+            annotations: [
+              {
+                id: "ai-recommends-best-match",
+                number: "01",
+                x: 60,
+                y: 28,
+                category: "ai-delegation",
+                title: "AI recommends the best match",
+                observation:
+                  "The assistant compares the available options and presents the strongest match first.",
+                meaning:
+                  "AI receives authority to rank options—not authority to schedule the meeting.",
+                rightHolder: "AI",
+                cardSide: "left",
+              },
+              {
+                id: "reasoning-inspectable",
+                number: "02",
+                x: 67,
+                y: 59,
+                category: "visible-reasoning",
+                title: "Reasoning remains inspectable",
+                observation:
+                  "Availability, conflicts, working hours, and preferences remain available for inspection.",
+                meaning:
+                  "Delegating synthesis does not require hiding how the recommendation was formed.",
+                rightHolder: "Shared",
+                cardSide: "left",
+              },
+              {
+                id: "alternatives-available",
+                number: "03",
+                x: 29,
+                y: 72,
+                category: "human-authority",
+                title: "Alternatives remain available",
+                observation:
+                  "The recommendation narrows attention without becoming the only available path.",
+                meaning:
+                  "The person can reject the AI's conclusion without abandoning the task.",
+                rightHolder: "Human",
+                cardSide: "left",
+              },
+              {
+                id: "human-final-decision",
+                number: "04",
+                x: 29,
+                y: 88,
+                category: "human-authority",
+                title: "Human makes the final decision",
+                observation:
+                  "The assistant may recommend a time. Nothing is scheduled or sent until the person confirms.",
+                meaning:
+                  "Commitment authority remains human.",
+                rightHolder: "Human",
+                cardSide: "left",
+              },
+            ],
+          },
         },
       ],
     },

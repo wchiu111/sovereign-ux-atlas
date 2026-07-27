@@ -92,6 +92,37 @@ export interface AtlasEntryOverview {
   keyDiscovery: string;
 }
 
+export type AtlasEvidenceAnnotationCategory =
+  | "ai-delegation"
+  | "human-authority"
+  | "visible-reasoning"
+  | "authority-problem";
+
+export type AtlasDecisionRightHolder = "Human" | "AI" | "Shared";
+
+export interface AtlasEvidenceAnnotation {
+  id: string;
+  number: string;
+  x: number;
+  y: number;
+  category: AtlasEvidenceAnnotationCategory;
+  title: string;
+  observation: string;
+  meaning: string;
+  rightHolder: AtlasDecisionRightHolder;
+  cardSide?: "left" | "right";
+}
+
+export interface AtlasEvidenceCanvas {
+  id: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  boardLabel: string;
+  boardSubtitle: string;
+  annotations: AtlasEvidenceAnnotation[];
+}
+
 export interface AtlasEntryEvidence {
   id: string;
   number: string;
@@ -102,6 +133,7 @@ export interface AtlasEntryEvidence {
   image?: string;
   alt?: string;
   imageFit?: "contain" | "cover";
+  canvas?: AtlasEvidenceCanvas;
 }
 
 export interface AtlasEntrySection {

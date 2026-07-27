@@ -1,3 +1,5 @@
+import type { AtlasEvidenceCanvas } from "../../content/types";
+
 export interface ReadingEvidenceItem {
   id: string;
   number: string;
@@ -8,6 +10,7 @@ export interface ReadingEvidenceItem {
   image?: string;
   alt?: string;
   imageFit?: "contain" | "cover";
+  canvas?: AtlasEvidenceCanvas;
 }
 
 export interface ReadingSection {

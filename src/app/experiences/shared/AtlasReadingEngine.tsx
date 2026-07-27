@@ -3,6 +3,7 @@ import { Share2, X, ZoomIn, Minimize2 } from "lucide-react";
 import type { ReadingDocument as CaseStudy, ReadingEvidenceItem as EvidenceItem, ReadingSection as Section } from "./types";
 import { EvidenceThumbnail, EvidenceLargeView } from "../../case-study/components/EvidenceArtwork";
 import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
+import FrameworkEvidenceCanvas from "../frameworks/FrameworkEvidenceCanvas";
 
 function LeftNav({
   caseStudy, activeSection, onSection, onExit, color,
@@ -636,6 +637,21 @@ function EvidenceRail({
                   color:"rgba(200,180,130,0.55)" }}>
                   {item.description}
                 </div>
+                {item.canvas && (
+                  <div style={{
+                    marginTop:"10px",
+                    paddingTop:"9px",
+                    borderTop:"1px solid rgba(200,180,130,0.08)",
+                    fontFamily:"'DM Mono',monospace",
+                    fontSize:"8.5px",
+                    letterSpacing:"0.16em",
+                    color,
+                    opacity:0.72,
+                    textTransform:"uppercase",
+                  }}>
+                    {item.canvas.annotations.length} framework signals · Open canvas
+                  </div>
+                )}
               </div>
             </button>
           );
@@ -847,7 +863,9 @@ export default function AtlasReadingEngine({
 };
 
   const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
-  const [activeEvidence, setActiveEvidence] = useState<EvidenceItem|null>(null);
+  const [activeEvidence, setActiveEvidence] = useState<EvidenceItem|null>(
+    () => activeSection.evidence.find((item) => item.canvas) ?? null,
+  );
   const [shareConfirm, setShareConfirm] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
   const sectionColor = resolveStellarColor(
@@ -887,7 +905,7 @@ export default function AtlasReadingEngine({
 
   const handleSection = useCallback((section: Section) => {
     setActiveSection(section);
-    setActiveEvidence(null);
+    setActiveEvidence(section.evidence.find((item) => item.canvas) ?? null);
     setAskOpen(false);
     try {
       const url = `/${routeSegment}/${caseStudy.id}/${section.slug}`;
@@ -1055,7 +1073,16 @@ export default function AtlasReadingEngine({
         </aside>
 
         {/* Evidence Viewer overlay */}
-        {activeEvidence && (
+        {activeEvidence?.canvas ? (
+          <FrameworkEvidenceCanvas
+            items={activeSection.evidence.filter(
+              (item) => item.canvas?.id === activeEvidence.canvas?.id,
+            )}
+            frameworkTitle={caseStudy.title}
+            sectionTitle={activeSection.title}
+            onClose={handleCloseEvidence}
+          />
+        ) : activeEvidence ? (
           <EvidenceViewer
             item={activeEvidence}
             color={color}
@@ -1064,7 +1091,7 @@ export default function AtlasReadingEngine({
             onClose={handleCloseEvidence}
             onShare={handleShare}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
