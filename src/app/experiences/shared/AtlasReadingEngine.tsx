@@ -523,6 +523,7 @@ function AskPanel({ caseStudy, section, color, onClose }: {
 
 function EvidenceRail({
   section,
+  persistentEvidence,
   color,
   railLabel,
   artifactLabel,
@@ -530,6 +531,7 @@ function EvidenceRail({
   onOpenEvidence,
 }: {
   section: Section;
+  persistentEvidence: EvidenceItem[];
   color: string;
   railLabel: string;
   artifactLabel: string;
@@ -538,14 +540,14 @@ function EvidenceRail({
 }) {
   const [hoveredId, setHoveredId] = useState<string|null>(null);
   const portalRef = useRef<HTMLButtonElement>(null);
-  const portalItems = section.evidence.filter(
+  const portalItems = persistentEvidence.filter(
     (item) => item.canvas?.portalImage,
   );
   const portalItem = portalItems[0];
-  const portalSignalCount = portalItems.reduce(
-    (total, item) => total + (item.canvas?.annotations.length ?? 0),
-    0,
+  const sectionEvidence = section.evidence.filter(
+    (item) => !item.canvas?.portalImage,
   );
+  const railItemCount = sectionEvidence.length + portalItems.length;
 
   const handlePortalPointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
     const portal = portalRef.current;
@@ -589,8 +591,8 @@ function EvidenceRail({
         </div>
         <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
           letterSpacing:"0.18em", color:"rgba(200,180,130,0.48)", marginTop:"3px" }}>
-          {section.evidence.length} {artifactLabel}
-          {section.evidence.length !== 1 ? "S" : ""}
+          {railItemCount} {artifactLabel}
+          {railItemCount !== 1 ? "S" : ""}
         </div>
       </div>
 
@@ -647,7 +649,7 @@ function EvidenceRail({
             }
           }
         `}</style>
-        {section.evidence.length === 0 && emptyMessage && (
+        {railItemCount === 0 && emptyMessage && (
           <div style={{
             margin:"8px 2px",
             padding:"18px 16px",
@@ -835,7 +837,7 @@ function EvidenceRail({
                   opacity:.76,
                   transition:"opacity 220ms ease, transform 220ms cubic-bezier(.16,1,.3,1)",
                 }}>
-                  {portalSignalCount} framework signals · Open canvas
+                  Open canvas
                 </span>
                 <span data-portal-cta-active style={{
                   position:"absolute",
@@ -850,7 +852,7 @@ function EvidenceRail({
             </div>
           </button>
         )}
-        {section.evidence.filter(item => !item.canvas?.portalImage).map(item => {
+        {sectionEvidence.map(item => {
           const isHov = hoveredId === item.id;
           return (
             <button key={item.id}
@@ -1130,15 +1132,25 @@ export default function AtlasReadingEngine({
 };
 
   const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
-  const [activeEvidence, setActiveEvidence] = useState<EvidenceItem|null>(
-    () => activeSection.evidence.find((item) => item.canvas) ?? null,
-  );
+  const [activeEvidence, setActiveEvidence] = useState<EvidenceItem|null>(null);
   const [shareConfirm, setShareConfirm] = useState(false);
   const [askOpen, setAskOpen] = useState(false);
   const sectionColor = resolveStellarColor(
     activeSection.accentStellarType,
     color,
   );
+  const allEvidence = caseStudy.sections.flatMap(
+    (section) => section.evidence,
+  );
+  const persistentPortalEvidence = allEvidence.filter(
+    (item) => item.canvas?.portalImage,
+  );
+  const activeEvidenceSection =
+    (activeEvidence &&
+      caseStudy.sections.find((section) =>
+        section.evidence.some((item) => item.id === activeEvidence.id),
+      )) ||
+    activeSection;
 
   // Browser back/forward support
   useEffect(() => {
@@ -1147,7 +1159,10 @@ export default function AtlasReadingEngine({
       const match = path.match(new RegExp(`/${routeSegment}/[^/]+/([^/#?]+)`));
       if (match) {
         const found = caseStudy.sections.find(s => s.slug === match[1]);
-        if (found) setActiveSection(found);
+        if (found) {
+          setActiveSection(found);
+          if (!window.location.hash) setActiveEvidence(null);
+        }
       }
     };
     window.addEventListener("popstate", handler);
@@ -1172,7 +1187,7 @@ export default function AtlasReadingEngine({
 
   const handleSection = useCallback((section: Section) => {
     setActiveSection(section);
-    setActiveEvidence(section.evidence.find((item) => item.canvas) ?? null);
+    setActiveEvidence(null);
     setAskOpen(false);
     try {
       const url = `/${routeSegment}/${caseStudy.id}/${section.slug}`;
@@ -1331,6 +1346,7 @@ export default function AtlasReadingEngine({
           )}
           <EvidenceRail
             section={activeSection}
+            persistentEvidence={persistentPortalEvidence}
             color={color}
             railLabel={caseStudy.railLabel}
             artifactLabel={caseStudy.artifactLabel}
@@ -1342,18 +1358,18 @@ export default function AtlasReadingEngine({
         {/* Evidence Viewer overlay */}
         {activeEvidence?.canvas ? (
           <FrameworkEvidenceCanvas
-            items={activeSection.evidence.filter(
+            items={allEvidence.filter(
               (item) => item.canvas?.id === activeEvidence.canvas?.id,
             )}
             frameworkTitle={caseStudy.title}
-            sectionTitle={activeSection.title}
+            sectionTitle={activeEvidenceSection.title}
             onClose={handleCloseEvidence}
           />
         ) : activeEvidence ? (
           <EvidenceViewer
             item={activeEvidence}
             color={color}
-            section={activeSection}
+            section={activeEvidenceSection}
             caseStudyTitle={caseStudy.title}
             onClose={handleCloseEvidence}
             onShare={handleShare}
