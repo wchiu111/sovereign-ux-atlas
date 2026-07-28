@@ -22,7 +22,10 @@ interface AtlasCanvasProps {
   onBackgroundClick: () => void;
   onSelectSystem: (system: StarSystem) => void;
   onSelectPlanet: (system: StarSystem, planet: Planet) => void;
-  onSystemHoverChange?: (system: StarSystem | null, anchor?: { x: number; y: number }) => void;
+  onSystemHoverChange?: (
+    system: StarSystem | null,
+    anchor?: { x: number; y: number },
+  ) => void;
   revealStage?: number;
 }
 
@@ -76,39 +79,93 @@ export default function AtlasCanvas({
         onClick={onBackgroundClick}
       >
         <defs>
-          {SYSTEMS.map((system) => (
-            <filter key={system.id} id={`glow-${system.id}`} x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          {SYSTEMS.map(system => (
+            <filter
+              key={system.id}
+              id={`glow-${system.id}`}
+              x="-55%"
+              y="-55%"
+              width="210%"
+              height="210%"
+            >
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation="3.2"
+                result="blur"
+              />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
             </filter>
           ))}
-          <filter id="glow-nexus" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+
+          <filter
+            id="glow-nexus"
+            x="-70%"
+            y="-70%"
+            width="240%"
+            height="240%"
+          >
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="4.8"
+              result="blur"
+            />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
-          <filter id="glow-sm" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur" />
-            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+
+          <filter
+            id="glow-sm"
+            x="-45%"
+            y="-45%"
+            width="190%"
+            height="190%"
+          >
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="1.9"
+              result="blur"
+            />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
 
         <g
-          opacity={revealStage >= 2 ? 0.028 : 0}
+          opacity={revealStage >= 2 ? 0.016 : 0}
           stroke="#C8A96E"
           fill="none"
-          strokeWidth="0.5"
-          style={{ transition: "opacity 900ms cubic-bezier(0.16,1,0.3,1)" }}
+          strokeWidth="0.45"
+          style={{
+            transition: "opacity 900ms cubic-bezier(0.16,1,0.3,1)",
+          }}
         >
-          {[110, 230, 360, 500].map((radius) => <circle key={radius} cx={nexusX} cy={nexusY} r={radius} />)}
-          {[0, 30, 60, 90, 120, 150].map((degrees) => {
+          {[110, 230, 360, 500].map(radius => (
+            <circle key={radius} cx={nexusX} cy={nexusY} r={radius} />
+          ))}
+
+          {[0, 30, 60, 90, 120, 150].map(degrees => {
             const radians = (degrees * Math.PI) / 180;
-            return <line key={degrees}
-              x1={nexusX + Math.cos(radians) * 700} y1={nexusY + Math.sin(radians) * 700}
-              x2={nexusX - Math.cos(radians) * 700} y2={nexusY - Math.sin(radians) * 700} />;
+
+            return (
+              <line
+                key={degrees}
+                x1={nexusX + Math.cos(radians) * 700}
+                y1={nexusY + Math.sin(radians) * 700}
+                x2={nexusX - Math.cos(radians) * 700}
+                y2={nexusY - Math.sin(radians) * 700}
+              />
+            );
           })}
         </g>
 
-        {SYSTEMS.map((system) => {
+        {SYSTEMS.map(system => {
           const stageBySystem: Record<string, number> = {
             frameworks: 3,
             "case-studies": 4,
@@ -131,14 +188,18 @@ export default function AtlasCanvas({
                 d={systemOrbitPath(system, nexusX, nexusY)}
                 fill="none"
                 stroke={system.color}
-                strokeWidth="0.65"
+                strokeWidth="0.55"
                 strokeOpacity={
-                  level === 0 ? 0.12 : activeSystemId === system.id ? 0.15 : 0.025
+                  level === 0
+                    ? 0.065
+                    : activeSystemId === system.id
+                      ? 0.13
+                      : 0.018
                 }
-                strokeDasharray="3 11"
+                strokeDasharray="3 13"
                 style={{
                   transition: "stroke-opacity 0.5s",
-                  filter: `drop-shadow(0 0 5px ${system.color}18)`,
+                  filter: `drop-shadow(0 0 3px ${system.color}10)`,
                 }}
               />
             </g>
@@ -161,7 +222,7 @@ export default function AtlasCanvas({
           />
         </g>
 
-        {SYSTEMS.map((system) => {
+        {SYSTEMS.map(system => {
           const stageBySystem: Record<string, number> = {
             frameworks: 3,
             "case-studies": 4,

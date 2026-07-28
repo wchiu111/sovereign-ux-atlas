@@ -78,13 +78,15 @@ export function useAtlasAnimation({
         if (particle.y < 0) particle.y += canvas.height;
         if (particle.y > canvas.height) particle.y -= canvas.height;
 
+        const breathe =
+          Math.sin(elapsed * particle.speed + particle.phase) *
+          (0.035 + particle.depth * 0.045);
+
         const opacity = Math.max(
-          0.02,
-          Math.min(
-            0.95,
-            particle.baseOp + Math.sin(elapsed * particle.speed + particle.phase) * 0.12,
-          ),
+          0.012,
+          Math.min(0.72, particle.baseOp + breathe),
         );
+
         const [r, g, b] = STAR_RGB_ARR[particle.ci];
 
         ctx.beginPath();
@@ -92,19 +94,29 @@ export function useAtlasAnimation({
         ctx.fillStyle = `rgba(${r},${g},${b},${opacity})`;
         ctx.fill();
 
-        if (particle.size > 1.55) {
+        if (particle.size > 1.35) {
           const gradient = ctx.createRadialGradient(
             particle.x,
             particle.y,
             0,
             particle.x,
             particle.y,
-            particle.size * 5.5,
+            particle.size * 4.3,
           );
-          gradient.addColorStop(0, `rgba(${r},${g},${b},${opacity * 0.3})`);
+          gradient.addColorStop(
+            0,
+            `rgba(${r},${g},${b},${opacity * 0.18})`,
+          );
           gradient.addColorStop(1, "rgba(0,0,0,0)");
+
           ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size * 5.5, 0, Math.PI * 2);
+          ctx.arc(
+            particle.x,
+            particle.y,
+            particle.size * 4.3,
+            0,
+            Math.PI * 2,
+          );
           ctx.fillStyle = gradient;
           ctx.fill();
         }
@@ -113,6 +125,7 @@ export function useAtlasAnimation({
       SYSTEMS.forEach((system) => {
         const systemPosition = sysOrbitPos(system, elapsed, nexusX, nexusY);
         const systemElement = systemGroupRefs.current.get(system.id);
+
         if (systemElement) {
           systemElement.setAttribute(
             "transform",
@@ -120,17 +133,18 @@ export function useAtlasAnimation({
           );
         }
 
-
         const pulse =
           0.5 + 0.5 * Math.sin(elapsed * system.pulseSpeed + system.pulsePhase);
+
         const outerGlow = outerGlowRefs.current.get(system.id);
         if (outerGlow) {
-          outerGlow.setAttribute("opacity", String(0.04 + pulse * 0.08));
+          outerGlow.setAttribute("opacity", String(0.022 + pulse * 0.038));
         }
 
         system.planets.forEach((planet) => {
           const planetPosition = planetLocalPos(planet, elapsed);
           const planetElement = planetGroupRefs.current.get(planet.id);
+
           if (planetElement) {
             planetElement.setAttribute(
               "transform",
@@ -160,11 +174,15 @@ export function useAtlasAnimation({
           let targetTy: number | null = null;
 
           if (currentLevel === 2 && planetId) {
-            const planet = system.planets.find((item) => item.id === planetId);
+            const planet = system.planets.find(item => item.id === planetId);
+
             if (planet) {
               const planetPosition = planetLocalPos(planet, elapsed);
-              const worldX = systemPosition.x + planetPosition.x * systemPosition.scale;
-              const worldY = systemPosition.y + planetPosition.y * systemPosition.scale;
+              const worldX =
+                systemPosition.x + planetPosition.x * systemPosition.scale;
+              const worldY =
+                systemPosition.y + planetPosition.y * systemPosition.scale;
+
               targetScale = 5.5;
               targetTx = w / 2 - worldX * targetScale;
               targetTy = h / 2 - worldY * targetScale;
@@ -180,12 +198,10 @@ export function useAtlasAnimation({
             targetTx !== null &&
             targetTy !== null
           ) {
-            // The CSS entry transition lands on a frozen orbital coordinate. Once
-            // following resumes, gently converge on the live orbit instead of
-            // handing camera ownership over in a single frame.
             const current = cameraRef.current;
             const followEase = 0.075;
-            const nextScale = current.scale + (targetScale - current.scale) * followEase;
+            const nextScale =
+              current.scale + (targetScale - current.scale) * followEase;
             const nextTx = current.tx + (targetTx - current.tx) * followEase;
             const nextTy = current.ty + (targetTy - current.ty) * followEase;
 
