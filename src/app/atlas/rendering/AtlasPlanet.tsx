@@ -4,6 +4,11 @@ import { planetLocalPos, starLocalPos } from "../../utils/atlasGeometry";
 import type { Planet, StarSystem, ViewLevel } from "../../types/atlas";
 import { resolveDepthColor } from "../constellation/depthColor";
 import { resolveStellarColor } from "../constellation/stellarPalette";
+import {
+  ATLAS_MOTION_EASE,
+  PLANET_VISUAL,
+  SATELLITE_VISUAL,
+} from "../constellation/visualTokens";
 
 interface AtlasPlanetProps {
   system: StarSystem;
@@ -30,6 +35,7 @@ export default function AtlasPlanet({
   const active = activePlanetId === planet.id;
   const enabled = level >= 1 && activeSystemId === system.id;
   const initial = planetLocalPos(planet, 0);
+
   const depthColor = resolveDepthColor({
     domainColor: system.color,
     stellarType: planet.signatureStellarType,
@@ -37,35 +43,54 @@ export default function AtlasPlanet({
     hovered,
     active,
   });
+
   const foregroundBoost = Math.max(
-    -0.08,
-    Math.min(0.12, planet.orbitPlane * 0.045),
+    -0.06,
+    Math.min(0.1, planet.orbitPlane * 0.04),
   );
 
   const opacity =
     level === 0
-      ? 0.48 + foregroundBoost
+      ? PLANET_VISUAL.overviewOpacity + foregroundBoost
       : activeSystemId !== system.id
         ? 0
         : level === 1
-          ? 0.86 + foregroundBoost
+          ? 0.82 + foregroundBoost
           : active
             ? 1
-            : 0.46 + foregroundBoost;
+            : 0.42 + foregroundBoost;
 
   const labelY = planet.orbitPlane > 0 ? -19 : -17;
   const labelOpacity = active
-    ? 0.98
+    ? PLANET_VISUAL.activeLabelOpacity
     : hovered && enabled
-      ? 1
+      ? PLANET_VISUAL.hoverLabelOpacity
       : level === 0
-        ? 0.7 + foregroundBoost
-        : 0.58 + foregroundBoost;
+        ? PLANET_VISUAL.overviewLabelOpacity + foregroundBoost
+        : PLANET_VISUAL.focusedLabelOpacity + foregroundBoost;
+
+  const outerRadius = active
+    ? PLANET_VISUAL.outerActive
+    : hovered && enabled
+      ? PLANET_VISUAL.outerHover
+      : PLANET_VISUAL.outerRest;
+
+  const innerRadius = active
+    ? PLANET_VISUAL.innerActive
+    : hovered && enabled
+      ? PLANET_VISUAL.innerHover
+      : PLANET_VISUAL.innerRest;
+
+  const coreRadius = active
+    ? PLANET_VISUAL.coreActive
+    : hovered && enabled
+      ? PLANET_VISUAL.coreHover
+      : PLANET_VISUAL.coreRest;
 
   return (
     <g>
       <line
-        ref={(element) => {
+        ref={element => {
           if (element) planetLineRefs.current.set(planet.id, element);
           else planetLineRefs.current.delete(planet.id);
         }}
@@ -74,41 +99,54 @@ export default function AtlasPlanet({
         x2={initial.x}
         y2={initial.y}
         stroke={system.color}
-        strokeWidth="0.45"
-        strokeOpacity={level === 0 ? 0.045 : 0}
+        strokeWidth="0.4"
+        strokeOpacity={
+          level === 0
+            ? hovered
+              ? 0.1
+              : 0.028
+            : enabled
+              ? hovered || active
+                ? 0.14
+                : 0.055
+              : 0
+        }
         style={{
-          transition: "stroke-opacity 0.5s",
+          transition: `stroke-opacity 380ms ${ATLAS_MOTION_EASE}`,
           pointerEvents: "none",
         }}
       />
 
       <g
-        ref={(element) => {
+        ref={element => {
           if (element) planetGroupRefs.current.set(planet.id, element);
           else planetGroupRefs.current.delete(planet.id);
         }}
         transform={`translate(${initial.x},${initial.y}) scale(${initial.scale})`}
         opacity={opacity}
-        style={{ transition: "opacity 0.5s" }}
+        style={{
+          transition: `opacity 420ms ${ATLAS_MOTION_EASE}`,
+        }}
       >
         <circle
           cx={0}
           cy={0}
-          r={active ? 32 : hovered && enabled ? 42 : 27}
+          r={outerRadius}
           fill={depthColor.atmosphereColor}
-          opacity={active ? 0.08 : hovered && enabled ? 0.12 : 0.018}
+          opacity={active ? 0.07 : hovered && enabled ? 0.095 : 0.012}
           style={{
-            transition: "r 0.45s ease-out, opacity 0.45s ease-out",
+            transition:
+              `r 420ms ${ATLAS_MOTION_EASE}, opacity 420ms ${ATLAS_MOTION_EASE}`,
           }}
         />
 
         <circle
           cx={0}
           cy={0}
-          r={active ? 19 : hovered && enabled ? 25 : 14}
+          r={innerRadius}
           fill={depthColor.semanticColor}
           opacity={
-            (active ? 0.3 : hovered && enabled ? 0.58 : 0.25) *
+            (active ? 0.28 : hovered && enabled ? 0.46 : 0.2) *
             depthColor.semanticStrength
           }
           filter={
@@ -117,14 +155,15 @@ export default function AtlasPlanet({
               : "url(#glow-sm)"
           }
           style={{
-            transition: "r 0.45s ease-out, opacity 0.45s ease-out",
+            transition:
+              `r 380ms ${ATLAS_MOTION_EASE}, opacity 380ms ${ATLAS_MOTION_EASE}`,
           }}
         />
 
         <circle
           cx={0}
           cy={0}
-          r={active ? 6.4 : hovered && enabled ? 5.8 : 4.2}
+          r={coreRadius}
           fill={depthColor.semanticColor}
           opacity={depthColor.coreOpacity}
           filter={
@@ -132,62 +171,83 @@ export default function AtlasPlanet({
               ? `url(#glow-${system.id})`
               : "url(#glow-sm)"
           }
-          style={{ transition: "r 0.3s ease-out" }}
-        />
-
-        <circle
-          cx={0}
-          cy={0}
-          r={hovered && enabled ? 20 : 0}
-          fill="none"
-          stroke={depthColor.stateColor}
-          strokeWidth="0.65"
-          strokeOpacity={hovered && enabled ? 0.62 : 0}
-          strokeDasharray="3 6"
           style={{
-            transition: "r 0.3s ease-out, stroke-opacity 0.3s ease-out",
+            transition: `r 220ms ${ATLAS_MOTION_EASE}`,
           }}
         />
 
         <circle
           cx={0}
           cy={0}
-          r={30}
+          r={hovered && enabled ? 18 : 0}
+          fill="none"
+          stroke={depthColor.stateColor}
+          strokeWidth="0.58"
+          strokeOpacity={hovered && enabled ? 0.5 : 0}
+          strokeDasharray="3 7"
+          style={{
+            transition:
+              `r 300ms ${ATLAS_MOTION_EASE}, stroke-opacity 300ms ${ATLAS_MOTION_EASE}`,
+          }}
+        />
+
+        <circle
+          cx={0}
+          cy={0}
+          r={PLANET_VISUAL.interactionTarget}
           fill="transparent"
-          onClick={(event) => {
+          tabIndex={enabled ? 0 : -1}
+          role="button"
+          aria-label={`Open ${planet.label}`}
+          onClick={event => {
             event.stopPropagation();
             if (enabled) onSelect(system, planet);
           }}
-          onMouseEnter={(event) => {
-            event.stopPropagation();
-            setHovered(true);
+          onKeyDown={event => {
+            if (!enabled) return;
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onSelect(system, planet);
+            }
           }}
-          onMouseLeave={(event) => {
+          onFocus={() => {
+            if (enabled) setHovered(true);
+          }}
+          onBlur={() => setHovered(false)}
+          onMouseEnter={event => {
+            event.stopPropagation();
+            if (enabled) setHovered(true);
+          }}
+          onMouseLeave={event => {
             event.stopPropagation();
             setHovered(false);
           }}
-          style={{ cursor: enabled ? "crosshair" : "default" }}
+          style={{
+            cursor: enabled ? "crosshair" : "default",
+            outline: "none",
+          }}
         />
 
         <text
           data-atlas-attention-label
           data-atlas-relation={system.id}
+          data-atlas-tier="planet"
           x={planet.orbitPlane * 1.5}
           y={labelY}
           textAnchor="middle"
-          fontSize="7.2"
+          fontSize="7.4"
           fontFamily="'DM Mono',monospace"
           fontWeight="500"
-          letterSpacing="1.45"
+          letterSpacing="1.3"
           fill={depthColor.labelColor}
           opacity={labelOpacity}
           paintOrder="stroke"
           stroke="#070811"
-          strokeWidth="1.8"
-          strokeOpacity="0.88"
+          strokeWidth="1.45"
+          strokeOpacity="0.76"
           style={{
             transition:
-              "opacity 180ms ease-out, filter 180ms ease-out, transform 180ms ease-out",
+              `opacity 220ms ${ATLAS_MOTION_EASE}, filter 220ms ${ATLAS_MOTION_EASE}, transform 220ms ${ATLAS_MOTION_EASE}`,
             pointerEvents: "none",
             willChange: "opacity, filter, transform",
           }}
@@ -203,12 +263,12 @@ export default function AtlasPlanet({
               r={STAR_ORBIT_R}
               fill="none"
               stroke={system.color}
-              strokeWidth="0.35"
-              strokeOpacity="0.08"
-              strokeDasharray="3 7"
+              strokeWidth="0.3"
+              strokeOpacity={SATELLITE_VISUAL.orbitOpacity}
+              strokeDasharray="3 8"
             />
 
-            {planet.stars.map((star) => {
+            {planet.stars.map(star => {
               const position = starLocalPos(star);
               const starColor = resolveStellarColor(
                 star.stellarType,
@@ -223,40 +283,44 @@ export default function AtlasPlanet({
                     x2={position.x}
                     y2={position.y}
                     stroke={system.color}
-                    strokeWidth="0.35"
-                    strokeOpacity="0.15"
+                    strokeWidth="0.3"
+                    strokeOpacity={SATELLITE_VISUAL.lineOpacity}
                     style={{ pointerEvents: "none" }}
                   />
 
                   <circle
                     cx={position.x}
                     cy={position.y}
-                    r={8}
+                    r={SATELLITE_VISUAL.atmosphereRadius}
                     fill={starColor}
-                    opacity="0.05"
+                    opacity="0.035"
                   />
 
                   <circle
                     cx={position.x}
                     cy={position.y}
-                    r={2.5}
+                    r={SATELLITE_VISUAL.coreRadius}
                     fill={starColor}
-                    opacity="0.62"
+                    opacity="0.58"
                     filter="url(#glow-sm)"
                   />
 
                   <text
+                    data-atlas-attention-label
+                    data-atlas-relation={system.id}
+                    data-atlas-tier="satellite"
                     x={position.x}
                     y={position.y - 8}
                     textAnchor="middle"
-                    fontSize="4.8"
+                    fontSize="4.9"
                     fontFamily="'DM Mono',monospace"
-                    letterSpacing="1.1"
+                    letterSpacing="1"
                     fill={system.color}
-                    opacity="0.62"
+                    opacity={SATELLITE_VISUAL.labelOpacity}
                     paintOrder="stroke"
                     stroke="#070811"
-                    strokeWidth="1.2"
+                    strokeWidth="1"
+                    strokeOpacity="0.72"
                     style={{ pointerEvents: "none" }}
                   >
                     {star.label}

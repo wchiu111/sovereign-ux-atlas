@@ -1,12 +1,7 @@
 import { useEffect, type RefObject } from "react";
+import { CURSOR_ATTENTION } from "../constellation/visualTokens";
 
 const LABEL_SELECTOR = "[data-atlas-attention-label]";
-
-const RESTING_OPACITY = 0.08;
-const MAX_POINTER_DISTANCE = 300;
-const SIGMA = 118;
-const MAX_LIFT = 3;
-const MAX_SCALE = 1.08;
 
 interface UseAtlasCursorAttentionOptions {
   rootRef: RefObject<SVGSVGElement | null>;
@@ -18,10 +13,14 @@ interface LabelSnapshot {
   centerX: number;
   centerY: number;
   relationId: string;
+  tier: "system" | "planet" | "satellite";
 }
 
 function gaussianFalloff(distance: number) {
-  return Math.exp(-(distance * distance) / (2 * SIGMA * SIGMA));
+  return Math.exp(
+    -(distance * distance) /
+      (2 * CURSOR_ATTENTION.sigma * CURSOR_ATTENTION.sigma),
+  );
 }
 
 function clamp01(value: number) {
@@ -34,6 +33,22 @@ function resetLabel(element: SVGTextElement) {
   element.style.transform = "";
   element.style.transformBox = "";
   element.style.transformOrigin = "";
+}
+
+function tierRestingOpacity(
+  tier: LabelSnapshot["tier"],
+) {
+  if (tier === "system") return 0.38;
+  if (tier === "planet") return 0.16;
+  return CURSOR_ATTENTION.restingOpacity;
+}
+
+function tierProximityCeiling(
+  tier: LabelSnapshot["tier"],
+) {
+  if (tier === "system") return 0.82;
+  if (tier === "planet") return 0.72;
+  return 0.52;
 }
 
 export default function useAtlasCursorAttention({
@@ -57,14 +72,21 @@ export default function useAtlasCursorAttention({
     const collectLabels = () => {
       snapshots = Array.from(
         root.querySelectorAll<SVGTextElement>(LABEL_SELECTOR),
-      ).map((element) => {
+      ).map(element => {
         const rect = element.getBoundingClientRect();
+        const rawTier = element.dataset.atlasTier;
+
+        const tier: LabelSnapshot["tier"] =
+          rawTier === "system" || rawTier === "satellite"
+            ? rawTier
+            : "planet";
 
         return {
           element,
           centerX: rect.left + rect.width / 2,
           centerY: rect.top + rect.height / 2,
           relationId: element.dataset.atlasRelation ?? "",
+          tier,
         };
       });
     };
@@ -89,56 +111,83 @@ export default function useAtlasCursorAttention({
           .filter(Boolean),
       );
 
-      snapshots.forEach(({ element, centerX, centerY, relationId }) => {
-        const dx = pointer.x - centerX;
-        const dy = pointer.y - centerY;
-        const distance = Math.hypot(dx, dy);
-        const proximity = clamp01(gaussianFalloff(distance));
-        const insideField = distance <= MAX_POINTER_DISTANCE;
-        const hovered = element.matches(":hover");
-        const related =
-          !hovered &&
-          relationId.length > 0 &&
-          hoveredRelationIds.has(relationId);
+      snapshots.forEach(
+        ({ element, centerX, centerY, relationId, tier }) => {
+          const dx = pointer.x - centerX;
+          const dy = pointer.y - centerY;
+          const distance = Math.hypot(dx, dy);
+          const proximity = clamp01(gaussianFalloff(distance));
+          const insideField =
+            distance <= CURSOR_ATTENTION.maxPointerDistance;
+          const hovered = element.matches(":hover");
+          const related =
+            !hovered &&
+            relationId.length > 0 &&
+            hoveredRelationIds.has(relationId);
 
-        let opacity = insideField
-          ? RESTING_OPACITY + proximity * (1 - RESTING_OPACITY)
-          : RESTING_OPACITY;
+          const restingOpacity = tierRestingOpacity(tier);
+          const ceiling = tierProximityCeiling(tier);
 
-        if (related) opacity = Math.max(opacity, 0.42);
-        if (hovered) opacity = 1;
+          let opacity = insideField
+            ? restingOpacity + proximity * (ceiling - restingOpacity)
+            : restingOpacity;
 
-        const safeDistance = Math.max(distance, 1);
-        const liftStrength = hovered
-          ? 1
-          : insideField
-            ? proximity
-            : 0;
-        const liftX = (dx / safeDistance) * MAX_LIFT * liftStrength;
-        const liftY = (dy / safeDistance) * MAX_LIFT * liftStrength;
-        const scale = hovered
-          ? MAX_SCALE
-          : 0.96 + proximity * 0.06;
+          if (related) {
+            opacity = Math.max(
+              opacity,
+              tier === "system"
+                ? 0.62
+                : CURSOR_ATTENTION.relatedOpacity,
+            );
+          }
 
-        const blur = hovered
-          ? 0
-          : Math.max(0, 0.6 - proximity * 0.9);
-        const glow = hovered
-          ? "drop-shadow(0 0 5px currentColor)"
-          : related
-            ? "drop-shadow(0 0 2px currentColor)"
-            : "none";
+          if (hovered) opacity = 1;
 
-        element.style.opacity = opacity.toFixed(3);
-        element.style.filter =
-          blur > 0.01
-            ? `blur(${blur.toFixed(2)}px) ${glow}`
-            : glow;
-        element.style.transformBox = "fill-box";
-        element.style.transformOrigin = "center";
-        element.style.transform =
-          `translate(${liftX.toFixed(2)}px, ${liftY.toFixed(2)}px) scale(${scale.toFixed(3)})`;
-      });
+          const safeDistance = Math.max(distance, 1);
+          const liftStrength = hovered
+            ? 1
+            : insideField
+              ? proximity
+              : 0;
+
+          const liftX =
+            (dx / safeDistance) *
+            CURSOR_ATTENTION.maxLift *
+            liftStrength;
+
+          const liftY =
+            (dy / safeDistance) *
+            CURSOR_ATTENTION.maxLift *
+            liftStrength;
+
+          const scale = hovered
+            ? CURSOR_ATTENTION.maxScale
+            : 0.98 + proximity * 0.035;
+
+          const blur =
+            tier === "system"
+              ? 0
+              : hovered
+                ? 0
+                : Math.max(0, 0.34 - proximity * 0.46);
+
+          const glow = hovered
+            ? "drop-shadow(0 0 4px currentColor)"
+            : related
+              ? "drop-shadow(0 0 1.5px currentColor)"
+              : "none";
+
+          element.style.opacity = opacity.toFixed(3);
+          element.style.filter =
+            blur > 0.01
+              ? `blur(${blur.toFixed(2)}px) ${glow}`
+              : glow;
+          element.style.transformBox = "fill-box";
+          element.style.transformOrigin = "center";
+          element.style.transform =
+            `translate(${liftX.toFixed(2)}px, ${liftY.toFixed(2)}px) scale(${scale.toFixed(3)})`;
+        },
+      );
     };
 
     const handlePointerMove = (event: PointerEvent) => {
@@ -157,10 +206,14 @@ export default function useAtlasCursorAttention({
       pointer.dirty = true;
     };
 
-    root.addEventListener("pointermove", handlePointerMove, { passive: true });
+    root.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
     root.addEventListener("pointerleave", handlePointerLeave);
     window.addEventListener("resize", handleLayoutChange);
-    window.addEventListener("scroll", handleLayoutChange, { passive: true });
+    window.addEventListener("scroll", handleLayoutChange, {
+      passive: true,
+    });
 
     frameId = window.requestAnimationFrame(render);
 
