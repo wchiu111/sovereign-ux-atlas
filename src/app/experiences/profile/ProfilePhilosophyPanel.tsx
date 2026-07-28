@@ -58,9 +58,9 @@ export default function ProfilePhilosophyPanel() {
         display: "grid",
         gridTemplateRows: "auto auto auto auto",
         alignContent: "start",
-        gap: 12,
+        gap: 20,
         minHeight: "100%",
-        padding: "18px 18px 30px",
+        padding: "28px 30px 40px",
         boxSizing: "border-box",
       }}
     >
@@ -266,7 +266,7 @@ function BeliefWave() {
     <div
       style={{
         position: "relative",
-        minHeight: 190,
+        minHeight: 218,
         overflow: "hidden",
       }}
     >
@@ -406,8 +406,8 @@ function BeliefWave() {
             style={{
               textAlign: "center",
               fontFamily: "'EB Garamond', serif",
-              fontSize: 13,
-              lineHeight: 1.28,
+              fontSize: 15,
+              lineHeight: 1.34,
               color: "rgba(244,237,255,0.82)",
             }}
           >
@@ -561,10 +561,9 @@ function PanelBlock({
     <section
       style={{
         minHeight: 0,
-        padding: 16,
-        border: "1px solid rgba(168,121,255,0.22)",
-        background:
-          "linear-gradient(145deg, rgba(168,121,255,0.038), rgba(168,121,255,0.012))",
+        padding: "18px 4px 22px",
+        borderTop: "1px solid rgba(168,121,255,0.18)",
+        background: "transparent",
         overflow: "visible",
       }}
     >
@@ -719,7 +718,7 @@ const sectionStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: 10,
-  margin: "0 0 18px",
+  margin: "0 0 24px",
   fontFamily: "'DM Mono', monospace",
   fontSize: 10,
   lineHeight: 1.3,

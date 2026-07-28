@@ -74,7 +74,9 @@ export default function ProfileContactPanel({
         position: "relative",
         display: "grid",
         alignContent: "start",
-        padding: "22px 24px 28px",
+        width: "min(100%, 720px)",
+        margin: "0 auto",
+        padding: "34px 34px 42px",
         minHeight: "100%",
         boxSizing: "border-box",
         overflow: "hidden",
@@ -122,7 +124,7 @@ export default function ProfileContactPanel({
           display: "flex",
           alignItems: "center",
           gap: 8,
-          marginBottom: 12,
+          marginBottom: 18,
           fontFamily: "'DM Mono', monospace",
           fontSize: 11,
           letterSpacing: "0.18em",
@@ -141,6 +143,19 @@ export default function ProfileContactPanel({
         />
         {sending ? "Transmitting" : "Channel open"}
       </div>
+
+      <p
+        style={{
+          margin: "0 0 8px",
+          maxWidth: 560,
+          fontFamily: "'EB Garamond', serif",
+          fontSize: 18,
+          lineHeight: 1.5,
+          color: "rgba(245,235,210,0.68)",
+        }}
+      >
+        Share what you’re building, questioning, or trying to make clearer.
+      </p>
 
       <Field label="Name" name="name" disabled={sending} />
       <Field label="Email" name="email" type="email" disabled={sending} />
@@ -187,6 +202,19 @@ export default function ProfileContactPanel({
       >
         {sending ? "Transmitting…" : "Transmit message"}
       </button>
+
+      <div
+        style={{
+          marginTop: 14,
+          textAlign: "center",
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 9,
+          letterSpacing: "0.1em",
+          color: "rgba(245,235,210,0.34)",
+        }}
+      >
+        Replies are sent personally to the email provided.
+      </div>
     </form>
   );
 }

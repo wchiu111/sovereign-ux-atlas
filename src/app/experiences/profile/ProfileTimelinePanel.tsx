@@ -72,6 +72,7 @@ export default function ProfileTimelinePanel() {
     moved: false,
   });
   const [dragging, setDragging] = useState(false);
+  const [hasDragged, setHasDragged] = useState(false);
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
@@ -95,7 +96,10 @@ export default function ProfileTimelinePanel() {
     if (!scroller || dragRef.current.pointerId !== event.pointerId) return;
 
     const delta = event.clientX - dragRef.current.startX;
-    if (Math.abs(delta) > 3) dragRef.current.moved = true;
+    if (Math.abs(delta) > 3) {
+      dragRef.current.moved = true;
+      setHasDragged(true);
+    }
 
     scroller.scrollLeft = dragRef.current.startScrollLeft - delta;
   };
@@ -120,6 +124,26 @@ export default function ProfileTimelinePanel() {
   };
 
   return (
+    <div style={{ position: "relative", minHeight: "100%" }}>
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          right: 28,
+          top: 18,
+          zIndex: 3,
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 9,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: "rgba(232,200,109,0.48)",
+          opacity: hasDragged ? 0 : 1,
+          transition: "opacity 300ms ease",
+          pointerEvents: "none",
+        }}
+      >
+        Drag to travel
+      </div>
     <div
       ref={scrollerRef}
       role="region"
@@ -149,7 +173,7 @@ export default function ProfileTimelinePanel() {
           gridAutoFlow: "column",
           gridAutoColumns: "minmax(340px, 1fr)",
           minWidth: "max-content",
-          padding: "26px 22px 34px",
+          padding: "46px 28px 42px",
         }}
       >
         {timeline.map((era, index) => (
@@ -160,6 +184,8 @@ export default function ProfileTimelinePanel() {
               minWidth: 340,
               scrollSnapAlign: "start",
               padding: "26px 20px 22px",
+              opacity: index === 2 ? 1 : 0.72,
+              transition: "opacity 280ms ease",
               borderLeft:
                 index === 0
                   ? "none"
@@ -188,6 +214,7 @@ export default function ProfileTimelinePanel() {
           </article>
         ))}
       </div>
+    </div>
     </div>
   );
 }
@@ -418,7 +445,7 @@ const yearStyle: CSSProperties = {
 const titleStyle: CSSProperties = {
   margin: "10px 0 0",
   fontFamily: "'EB Garamond', serif",
-  fontSize: 25,
+  fontSize: 27,
   lineHeight: 1.12,
   fontWeight: 500,
   color: "rgba(247,239,218,0.94)",

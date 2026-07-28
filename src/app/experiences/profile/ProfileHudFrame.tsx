@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { ProfileHotspotDefinition } from "./profileHotspots";
 import {
   getNearestHudEdgePoint,
@@ -37,10 +37,6 @@ export default function ProfileHudFrame({
     x: attachment.x - rect.left,
     y: attachment.y - rect.top,
   };
-  const timeline = hotspot.id === "timeline";
-  const contact = hotspot.id === "contact";
-  const about = hotspot.id === "about";
-  const philosophy = hotspot.id === "philosophy";
 
   return (
     <section
@@ -50,36 +46,23 @@ export default function ProfileHudFrame({
         top: rect.top,
         width: rect.width,
         height: rect.height,
-        transform: `translateY(${closing ? "20px" : "0"}) scale(${
-          closing ? 0.985 : 1
+        transform: `translateY(${closing ? "18px" : "0"}) scale(${
+          closing ? 0.988 : 1
         })`,
         opacity: closing ? 0 : 1,
         color: "#F4EBD0",
-        background: timeline
-          ? "linear-gradient(180deg, rgba(18,10,4,0.84), rgba(7,5,4,0.91))"
-          : contact
-            ? "linear-gradient(180deg, rgba(5,15,14,0.82), rgba(3,8,9,0.90))"
-            : about
-              ? "linear-gradient(180deg, rgba(5,11,22,0.84), rgba(3,7,14,0.92))"
-              : philosophy
-                ? "linear-gradient(180deg, rgba(14,7,24,0.84), rgba(7,4,13,0.92))"
-                : "linear-gradient(180deg, rgba(13,12,10,0.82), rgba(6,7,9,0.88))",
-        boxShadow: `0 24px 72px rgba(0,0,0,0.36), 0 0 52px ${hotspot.color}16, inset 0 0 32px ${hotspot.color}08`,
+        background: getSurface(hotspot.id),
+        border: `1px solid ${hotspot.color}42`,
+        boxShadow:
+          "0 28px 90px rgba(0,0,0,0.42), inset 0 1px rgba(255,255,255,0.025)",
         overflow: "hidden",
         clipPath:
-          "polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px)",
+          "polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px)",
         transition:
-          "opacity 300ms ease, transform 420ms cubic-bezier(0.22,1,0.36,1)",
-        transformOrigin: timeline ? "22% 100%" : philosophy ? "100% 52%" : about ? "50% 65%" : "0 58%",
+          "opacity 300ms ease, transform 460ms cubic-bezier(0.16,1,0.3,1)",
         animation: closing
           ? "none"
-          : timeline
-            ? "profileArchiveHudUnfold 820ms cubic-bezier(0.22,1,0.36,1) 280ms both"
-            : contact
-              ? "profileContactHudPowerOn 760ms cubic-bezier(0.22,1,0.36,1) 300ms both"
-              : about
-                ? "profileAboutHudAssemble 800ms cubic-bezier(0.22,1,0.36,1) 280ms both"
-                : "profilePhilosophyHudStack 840ms cubic-bezier(0.22,1,0.36,1) 280ms both",
+          : "profileHudShellIn 720ms cubic-bezier(0.16,1,0.3,1) 240ms both",
       }}
     >
       <FrameGeometry
@@ -100,10 +83,10 @@ export default function ProfileHudFrame({
           opacity: closing ? 0 : 1,
           transform: `translateY(${closing ? 8 : 0}px)`,
           transition:
-            "opacity 220ms ease, transform 320ms cubic-bezier(0.22,1,0.36,1)",
+            "opacity 240ms ease, transform 340ms cubic-bezier(0.16,1,0.3,1)",
           animation: closing
             ? "none"
-            : "profileHudContentIn 540ms ease-out 900ms both",
+            : "profileHudContentIn 520ms ease-out 660ms both",
         }}
       >
         <PanelHeader hotspot={hotspot} onClose={onClose} />
@@ -115,7 +98,7 @@ export default function ProfileHudFrame({
             overflowX: "hidden",
             overscrollBehavior: "contain",
             scrollbarWidth: "thin",
-            scrollbarColor: `${hotspot.color}66 transparent`,
+            scrollbarColor: `${hotspot.color}52 transparent`,
           }}
         >
           {children}
@@ -136,9 +119,6 @@ function FrameGeometry({
   attachment: { x: number; y: number };
   originInsideHud: boolean;
 }) {
-  const timeline = hotspot.id === "timeline";
-  const line = `${hotspot.color}A0`;
-
   return (
     <div
       aria-hidden="true"
@@ -151,15 +131,23 @@ function FrameGeometry({
         transition: "opacity 220ms ease",
       }}
     >
-      <span style={{ ...corner, left: 0, top: 0, borderLeft: `1px solid ${line}`, borderTop: `1px solid ${line}` }} />
-      <span style={{ ...corner, right: 0, top: 0, borderRight: `1px solid ${line}`, borderTop: `1px solid ${line}` }} />
-      <span style={{ ...corner, left: 0, bottom: 0, borderLeft: `1px solid ${line}`, borderBottom: `1px solid ${line}` }} />
-      <span style={{ ...corner, right: 0, bottom: 0, borderRight: `1px solid ${line}`, borderBottom: `1px solid ${line}` }} />
+      <span style={{ ...corner, left: 0, top: 0, borderLeft: `1px solid ${hotspot.color}B0`, borderTop: `1px solid ${hotspot.color}B0` }} />
+      <span style={{ ...corner, right: 0, top: 0, borderRight: `1px solid ${hotspot.color}B0`, borderTop: `1px solid ${hotspot.color}B0` }} />
+      <span style={{ ...corner, left: 0, bottom: 0, borderLeft: `1px solid ${hotspot.color}B0`, borderBottom: `1px solid ${hotspot.color}B0` }} />
+      <span style={{ ...corner, right: 0, bottom: 0, borderRight: `1px solid ${hotspot.color}B0`, borderBottom: `1px solid ${hotspot.color}B0` }} />
 
-      <span style={{ ...edgeHorizontal, top: 0, left: 14, background: `linear-gradient(90deg, ${line}, ${hotspot.color}30)` }} />
-      <span style={{ ...edgeHorizontal, bottom: 0, right: 14, background: `linear-gradient(270deg, ${line}, ${hotspot.color}30)` }} />
-      <span style={{ ...edgeVertical, left: 0, top: 14, background: `linear-gradient(180deg, ${line}, ${hotspot.color}28)` }} />
-      <span style={{ ...edgeVertical, right: 0, bottom: 14, background: `linear-gradient(0deg, ${line}, ${hotspot.color}28)` }} />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.08,
+          backgroundImage:
+            `linear-gradient(${hotspot.color}1A 1px, transparent 1px), linear-gradient(90deg, ${hotspot.color}12 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
+          maskImage:
+            "linear-gradient(180deg, rgba(0,0,0,0.76), rgba(0,0,0,0.08) 68%, transparent)",
+        }}
+      />
 
       {hotspot.id === "contact" && !originInsideHud && (
         <span
@@ -167,99 +155,17 @@ function FrameGeometry({
             position: "absolute",
             left: attachment.x,
             top: attachment.y,
-            width: 12,
-            height: 12,
+            width: 10,
+            height: 10,
             transform: "translate(-50%, -50%)",
             borderRadius: "50%",
             background: hotspot.color,
-            border: `2px solid rgba(4,7,9,0.92)`,
-            boxShadow: `0 0 18px ${hotspot.color}D8, 0 0 38px ${hotspot.color}68`,
-            animation: "profileProjectionTargetIn 360ms ease-out 480ms both",
+            border: "2px solid rgba(4,7,9,0.92)",
+            boxShadow: `0 0 16px ${hotspot.color}9C`,
           }}
         />
       )}
-
-      {hotspot.id === "contact" && originInsideHud && (
-        <ContactEdgeTrace
-          color={hotspot.color}
-          attachment={attachment}
-        />
-      )}
-
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.18,
-          backgroundImage:
-            `linear-gradient(${hotspot.color}20 1px, transparent 1px), linear-gradient(90deg, ${hotspot.color}16 1px, transparent 1px)`,
-          backgroundSize: "32px 32px",
-          maskImage:
-            "linear-gradient(180deg, rgba(0,0,0,0.86), rgba(0,0,0,0.24))",
-          animation: "profileHudGridIn 640ms ease-out 620ms both",
-        }}
-      />
-
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: -18,
-          height: 38,
-          opacity: timeline ? 0.24 : 0.42,
-          background: timeline
-            ? "linear-gradient(180deg, transparent, rgba(232,200,109,0.24), transparent)"
-            : `linear-gradient(180deg, transparent, ${hotspot.color}3E, transparent)`,
-          animation: timeline
-            ? "profileArchiveScan 8200ms linear 1200ms infinite"
-            : "profileHudScan 5200ms linear 1000ms infinite",
-        }}
-      />
     </div>
-  );
-}
-
-
-function ContactEdgeTrace({
-  color,
-  attachment,
-}: {
-  color: string;
-  attachment: { x: number; y: number };
-}) {
-  return (
-    <>
-      <span
-        style={{
-          position: "absolute",
-          left: 0,
-          top: attachment.y,
-          width: 82,
-          height: 1,
-          transform: "translateY(-50%)",
-          background: `linear-gradient(90deg, ${color}E8, ${color}58, transparent)`,
-          boxShadow: `0 0 10px ${color}88`,
-          animation: "profileProjectionTargetIn 360ms ease-out 280ms both",
-        }}
-      />
-
-      <span
-        style={{
-          position: "absolute",
-          left: 0,
-          top: attachment.y,
-          width: 10,
-          height: 10,
-          transform: "translate(-50%, -50%)",
-          borderRadius: "50%",
-          border: `1px solid ${color}C8`,
-          background: "rgba(3,8,9,0.94)",
-          boxShadow: `0 0 16px ${color}A8`,
-          animation: "profileProjectionTargetIn 360ms ease-out 320ms both",
-        }}
-      />
-    </>
   );
 }
 
@@ -271,88 +177,88 @@ function PanelHeader({
   onClose: () => void;
 }) {
   return (
-    <div
+    <header
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: 18,
-        padding: "17px 20px",
-        borderBottom: `1px solid ${hotspot.color}2E`,
-        background: `linear-gradient(90deg, ${hotspot.color}12, transparent 44%)`,
+        gap: 24,
+        minHeight: 92,
+        padding: "20px 24px 18px",
+        borderBottom: `1px solid ${hotspot.color}24`,
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.018), transparent)",
       }}
     >
       <div>
         <div
           style={{
             fontFamily: "'DM Mono', monospace",
-            fontSize: 11,
+            fontSize: 9,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: `${hotspot.color}D0`,
+            color: `${hotspot.color}C8`,
           }}
         >
           {hotspot.eyebrow}
         </div>
-        <div
+
+        <h2
           style={{
-            marginTop: 6,
-            fontFamily: "'DM Mono', monospace",
-            fontSize: 22,
-            lineHeight: 1.2,
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
+            margin: "7px 0 0",
+            fontFamily: "'EB Garamond', serif",
+            fontSize: 31,
+            lineHeight: 1,
+            fontWeight: 500,
+            letterSpacing: "0.01em",
             color: "rgba(255,248,229,0.96)",
           }}
         >
-          {hotspot.id === "about" ? "About" : hotspot.label}
-        </div>
+          {hotspot.id === "about" ? "About Wilson" : hotspot.label}
+        </h2>
       </div>
 
       <button
         type="button"
         onClick={onClose}
         aria-label={`Close ${hotspot.label}`}
+        title="Close · Esc"
         style={{
-          width: 42,
-          height: 42,
-          borderRadius: 7,
-          border: `1px solid ${hotspot.color}52`,
-          background: `${hotspot.color}08`,
-          color: "rgba(245,235,210,0.84)",
+          width: 44,
+          height: 44,
+          flexShrink: 0,
+          borderRadius: 8,
+          border: `1px solid ${hotspot.color}36`,
+          background: "rgba(0,0,0,0.12)",
+          color: "rgba(245,235,210,0.76)",
           fontFamily: "'DM Mono', monospace",
-          fontSize: 20,
+          fontSize: 18,
           cursor: "pointer",
+          transition:
+            "border-color 180ms ease, color 180ms ease, background 180ms ease",
         }}
       >
         ×
       </button>
-    </div>
+    </header>
   );
 }
 
-const corner: React.CSSProperties = {
-  position: "absolute",
-  width: 30,
-  height: 30,
-  animation:
-    "profileHudCornerIn 360ms cubic-bezier(0.22,1,0.36,1) 410ms both",
-};
+function getSurface(id: ProfileHotspotDefinition["id"]) {
+  if (id === "timeline") {
+    return "linear-gradient(180deg, rgba(15,10,5,0.94), rgba(7,6,5,0.965))";
+  }
+  if (id === "contact") {
+    return "linear-gradient(180deg, rgba(4,13,12,0.94), rgba(3,8,9,0.97))";
+  }
+  if (id === "about") {
+    return "linear-gradient(180deg, rgba(5,10,19,0.95), rgba(3,7,13,0.97))";
+  }
+  return "linear-gradient(180deg, rgba(12,7,20,0.95), rgba(6,4,12,0.97))";
+}
 
-const edgeHorizontal: React.CSSProperties = {
+const corner: CSSProperties = {
   position: "absolute",
-  width: "calc(100% - 28px)",
-  height: 1,
-  transformOrigin: "left center",
-  animation:
-    "profileHudEdgeXIn 520ms cubic-bezier(0.22,1,0.36,1) 520ms both",
-};
-
-const edgeVertical: React.CSSProperties = {
-  position: "absolute",
-  width: 1,
-  height: "calc(100% - 28px)",
-  transformOrigin: "center top",
-  animation:
-    "profileHudEdgeYIn 520ms cubic-bezier(0.22,1,0.36,1) 560ms both",
+  width: 22,
+  height: 22,
 };
