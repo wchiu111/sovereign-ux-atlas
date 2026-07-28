@@ -96,7 +96,12 @@ export type AtlasEvidenceAnnotationCategory =
   | "ai-delegation"
   | "human-authority"
   | "visible-reasoning"
-  | "authority-problem";
+  | "authority-problem"
+  | "capability-focus"
+  | "governance"
+  | "constraints"
+  | "behavioral-integrity"
+  | "regenerative-capacity";
 
 export type AtlasDecisionRightHolder = "Human" | "AI" | "Shared";
 
@@ -110,6 +115,8 @@ export interface AtlasEvidenceAnnotation {
   observation: string;
   meaning: string;
   rightHolder: AtlasDecisionRightHolder;
+  footerLabel?: string;
+  footerValue?: string;
   cardSide?: "left" | "right";
 }
 
@@ -121,6 +128,8 @@ export interface AtlasEvidenceCanvas {
   portalImage?: string;
   boardLabel: string;
   boardSubtitle: string;
+  transitionFrom?: string;
+  transitionTo?: string;
   annotations: AtlasEvidenceAnnotation[];
 }
 

@@ -1,4 +1,6 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import traditionalAi from "../../../imports/frameworks/behavioral-architecture/01-governance/traditional-ai.jpg";
+import behavioralArchitecture from "../../../imports/frameworks/behavioral-architecture/01-governance/behavioral-architecture.jpg";
 
 export default defineAtlasEntry({
   id: "behavioral-architecture",
@@ -41,8 +43,8 @@ export default defineAtlasEntry({
   presentation: {
     mode: "map-led",
     sequenceLabel: "BEHAVIORAL LOOP",
-    railLabel: "MAPS & TOOLS",
-    artifactLabel: "TOOL",
+    railLabel: "EXPLORE THE CANVAS",
+    artifactLabel: "",
     emptyRailMessage:
       "Behavior maps and evaluation tools will appear here as the framework develops.",
   },
@@ -80,7 +82,7 @@ export default defineAtlasEntry({
       label: "BEHAVIORAL INTEGRITY",
       angle: -93,
       x: -0.05,
-      y: -0.90,
+      y: -0.97,
       scale: 1.12,
       stellarType: "judgment",
       intensity: "bright",
@@ -159,6 +161,191 @@ export default defineAtlasEntry({
         "Governance defines who may establish the system's purpose, change its operating rules, evaluate its behavior, and intervene when it begins to drift. It turns responsibility into an explicit structure instead of leaving it distributed across product decisions, model settings, and informal team assumptions.\n\nThis is related to Authority Gradient, but it asks a different question. Authority Gradient locates where meaningful human authority should remain. Governance determines how that authority is exercised: who can redirect the system, which changes require review, what conditions trigger escalation, and where accountability ultimately sits.\n\nWithout governance, system behavior can still change. It simply changes through updates, optimization pressure, accumulated exceptions, and automated decisions that no one clearly owns.",
       insight:
         "If no one can clearly explain who may change or stop the system, its behavior is already being governed by something else.",
+      evidence: [
+        {
+          id: "traditional-ai",
+          image: traditionalAi,
+          alt:
+            "Traditional AI coding assistant that leads with changed files, line counts, a code diff, and approve or reject controls.",
+          imageFit: "contain",
+          number: "01",
+          title: "Traditional AI",
+          type: "Interactive Example",
+          description:
+            "The interface exposes the generated artifact first, leaving the person to infer whether the behavior that produced it was trustworthy.",
+          caption:
+            "Capability is visible. Governance, operating boundaries, validation, and recovery remain implicit.",
+          canvas: {
+            id: "behavioral-architecture-comparison",
+            eyebrow: "INTERACTIVE COMPARISON",
+            title: "Where trust comes from",
+            description:
+              "The code is unchanged. What changes is the trust architecture surrounding it.",
+            portalImage: behavioralArchitecture,
+            boardLabel: "TRADITIONAL AI",
+            boardSubtitle: "Trust centers on the artifact",
+            transitionFrom: "ARTIFACT-BASED TRUST",
+            transitionTo: "SYSTEM-BASED TRUST",
+            annotations: [
+              {
+                id: "artifact-leads",
+                number: "01",
+                x: 54,
+                y: 15,
+                category: "capability-focus",
+                title: "The artifact leads",
+                observation:
+                  "The interaction begins with what the AI generated and how much code changed.",
+                meaning:
+                  "The output becomes the primary evidence offered to the person evaluating the AI.",
+                rightHolder: "AI",
+                footerLabel: "TRUST BASIS",
+                footerValue: "OUTPUT",
+                cardSide: "right",
+              },
+              {
+                id: "capability-becomes-evidence",
+                number: "02",
+                x: 52,
+                y: 30,
+                category: "capability-focus",
+                title: "Capability becomes evidence",
+                observation:
+                  "File counts, changed lines, packages, and estimated time saved describe the scale of the work.",
+                meaning:
+                  "These signals show activity, but they do not establish whether the AI acted within legitimate boundaries.",
+                rightHolder: "AI",
+                footerLabel: "VISIBLE SIGNAL",
+                footerValue: "CAPABILITY",
+                cardSide: "right",
+              },
+              {
+                id: "trust-remains-implicit",
+                number: "03",
+                x: 60,
+                y: 68,
+                category: "authority-problem",
+                title: "Trust remains implicit",
+                observation:
+                  "The person can inspect the diff, approve it, or reject it, but must decide for themselves whether the process was safe.",
+                meaning:
+                  "The interface exposes implementation while leaving governance, validation, and recovery outside the decision.",
+                rightHolder: "Human",
+                footerLabel: "TRUST WORK",
+                footerValue: "INFERRED BY HUMAN",
+                cardSide: "right",
+              },
+            ],
+          },
+        },
+        {
+          id: "behavioral-architecture",
+          image: behavioralArchitecture,
+          alt:
+            "AI coding assistant that explains governance, constraints, behavioral integrity, and regenerative capacity before showing implementation details.",
+          imageFit: "contain",
+          number: "02",
+          title: "Behavioral Architecture",
+          type: "Interactive Example",
+          description:
+            "The interface makes the behavioral system surrounding the AI visible before asking the person to trust its output.",
+          caption:
+            "Trust shifts from the artifact to the governed, bounded, observable, and recoverable process that produced it.",
+          canvas: {
+            id: "behavioral-architecture-comparison",
+            eyebrow: "INTERACTIVE COMPARISON",
+            title: "Where trust comes from",
+            description:
+              "The code is unchanged. What changes is the trust architecture surrounding it.",
+            boardLabel: "BEHAVIORAL ARCHITECTURE",
+            boardSubtitle: "Trust centers on the system",
+            transitionFrom: "ARTIFACT-BASED TRUST",
+            transitionTo: "SYSTEM-BASED TRUST",
+            annotations: [
+              {
+                id: "governance-visible",
+                number: "01",
+                x: 58,
+                y: 31,
+                category: "governance",
+                title: "Governance establishes authority",
+                observation:
+                  "The interface identifies the project owner and makes required approval explicit.",
+                meaning:
+                  "The AI operates within delegated authority rather than appearing to act independently.",
+                rightHolder: "Human",
+                footerLabel: "BEHAVIORAL LAYER",
+                footerValue: "GOVERNANCE",
+                cardSide: "left",
+              },
+              {
+                id: "constraints-visible",
+                number: "02",
+                x: 58,
+                y: 36,
+                category: "constraints",
+                title: "Constraints define the envelope",
+                observation:
+                  "The system states which module may change, how many files are targeted, and which rules remain enforced.",
+                meaning:
+                  "The person can understand the operating boundaries before inspecting the implementation.",
+                rightHolder: "Shared",
+                footerLabel: "BEHAVIORAL LAYER",
+                footerValue: "CONSTRAINTS",
+                cardSide: "left",
+              },
+              {
+                id: "integrity-visible",
+                number: "03",
+                x: 58,
+                y: 41,
+                category: "behavioral-integrity",
+                title: "Behavior becomes observable",
+                observation:
+                  "Tests, policy consistency, and affected scope show whether the AI remained within its stated boundaries.",
+                meaning:
+                  "Trust is supported by evidence of conduct, not merely confidence in the generated artifact.",
+                rightHolder: "Shared",
+                footerLabel: "BEHAVIORAL LAYER",
+                footerValue: "INTEGRITY",
+                cardSide: "left",
+              },
+              {
+                id: "recovery-visible",
+                number: "04",
+                x: 58,
+                y: 46,
+                category: "regenerative-capacity",
+                title: "Recovery is prepared",
+                observation:
+                  "A rollback snapshot is created before the proposed change is applied.",
+                meaning:
+                  "The person is not asked to trust perfection. They can trust that failure has a governed recovery path.",
+                rightHolder: "Shared",
+                footerLabel: "BEHAVIORAL LAYER",
+                footerValue: "REGENERATIVE CAPACITY",
+                cardSide: "left",
+              },
+              {
+                id: "artifact-becomes-evidence",
+                number: "05",
+                x: 61,
+                y: 72,
+                category: "visible-reasoning",
+                title: "The artifact becomes supporting evidence",
+                observation:
+                  "Files, lines, packages, and the complete diff remain available for detailed review.",
+                meaning:
+                  "Implementation evidence still matters, but it no longer carries the entire burden of trust.",
+                rightHolder: "Human",
+                footerLabel: "TRUST BASIS",
+                footerValue: "SYSTEM + OUTPUT",
+                cardSide: "left",
+              },
+            ],
+          },
+        },
+      ],
     },
     {
       id: "constraints",

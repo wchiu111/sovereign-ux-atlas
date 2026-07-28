@@ -35,6 +35,17 @@ const CATEGORY_STYLE: Record<
   "human-authority": { label: "HUMAN AUTHORITY", color: "#76C79A" },
   "visible-reasoning": { label: "VISIBLE REASONING", color: "#E1C35C" },
   "authority-problem": { label: "AUTHORITY PROBLEM", color: "#D47B68" },
+  "capability-focus": { label: "CAPABILITY FOCUS", color: "#D47B68" },
+  governance: { label: "GOVERNANCE", color: "#A78BDB" },
+  constraints: { label: "CONSTRAINTS", color: "#76C79A" },
+  "behavioral-integrity": {
+    label: "BEHAVIORAL INTEGRITY",
+    color: "#7CB4D5",
+  },
+  "regenerative-capacity": {
+    label: "REGENERATIVE CAPACITY",
+    color: "#D99A6C",
+  },
 };
 
 interface ActiveAnnotation {
@@ -148,10 +159,10 @@ function AnnotationCard({
         }}
       >
         <span style={{ color: "rgba(200,180,130,0.48)" }}>
-          DECISION RIGHT
+          {annotation.footerLabel ?? "DECISION RIGHT"}
         </span>
         <span style={{ color: style.color }}>
-          {annotation.rightHolder.toUpperCase()}
+          {(annotation.footerValue ?? annotation.rightHolder).toUpperCase()}
         </span>
       </div>
     </div>
@@ -857,7 +868,7 @@ export default function FrameworkEvidenceCanvas({
               pointerEvents: "none",
             }}
           >
-            <span>RAW OPTIONS</span>
+            <span>{canvasMeta.transitionFrom ?? "RAW OPTIONS"}</span>
             <span
               style={{
                 flex: 1,
@@ -867,7 +878,9 @@ export default function FrameworkEvidenceCanvas({
               }}
             />
             <span style={{ fontSize: 24 }}>→</span>
-            <span>SYNTHESIZED RECOMMENDATION</span>
+            <span>
+              {canvasMeta.transitionTo ?? "SYNTHESIZED RECOMMENDATION"}
+            </span>
           </div>
 
           {canvasItems.map((item, index) => (
