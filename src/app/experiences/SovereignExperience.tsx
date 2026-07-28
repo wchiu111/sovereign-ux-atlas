@@ -82,9 +82,7 @@ export default function SovereignExperience() {
           }}
         >
           <ProfileExperience
-            onExit={returnToAtlas}
-            onEnterAtlas={returnToAtlas}
-            onContact={() => undefined}
+            onReturnToAtlas={returnToAtlas}
           />
         </div>
       )}

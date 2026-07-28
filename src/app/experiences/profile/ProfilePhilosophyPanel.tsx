@@ -33,6 +33,15 @@ const influences = [
   "Minimalism",
 ];
 
+const beliefNodes = [
+  { x: 7.3, y: 25.3 },
+  { x: 24.0, y: 38.9 },
+  { x: 41.5, y: 23.2 },
+  { x: 59.0, y: 40.0 },
+  { x: 76.5, y: 26.3 },
+  { x: 93.1, y: 37.9 },
+];
+
 const explorationNodes = [
   { label: "Human–AI Collaboration", x: 160, y: 24, align: "center" as const },
   { label: "Design Integrity", x: 72, y: 58, align: "right" as const },
@@ -146,11 +155,7 @@ export default function ProfilePhilosophyPanel() {
             }}
           >
             {influences.map((influence, index) => (
-              <InfluenceChip
-                key={influence}
-                label={influence}
-                index={index}
-              />
+              <InfluenceChip key={influence} label={influence} index={index} />
             ))}
           </div>
         </PanelBlock>
@@ -202,7 +207,6 @@ export default function ProfilePhilosophyPanel() {
               support human judgment, strengthen collaboration, and prepare us
               for the future of AI.
             </p>
-
           </div>
         </div>
       </PanelBlock>
@@ -258,15 +262,6 @@ export default function ProfilePhilosophyPanel() {
 }
 
 function BeliefWave() {
-  const nodes = [
-    { x: 76, y: 48 },
-    { x: 250, y: 74 },
-    { x: 432, y: 44 },
-    { x: 614, y: 76 },
-    { x: 796, y: 50 },
-    { x: 968, y: 72 },
-  ];
-
   return (
     <div
       style={{
@@ -282,20 +277,22 @@ function BeliefWave() {
         }
 
         @keyframes philosophyBeliefNodePulse {
-          0%, 100% { opacity: 0.46; transform: scale(0.84); }
-          50% { opacity: 1; transform: scale(1.22); }
+          0%, 100% { opacity: 0.46; transform: translate(-50%, -50%) scale(0.84); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.22); }
         }
       `}</style>
 
       <svg
         viewBox="0 0 1040 190"
         preserveAspectRatio="none"
+        aria-hidden="true"
         style={{
           position: "absolute",
           inset: 0,
           width: "100%",
           height: "100%",
           overflow: "visible",
+          pointerEvents: "none",
         }}
       >
         <defs>
@@ -312,6 +309,7 @@ function BeliefWave() {
           stroke="url(#beliefWaveStroke)"
           strokeWidth="1.4"
           strokeDasharray="8 9"
+          vectorEffect="non-scaling-stroke"
           style={{
             filter: "drop-shadow(0 0 6px rgba(168,121,255,0.48))",
             animation: "philosophyBeliefWaveFlow 8800ms ease-in-out infinite",
@@ -324,49 +322,71 @@ function BeliefWave() {
           stroke="rgba(168,121,255,0.22)"
           strokeWidth="0.9"
           strokeDasharray="2 7"
+          vectorEffect="non-scaling-stroke"
         />
 
-        {nodes.map((node, index) => (
-          <g key={index}>
-            {[18, 30].map((radius) => (
-              <circle
-                key={radius}
-                cx={node.x}
-                cy={node.y}
-                r={radius}
-                fill="none"
-                stroke={`rgba(168,121,255,${radius === 18 ? 0.28 : 0.14})`}
-              />
-            ))}
-
-            <line
-              x1={node.x}
-              y1={node.y + 8}
-              x2={node.x}
-              y2="120"
-              stroke="rgba(168,121,255,0.78)"
-              strokeWidth="1"
-              strokeDasharray="2 5"
-              strokeLinecap="round"
-            />
-
-            <circle
-              cx={node.x}
-              cy={node.y}
-              r="7"
-              fill={VIOLET}
-              style={{
-                filter:
-                  "drop-shadow(0 0 8px rgba(168,121,255,1)) drop-shadow(0 0 18px rgba(168,121,255,0.72))",
-                transformOrigin: `${node.x}px ${node.y}px`,
-                animation: `philosophyBeliefNodePulse ${
-                  3000 + index * 260
-                }ms ease-in-out ${index * -240}ms infinite`,
-              }}
-            />
-          </g>
+        {beliefNodes.map((node, index) => (
+          <line
+            key={index}
+            x1={`${node.x}%`}
+            y1={`${node.y + 4}%`}
+            x2={`${node.x}%`}
+            y2="63%"
+            stroke="rgba(168,121,255,0.78)"
+            strokeWidth="1"
+            strokeDasharray="2 5"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
         ))}
       </svg>
+
+      {beliefNodes.map((node, index) => (
+        <div
+          key={index}
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            left: `${node.x}%`,
+            top: `${node.y}%`,
+            width: 60,
+            height: 60,
+            aspectRatio: "1 / 1",
+            borderRadius: "50%",
+            border: "1px solid rgba(168,121,255,0.14)",
+            transform: "translate(-50%, -50%)",
+            boxSizing: "border-box",
+            pointerEvents: "none",
+          }}
+        >
+          <span
+            style={{
+              position: "absolute",
+              inset: 11,
+              aspectRatio: "1 / 1",
+              borderRadius: "50%",
+              border: "1px solid rgba(168,121,255,0.28)",
+            }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              width: 14,
+              height: 14,
+              aspectRatio: "1 / 1",
+              borderRadius: "50%",
+              background: VIOLET,
+              filter:
+                "drop-shadow(0 0 8px rgba(168,121,255,1)) drop-shadow(0 0 18px rgba(168,121,255,0.72))",
+              animation: `philosophyBeliefNodePulse ${
+                3000 + index * 260
+              }ms ease-in-out ${index * -240}ms infinite`,
+            }}
+          />
+        </div>
+      ))}
 
       <div
         style={{
@@ -401,12 +421,7 @@ function BeliefWave() {
 
 function ExplorationField() {
   return (
-    <div
-      style={{
-        position: "relative",
-        minHeight: 198,
-      }}
-    >
+    <div style={{ position: "relative", minHeight: 198 }}>
       <style>{`
         @keyframes explorationNodeFocus {
           0%, 100% { opacity: 0.42; transform: scale(0.84); }
@@ -454,7 +469,6 @@ function ExplorationField() {
               stroke="rgba(168,121,255,0.38)"
               strokeWidth="1"
             />
-
             <circle
               cx={item.x}
               cy={item.y}
@@ -469,7 +483,6 @@ function ExplorationField() {
                 }ms infinite`,
               }}
             />
-
             <circle
               cx={item.x}
               cy={item.y}
@@ -559,7 +572,6 @@ function PanelBlock({
         <span style={{ opacity: 0.78 }}>{index}</span>
         <span>{title}</span>
       </h3>
-
       <div style={{ marginTop: contentOffset }}>{children}</div>
     </section>
   );
@@ -591,6 +603,8 @@ function ModelStep({
             placeItems: "center",
             width: 40,
             height: 40,
+            aspectRatio: "1 / 1",
+            flexShrink: 0,
             borderRadius: "50%",
             border: "1px solid rgba(168,121,255,0.68)",
             background: "rgba(168,121,255,0.035)",
@@ -601,7 +615,6 @@ function ModelStep({
         >
           {glyph}
         </span>
-
         <span
           style={{
             fontFamily: "'DM Mono', monospace",
@@ -634,13 +647,7 @@ function ModelStep({
   );
 }
 
-function InfluenceChip({
-  label,
-  index,
-}: {
-  label: string;
-  index: number;
-}) {
+function InfluenceChip({ label, index }: { label: string; index: number }) {
   return (
     <span
       style={{
@@ -653,9 +660,7 @@ function InfluenceChip({
         letterSpacing: "0.04em",
         color: "rgba(232,221,255,0.78)",
         boxShadow:
-          index % 4 === 0
-            ? "0 0 16px rgba(168,121,255,0.08)"
-            : "none",
+          index % 4 === 0 ? "0 0 16px rgba(168,121,255,0.08)" : "none",
       }}
     >
       {label}
@@ -667,12 +672,7 @@ function StatementStar() {
   return (
     <div
       aria-hidden="true"
-      style={{
-        position: "relative",
-        width: 98,
-        height: 64,
-        marginLeft: "auto",
-      }}
+      style={{ position: "relative", width: 98, height: 64, marginLeft: "auto" }}
     >
       <span
         style={{

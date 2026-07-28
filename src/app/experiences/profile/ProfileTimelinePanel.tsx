@@ -1,4 +1,9 @@
-import type { CSSProperties } from "react";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 
 type VisualKind =
   | "exploration"
@@ -59,15 +64,83 @@ const timeline: TimelineEra[] = [
 ];
 
 export default function ProfileTimelinePanel() {
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const dragRef = useRef({
+    pointerId: -1,
+    startX: 0,
+    startScrollLeft: 0,
+    moved: false,
+  });
+  const [dragging, setDragging] = useState(false);
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startScrollLeft: scroller.scrollLeft,
+      moved: false,
+    };
+
+    scroller.setPointerCapture(event.pointerId);
+    setDragging(true);
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const scroller = scrollerRef.current;
+    if (!scroller || dragRef.current.pointerId !== event.pointerId) return;
+
+    const delta = event.clientX - dragRef.current.startX;
+    if (Math.abs(delta) > 3) dragRef.current.moved = true;
+
+    scroller.scrollLeft = dragRef.current.startScrollLeft - delta;
+  };
+
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const scroller = scrollerRef.current;
+    if (!scroller || dragRef.current.pointerId !== event.pointerId) return;
+
+    if (scroller.hasPointerCapture(event.pointerId)) {
+      scroller.releasePointerCapture(event.pointerId);
+    }
+
+    dragRef.current.pointerId = -1;
+    setDragging(false);
+  };
+
+  const preventDragClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!dragRef.current.moved) return;
+    event.preventDefault();
+    event.stopPropagation();
+    dragRef.current.moved = false;
+  };
+
   return (
     <div
+      ref={scrollerRef}
+      role="region"
+      aria-label="Career journey timeline. Drag horizontally or use the scrollbar to explore."
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onLostPointerCapture={() => setDragging(false)}
+      onClickCapture={preventDragClick}
       style={{
         overflowX: "auto",
         overflowY: "visible",
         overscrollBehaviorX: "contain",
-        scrollSnapType: "x proximity",
+        scrollSnapType: dragging ? "none" : "x proximity",
         scrollbarWidth: "thin",
         scrollbarColor: "rgba(232,200,109,0.38) transparent",
+        cursor: dragging ? "grabbing" : "grab",
+        userSelect: dragging ? "none" : "auto",
+        WebkitUserSelect: dragging ? "none" : "auto",
+        touchAction: "pan-y",
       }}
     >
       <div
@@ -109,11 +182,8 @@ export default function ProfileTimelinePanel() {
             />
 
             <ArchiveVisual era={era} />
-
             <div style={yearStyle}>{era.year}</div>
-
             <h3 style={titleStyle}>{era.title}</h3>
-
             <p style={descriptionStyle}>{era.description}</p>
           </article>
         ))}
@@ -374,17 +444,20 @@ const orbitalRing: CSSProperties = {
 
 const glowNode: CSSProperties = {
   position: "absolute",
-  width: 8,
-  height: 8,
+  left: "50%",
+  top: "50%",
+  width: 10,
+  height: 10,
   transform: "translate(-50%, -50%)",
   borderRadius: "50%",
   background: "#E8C86D",
-  boxShadow: "0 0 12px rgba(232,200,109,0.9)",
+  boxShadow:
+    "0 0 18px rgba(232,200,109,0.82), 0 0 42px rgba(232,200,109,0.32)",
 };
 
 const deskLine: CSSProperties = {
   position: "absolute",
   height: 1,
   background:
-    "linear-gradient(90deg, transparent, rgba(232,200,109,0.48), transparent)",
+    "linear-gradient(90deg, transparent, rgba(232,200,109,0.32), transparent)",
 };
