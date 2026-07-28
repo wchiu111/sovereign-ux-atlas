@@ -1,1 +1,1 @@
-export type SovereignMode = "arrival" | "profile" | "atlas" | "contact";
+export type SovereignMode = "atlas" | "profile";
