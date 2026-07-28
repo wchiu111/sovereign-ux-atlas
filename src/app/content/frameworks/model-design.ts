@@ -1,6 +1,7 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
 import traditionalAi from "../../../imports/frameworks/behavioral-architecture/01-governance/traditional-ai.jpg";
 import behavioralArchitecture from "../../../imports/frameworks/behavioral-architecture/01-governance/behavioral-architecture.jpg";
+import behavioralArchitecturePortal from "../../../imports/frameworks/behavioral-architecture/behavioral-architecture-portal.jpg";
 
 export default defineAtlasEntry({
   id: "behavioral-architecture",
@@ -181,7 +182,7 @@ export default defineAtlasEntry({
             title: "Where trust comes from",
             description:
               "The code is unchanged. What changes is the trust architecture surrounding it.",
-            portalImage: behavioralArchitecture,
+            portalImage: behavioralArchitecturePortal,
             boardLabel: "TRADITIONAL AI",
             boardSubtitle: "Trust centers on the artifact",
             transitionFrom: "ARTIFACT-BASED TRUST",
@@ -257,6 +258,7 @@ export default defineAtlasEntry({
             title: "Where trust comes from",
             description:
               "The code is unchanged. What changes is the trust architecture surrounding it.",
+            portalImage: behavioralArchitecturePortal,
             boardLabel: "BEHAVIORAL ARCHITECTURE",
             boardSubtitle: "Trust centers on the system",
             transitionFrom: "ARTIFACT-BASED TRUST",
