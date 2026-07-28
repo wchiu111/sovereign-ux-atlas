@@ -10,15 +10,11 @@ import {
 } from "./profile";
 
 interface ProfileExperienceProps {
-  onExit: () => void;
-  onEnterAtlas: () => void;
-  onContact: () => void;
+  onReturnToAtlas: () => void;
 }
 
 export default function ProfileExperience({
-  onExit,
-  onEnterAtlas,
-  onContact,
+  onReturnToAtlas,
 }: ProfileExperienceProps) {
   const [hovered, setHovered] = useState<ProfileHotspotId | null>(null);
   const [focus, setFocus] = useState<ProfileHotspotId | null>(null);
@@ -36,7 +32,7 @@ export default function ProfileExperience({
 
   const handleSelect = (hotspot: ProfileHotspotDefinition) => {
     if (hotspot.id === "atlas") {
-      onEnterAtlas();
+      onReturnToAtlas();
       return;
     }
 
@@ -142,11 +138,6 @@ export default function ProfileExperience({
           </div>
         </div>
 
-        <nav style={{ display: "flex", gap: 10 }} aria-label="Profile destinations">
-          <HeaderButton onClick={onEnterAtlas}>Enter Atlas</HeaderButton>
-          <HeaderButton onClick={onContact}>First Contact</HeaderButton>
-          <HeaderButton onClick={onExit}>Exit Profile</HeaderButton>
-        </nav>
       </header>
 
       <div
@@ -828,65 +819,8 @@ export default function ProfileExperience({
             align-items: flex-start !important;
           }
 
-          header nav {
-            gap: 6px !important;
-          }
-
-          header nav button {
-            padding: 9px 10px !important;
-            font-size: 7px !important;
-          }
         }
       `}</style>
     </main>
-  );
-}
-
-function HeaderButton({
-  children,
-  onClick,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        padding: "10px 14px",
-        border: "1px solid rgba(232,200,109,0.18)",
-        borderRadius: 8,
-        background: "rgba(4,6,10,0.42)",
-        color: "rgba(245,235,210,0.66)",
-        backdropFilter: "blur(12px)",
-        font: "inherit",
-        fontSize: 8,
-        letterSpacing: "0.18em",
-        textTransform: "uppercase",
-        cursor: "pointer",
-        boxShadow: "inset 0 0 18px rgba(232,200,109,0.015)",
-        transition:
-          "color 220ms ease, border-color 220ms ease, background 220ms ease, box-shadow 220ms ease, transform 220ms ease",
-      }}
-      onMouseEnter={(event) => {
-        event.currentTarget.style.color = "rgba(245,235,210,0.94)";
-        event.currentTarget.style.borderColor = "rgba(232,200,109,0.42)";
-        event.currentTarget.style.background = "rgba(10,11,16,0.68)";
-        event.currentTarget.style.boxShadow =
-          "0 0 24px rgba(232,200,109,0.08), inset 0 0 22px rgba(232,200,109,0.035)";
-        event.currentTarget.style.transform = "translateY(-1px)";
-      }}
-      onMouseLeave={(event) => {
-        event.currentTarget.style.color = "rgba(245,235,210,0.66)";
-        event.currentTarget.style.borderColor = "rgba(232,200,109,0.18)";
-        event.currentTarget.style.background = "rgba(4,6,10,0.42)";
-        event.currentTarget.style.boxShadow =
-          "inset 0 0 18px rgba(232,200,109,0.015)";
-        event.currentTarget.style.transform = "translateY(0)";
-      }}
-    >
-      {children}
-    </button>
   );
 }

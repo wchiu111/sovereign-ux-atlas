@@ -124,6 +124,20 @@ export default function SovereignExperience() {
       {spatialTransition === "toAtlas" && <AtlasPushInOverlay />}
 
       <style>{`
+        [aria-label="Profile destinations"] button:nth-child(2),
+        [aria-label="Profile destinations"] button:nth-child(3) {
+          display: none;
+        }
+
+        [aria-label="Profile destinations"] button:first-child {
+          font-size: 0;
+        }
+
+        [aria-label="Profile destinations"] button:first-child::after {
+          content: "Return to Atlas";
+          font-size: 8px;
+        }
+
         @keyframes atlasPullIntoObservatory {
           0% {
             transform: scale(1);
