@@ -87,6 +87,8 @@ export default function AtlasPlanet({
       ? PLANET_VISUAL.coreHover
       : PLANET_VISUAL.coreRest;
 
+  const navigationLabel = planet.label.toLocaleUpperCase("en-US");
+
   return (
     <g>
       <line
@@ -252,7 +254,7 @@ export default function AtlasPlanet({
             willChange: "opacity, filter, transform",
           }}
         >
-          {planet.label}
+          {navigationLabel}
         </text>
 
         {active && level === 2 && (
