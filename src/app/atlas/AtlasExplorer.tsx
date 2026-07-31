@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence } from "motion/react";
 import AtlasExperienceRouter from "../experiences/AtlasExperienceRouter";
 import AtlasCommandPalette from "../components/AtlasCommandPalette";
-import AtlasIntelligenceDrawer from "../components/AtlasIntelligenceDrawer";
 import AtlasProjectIntelligenceDrawer from "../components/AtlasProjectIntelligenceDrawer";
 import FocusPullTransition, {
   FOCUS_TRANSITION_DURATION,
@@ -72,6 +71,7 @@ export default function AtlasExplorer({
   // Local render-only state. Navigation and overlays live in the Atlas state engine.
   const [dims, setDims] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
   const [hoveredNexus, setHoveredNexus] = useState(false);
+  const [searchPreviewSystemId, setSearchPreviewSystemId] = useState<string | null>(null);
   const [reduceFocusMotion, setReduceFocusMotion] = useState(false);
   const [hoveredSystemPreview, setHoveredSystemPreview] = useState<{
     id: AtlasPreviewId;
@@ -270,6 +270,59 @@ useEffect(() => {
   });
 }, [actions]);
 
+  const navigateFromSearch = useCallback((destinationId: string) => {
+    actions.setSearchMode(null);
+    setSearchPreviewSystemId(null);
+    setHoveredNexus(false);
+
+    if (destinationId === "about-wilson") {
+      onEnterObservatory?.();
+      return;
+    }
+
+    const system = SYSTEMS.find((candidate) => candidate.id === destinationId);
+    if (system) {
+      const { w, h } = dimsRef.current;
+      const position = sysOrbitPos(system, elapsedRef.current, w * 0.5, h * 0.48);
+      const scale = SYSTEM_FOCUS_SCALE[system.id] ?? 1.35;
+      const tx = w / 2 - position.x * scale;
+      const ty = h / 2 - position.y * scale;
+      actions.enterSystem(system.id);
+      const element = zoomableRef.current;
+      if (element) {
+        element.style.transition = "transform 100ms ease-out";
+        element.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+        cameraRef.current = { scale, tx, ty };
+      }
+      return;
+    }
+
+    for (const candidate of SYSTEMS) {
+      const planet = candidate.planets.find((item) => item.id === destinationId);
+      if (planet) {
+        actions.openPlanet(candidate.id, planet.id);
+        requestAnimationFrame(() => actions.openProjectDrawer());
+        return;
+      }
+    }
+  }, [actions, elapsedRef, onEnterObservatory]);
+
+  const previewFromSearch = useCallback((destinationId: string | null) => {
+    if (!destinationId) {
+      setSearchPreviewSystemId(null);
+      setHoveredNexus(false);
+      return;
+    }
+    if (destinationId === "about-wilson") {
+      setSearchPreviewSystemId(null);
+      setHoveredNexus(true);
+      return;
+    }
+    const system = SYSTEMS.find((candidate) => candidate.id === destinationId || candidate.planets.some((planet) => planet.id === destinationId));
+    setHoveredNexus(false);
+    setSearchPreviewSystemId(system?.id ?? null);
+  }, []);
+
   const goToAtlas = useCallback(() => {
     isFollowingRef.current = false;
     if (followTimerRef.current) clearTimeout(followTimerRef.current);
@@ -348,7 +401,7 @@ useEffect(() => {
             pointerEvents: "none",
           }}
         >
-          {searchMode === "results" && (
+          {searchMode && (
             <div
               role="button"
               tabIndex={-1}
@@ -363,24 +416,17 @@ useEffect(() => {
                 inset: 0,
                 zIndex: 850,
                 pointerEvents: "auto",
-                background: "rgba(0,0,0,0.42)",
-                backdropFilter: "blur(2px)",
+                background: "rgba(0,0,0,0.08)",
                 cursor: "default",
               }}
             />
           )}
           <div style={{ pointerEvents: "auto" }}>
             <AtlasCommandPalette
-              onOpen={() => actions.setSearchMode("suggestions")}
-            onSubmit={(query) => {
-              console.log("Atlas query:", query);
-              actions.setSearchMode("results");
-            }}
+              onOpenChange={(open) => actions.setSearchMode(open ? "suggestions" : null)}
+              onPreviewDestination={previewFromSearch}
+              onNavigate={navigateFromSearch}
             />
-          </div>
-
-          <div style={{ pointerEvents: "auto" }}>
-            <AtlasIntelligenceDrawer open={searchMode === "results"} />
           </div>
         </div>
       )}
@@ -391,6 +437,7 @@ useEffect(() => {
         level={level}
         activeSystemId={activeSystemId}
         activePlanetId={activePlanetId}
+        searchPreviewSystemId={searchPreviewSystemId}
         zoomableRef={zoomableRef}
         systemGroupRefs={systemGroupRefs}
         planetGroupRefs={planetGroupRefs}

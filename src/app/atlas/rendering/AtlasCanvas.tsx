@@ -12,6 +12,7 @@ interface AtlasCanvasProps {
   level: ViewLevel;
   activeSystemId: string | null;
   activePlanetId: string | null;
+  searchPreviewSystemId?: string | null;
   zoomableRef: React.RefObject<HTMLDivElement | null>;
   systemGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
   planetGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
@@ -35,6 +36,7 @@ export default function AtlasCanvas({
   level,
   activeSystemId,
   activePlanetId,
+  searchPreviewSystemId = null,
   zoomableRef,
   systemGroupRefs,
   planetGroupRefs,
@@ -251,6 +253,7 @@ export default function AtlasCanvas({
                 level={level}
                 activeSystemId={activeSystemId}
                 activePlanetId={activePlanetId}
+                searchPreviewSystemId={searchPreviewSystemId}
                 systemGroupRefs={systemGroupRefs}
                 planetGroupRefs={planetGroupRefs}
                 outerGlowRefs={outerGlowRefs}

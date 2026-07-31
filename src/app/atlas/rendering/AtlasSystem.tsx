@@ -12,6 +12,7 @@ interface AtlasSystemProps {
   level: ViewLevel;
   activeSystemId: string | null;
   activePlanetId: string | null;
+  searchPreviewSystemId?: string | null;
   systemGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
   planetGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
   outerGlowRefs: React.MutableRefObject<Map<string, SVGCircleElement>>;
@@ -30,6 +31,7 @@ export default function AtlasSystem({
   level,
   activeSystemId,
   activePlanetId,
+  searchPreviewSystemId = null,
   systemGroupRefs,
   planetGroupRefs,
   outerGlowRefs,
@@ -40,8 +42,10 @@ export default function AtlasSystem({
 }: AtlasSystemProps) {
   const [hovered, setHovered] = useState(false);
   const active = activeSystemId === system.id;
+  const searchAware = searchPreviewSystemId === system.id;
+  const searchDimmed = Boolean(searchPreviewSystemId) && !searchAware;
   const baseRadius = system.size * 4;
-  const opacity = level === 0 ? 1 : active ? 1 : 0.08;
+  const opacity = level === 0 ? (searchDimmed ? 0.3 : 1) : active ? 1 : 0.08;
   const interactive = level === 0;
   const depthSortedPlanets = [...system.planets].sort(
     (a, b) => a.orbitPlane - b.orbitPlane,
@@ -63,7 +67,7 @@ export default function AtlasSystem({
       }}
       transform={`translate(${initialPosition.x},${initialPosition.y}) scale(${initialPosition.scale ?? 1})`}
       opacity={opacity}
-      style={{ transition: "opacity 0.5s" }}
+      style={{ transition: "opacity 220ms cubic-bezier(0.16,1,0.3,1)" }}
     >
       <circle
         cx={0}
@@ -143,12 +147,12 @@ export default function AtlasSystem({
         cx={0}
         cy={0}
         r={
-          hovered && interactive
+            (hovered || searchAware) && interactive
             ? baseRadius * SYSTEM_VISUAL.outerFieldHover
             : baseRadius * SYSTEM_VISUAL.outerFieldRest
         }
         fill={system.color}
-        opacity={hovered && interactive ? 0.085 : 0.025}
+        opacity={(hovered || searchAware) && interactive ? 0.085 : 0.025}
         style={{
           transition:
             `r 460ms ${ATLAS_MOTION_EASE}, opacity 460ms ${ATLAS_MOTION_EASE}`,
@@ -159,12 +163,12 @@ export default function AtlasSystem({
         cx={0}
         cy={0}
         r={
-          hovered && interactive
+          (hovered || searchAware) && interactive
             ? baseRadius * SYSTEM_VISUAL.atmosphereHover
             : baseRadius * SYSTEM_VISUAL.atmosphereRest
         }
         fill={system.color}
-        opacity={hovered && interactive ? 0.3 : 0.12}
+        opacity={(hovered || searchAware) && interactive ? 0.3 : 0.12}
         filter={`url(#glow-${system.id})`}
         style={{
           transition:
@@ -175,12 +179,12 @@ export default function AtlasSystem({
       <circle
         cx={0}
         cy={0}
-        r={hovered && interactive ? baseRadius * 1.85 : baseRadius * 1.36}
+        r={(hovered || searchAware) && interactive ? baseRadius * 1.85 : baseRadius * 1.36}
         fill="none"
         stroke={system.color}
         strokeWidth="0.55"
         strokeDasharray="4 9"
-        strokeOpacity={hovered && interactive ? 0.36 : 0}
+        strokeOpacity={(hovered || searchAware) && interactive ? 0.26 : 0}
         style={{
           transition:
             `r 340ms ${ATLAS_MOTION_EASE}, stroke-opacity 340ms ${ATLAS_MOTION_EASE}`,
@@ -191,7 +195,7 @@ export default function AtlasSystem({
         cx={0}
         cy={0}
         r={
-          hovered && interactive
+          (hovered || searchAware) && interactive
             ? system.size * SYSTEM_VISUAL.coreHoverScale
             : system.size
         }
