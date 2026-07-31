@@ -335,14 +335,6 @@ function findComparisonEntities(query: string): AtlasResult[] {
     .filter((result): result is AtlasResult => Boolean(result));
 }
 
-function intentGlyph(intent: SearchIntent): string {
-  if (intent === "ask") return "✦";
-  if (intent === "compare") return "⇄";
-  if (intent === "explore") return "◇";
-  return "→";
-}
-
-
 function ActivationView({ activation, destinations }: { activation: ActivationPayload; destinations: AtlasResult[] }) {
   const { result, state, query, sourceIds, comparisonIds } = activation;
   const accent = KIND_COLOR[result.kind];
@@ -683,24 +675,29 @@ export default function AtlasCommandPalette({
         transform: "translateX(-50%)",
         zIndex: 1000,
         pointerEvents: "auto",
-        width: "min(610px, calc(100vw - 40px))",
+        width: "min(470px, calc(100vw - 48px))",
       }}
     >
       <div
         style={{
           width: "100%",
-          background: "rgba(9,10,16,0.9)",
-          border: `1px solid ${isOpen ? "rgba(232,200,109,0.64)" : "rgba(232,200,109,0.38)"}`,
-          borderRadius: isOpen ? "18px" : "16px",
-          backdropFilter: "blur(24px)",
-          boxShadow: isOpen
-            ? "0 28px 90px rgba(0,0,0,0.58), 0 0 48px rgba(232,200,109,0.12)"
-            : "0 18px 60px rgba(0,0,0,0.38), 0 0 30px rgba(232,200,109,0.08)",
-          overflow: "hidden",
-          transition: "border-color 220ms ease-out, border-radius 220ms ease-out, box-shadow 220ms ease-out",
+          background: "transparent",
+          overflow: "visible",
         }}
       >
-        <div style={{ width: "100%", minHeight: 52, display: "flex", alignItems: "center", gap: 14, padding: "0 20px 0 22px" }}>
+        <div
+          style={{
+            width: "100%",
+            minHeight: 46,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "0 2px",
+            borderBottom: `1px solid ${isOpen ? "rgba(232,200,109,0.78)" : "rgba(232,200,109,0.46)"}`,
+            boxShadow: isOpen ? "0 10px 22px -16px rgba(232,200,109,0.9)" : "none",
+            transition: "border-color 220ms cubic-bezier(0.16,1,0.3,1), box-shadow 220ms cubic-bezier(0.16,1,0.3,1)",
+          }}
+        >
           <div aria-hidden="true" style={{ color: "#E8C86D", fontSize: 18, lineHeight: 1, opacity: isOpen || query.trim() ? 1 : 0.72, transition: "opacity 220ms ease-out", flexShrink: 0 }}>
             ✦
           </div>
@@ -770,7 +767,7 @@ export default function AtlasCommandPalette({
               }}
               style={{
                 width: "100%",
-                height: 52,
+                height: 46,
                 background: "transparent",
                 border: "none",
                 outline: "none",
@@ -814,30 +811,7 @@ export default function AtlasCommandPalette({
             </button>
           )}
 
-          <button
-            aria-label={`${INTENT_LABEL[intent].toLowerCase()} query`}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => submitQuery(query)}
-            style={{
-              width: 30,
-              height: 30,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#E8C86D",
-              background: "transparent",
-              border: "none",
-              cursor: query.trim() ? "pointer" : "default",
-              fontFamily: "'EB Garamond', serif",
-              fontSize: intent === "compare" ? 15 : 18,
-              lineHeight: 1,
-              padding: 0,
-              opacity: query.trim() ? 1 : 0.42,
-              transition: "opacity 160ms ease-out, transform 160ms ease-out",
-            }}
-          >
-            {intentGlyph(intent)}
-          </button>
+
         </div>
 
         {isOpen && (
@@ -846,11 +820,11 @@ export default function AtlasCommandPalette({
             role="listbox"
             style={{
               position: "relative",
-              borderTop: "1px solid rgba(232,200,109,0.14)",
-              padding: 12,
+              padding: "12px 0 0",
               overflow: "hidden",
-              background:
-                "radial-gradient(circle at 10% 0%, rgba(232,200,109,0.055), transparent 30%), radial-gradient(circle at 92% 88%, rgba(177,138,244,0.045), transparent 34%)",
+              background: "linear-gradient(180deg, rgba(7,8,13,0.82), rgba(7,8,13,0.38) 72%, transparent)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
               animation: "atlasPaletteIn 220ms cubic-bezier(0.16,1,0.3,1)",
             }}
           >
@@ -898,26 +872,23 @@ export default function AtlasCommandPalette({
                       width: "100%",
                       position: "relative",
                       display: "grid",
-                      gridTemplateColumns: "42px minmax(0, 1fr) 24px",
+                      gridTemplateColumns: "36px minmax(0, 1fr) 20px",
                       alignItems: "center",
-                      gap: 14,
-                      padding: isAssist ? "14px 16px" : "13px 16px",
-                      marginBottom: index < visibleResults.length - 1 ? 6 : 0,
+                      gap: 12,
+                      padding: isAssist ? "13px 6px" : "12px 6px",
+                      marginBottom: 0,
                       background: isActive
-                        ? isAssist
-                          ? "linear-gradient(105deg, rgba(232,200,109,0.18), rgba(232,200,109,0.08))"
-                          : "rgba(255,255,255,0.055)"
-                        : isAssist
-                          ? "linear-gradient(105deg, rgba(232,200,109,0.11), rgba(232,200,109,0.035))"
-                          : "rgba(255,255,255,0.018)",
-                      border: `1px solid ${isActive ? `${accent}70` : isAssist ? "rgba(232,200,109,0.30)" : "rgba(255,255,255,0.075)"}`,
-                      borderRadius: 12,
+                        ? `linear-gradient(90deg, ${accent}10, transparent 78%)`
+                        : "transparent",
+                      border: "none",
+                      borderBottom: index < visibleResults.length - 1 ? "1px solid rgba(232,200,109,0.10)" : "none",
+                      borderRadius: 0,
                       color: "#F4EBD0",
                       textAlign: "left",
                       cursor: "pointer",
-                      boxShadow: isActive ? `0 0 24px ${accent}12, inset 0 0 18px ${accent}08` : "none",
+                      boxShadow: "none",
                       transition: "background 180ms ease-out, border-color 180ms ease-out, box-shadow 180ms ease-out, transform 180ms ease-out",
-                      transform: isActive ? "translateX(3px)" : "translateX(0)",
+                      transform: isActive ? "translateX(2px)" : "translateX(0)",
                       animation: `atlasResultIn 260ms cubic-bezier(0.16,1,0.3,1) ${index * 38}ms both`,
                     }}
                   >
@@ -926,8 +897,8 @@ export default function AtlasCommandPalette({
                       aria-hidden="true"
                       style={{
                         position: "relative",
-                        width: 36,
-                        height: 36,
+                        width: 30,
+                        height: 30,
                         borderRadius: "50%",
                         display: "flex",
                         alignItems: "center",
@@ -1021,7 +992,6 @@ export default function AtlasCommandPalette({
           .atlas-command-palette > div {
             max-height: calc(100dvh - 24px);
             overflow: auto !important;
-            border-radius: 16px !important;
           }
           #atlas-search-results button[role="option"] { min-height: 72px; }
         }
