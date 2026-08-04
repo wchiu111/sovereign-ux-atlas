@@ -32,6 +32,7 @@ const focus = {
     {
       id: "context",
       label: "Context",
+      accentStellarType: "relational",
       subtitle: "How curiosity became a domain-research problem",
       readingTime: 3,
       content: `This project began while I was interviewing for a product design role at an insurance company.
@@ -88,6 +89,7 @@ That changed the direction of the project. Instead of beginning with an interfac
     {
       id: "problem",
       label: "The Problem",
+      accentStellarType: "risk",
       subtitle: "Designing without direct access to the person doing the work",
       readingTime: 3,
       content: `I did not have direct access to claim adjusters, and I did not know what their typical day looked like.
@@ -146,6 +148,7 @@ This also raised a second problem. In a high-stakes domain, an AI system cannot 
     {
       id: "approach",
       label: "Approach",
+      accentStellarType: "strategy",
       subtitle: "Using AI to investigate the role, not impersonate validation",
       readingTime: 4,
       content: `I used public research, job descriptions, workflow documentation, industry material, and AI-assisted role simulation to build a more complete picture of the claim-adjuster experience.
@@ -209,6 +212,7 @@ The concepts focused on areas such as:
     {
       id: "decisions",
       label: "Key Decisions",
+      accentStellarType: "judgment",
       subtitle: "Keeping the adjuster responsible for the outcome",
       readingTime: 4,
       content: `One of the most important decisions was not to design AI as an autonomous claim decision-maker.
@@ -271,6 +275,7 @@ This made the concept less about automation and more about helping the user form
     {
       id: "outcomes",
       label: "Outcomes",
+      accentStellarType: "agentic",
       subtitle: "What the exploration produced—and what it did not prove",
       readingTime: 3,
       content: `The project resulted in a conceptual customer and adjuster journey showing how AI-assisted tools could be introduced across the claims process.
@@ -340,6 +345,7 @@ That validation would require real users, realistic claim scenarios, and subject
     {
       id: "lessons",
       label: "Lessons",
+      accentStellarType: "purpose",
       subtitle: "Knowing where simulated research has to stop",
       readingTime: 4,
       content: `The biggest lesson was that AI-generated research can help expand an investigation, but it cannot complete the validation.
@@ -390,8 +396,10 @@ That limitation became part of the project’s value. It taught me to distinguis
 export default defineAtlasEntry({
   id: "agentic-insurance",
   category: "case-study",
+  signatureStellarType: "judgment",
   title: "Agentic Insurance",
   subtitle: focus.subheadline,
+  tags: ["HUMAN AUTHORITY", "AI SUPPORT"],
   overview: {
     what:
       "A self-directed exploration of how AI-assisted tools might support claim adjusters and customers during complex insurance decisions.",
@@ -407,6 +415,84 @@ export default defineAtlasEntry({
     radius: 115,
     speed: 1.2e-4,
     starPrefix: "ai",
+  },
+  overviewStars: [
+    {
+      id: "context",
+      label: "CONTEXT",
+      angle: -145,
+      x: -0.95,
+      y: -0.82,
+      scale: 0.92,
+      stellarType: "relational",
+      intensity: "balanced",
+      labelPosition: { side: "top", offset: 30 },
+    },
+    {
+      id: "problem",
+      label: "PROBLEM",
+      angle: -96,
+      x: -0.42,
+      y: -0.38,
+      scale: 1.05,
+      stellarType: "risk",
+      intensity: "bright",
+      labelPosition: { side: "left", offset: 30 },
+    },
+    {
+      id: "approach",
+      label: "APPROACH",
+      angle: -38,
+      x: 0.28,
+      y: -0.72,
+      scale: 1.08,
+      stellarType: "strategy",
+      intensity: "balanced",
+      labelPosition: { side: "top", offset: 30 },
+    },
+    {
+      id: "decisions",
+      label: "DECISIONS",
+      angle: 18,
+      x: 0.9,
+      y: -0.08,
+      scale: 1.18,
+      stellarType: "judgment",
+      intensity: "bright",
+      labelPosition: { side: "right", offset: 32 },
+    },
+    {
+      id: "outcomes",
+      label: "OUTCOMES",
+      angle: 72,
+      x: 0.92,
+      y: 0.62,
+      scale: 1.08,
+      stellarType: "agentic",
+      intensity: "bright",
+      labelPosition: { side: "right", offset: 30 },
+    },
+    {
+      id: "lessons",
+      label: "LESSONS",
+      angle: 145,
+      x: -0.72,
+      y: 0.8,
+      scale: 0.96,
+      stellarType: "purpose",
+      intensity: "balanced",
+      labelPosition: { side: "left", offset: 30 },
+    },
+  ],
+  constellation: {
+    showCenterConnections: false,
+    connections: [
+      { from: "context", to: "problem", strength: "primary" },
+      { from: "problem", to: "approach", strength: "primary" },
+      { from: "approach", to: "decisions", strength: "primary" },
+      { from: "decisions", to: "outcomes", strength: "primary" },
+      { from: "outcomes", to: "lessons", strength: "primary" },
+    ],
   },
   caseStudyId: "agentic-insurance",
   role: "Product Designer",

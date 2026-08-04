@@ -22,6 +22,7 @@ const focus = {
     {
       id: "context",
       label: "Context",
+      accentStellarType: "relational",
       subtitle: "Designing a clearer entry point into a complex product portfolio",
       readingTime: 3,
       content: `Oracle offered a broad set of cloud products for higher education, including student systems, human capital management, enterprise resource planning, platform services, and infrastructure.
@@ -72,6 +73,7 @@ I worked across wireframing, content structure, visual design, component explora
     {
       id: "problem",
       label: "The Problem",
+      accentStellarType: "risk",
       subtitle: "Creating consistency without pretending every product was the same",
       readingTime: 3,
       content: `The information was dense, technical, and uneven.
@@ -119,6 +121,7 @@ The initial card-based direction exposed the limitation. It assumed uniform cont
     {
       id: "approach",
       label: "Approach",
+      accentStellarType: "strategy",
       subtitle: "Treating the page as an information system",
       readingTime: 4,
       content: `I treated the page as an information system rather than a collection of marketing sections.
@@ -195,6 +198,7 @@ This meant exploring multiple ways to introduce the platform, structure the prod
     {
       id: "decisions",
       label: "Key Decisions",
+      accentStellarType: "judgment",
       subtitle: "Changing the content model instead of restyling the cards",
       readingTime: 4,
       content: `The strongest decision was to replace the fixed product-card model with a flexible product explorer.
@@ -268,6 +272,7 @@ The design system remained consistent, but the underlying content model became f
     {
       id: "outcomes",
       label: "Outcomes",
+      accentStellarType: "agentic",
       subtitle: "A coherent experience that could support complexity without exposing it all at once",
       readingTime: 3,
       content: `The final experience brought a large product portfolio into a more coherent customer journey.
@@ -302,6 +307,7 @@ The value of the work is visible in the system itself: the final design supports
     {
       id: "lessons",
       label: "Lessons",
+      accentStellarType: "purpose",
       subtitle: "What enterprise microsite work taught me about translation",
       readingTime: 3,
       content: `At the time, I saw much of this work as microsite and campaign design.
@@ -331,9 +337,11 @@ People do not need every detail at once. They need the right detail at the momen
 export default defineAtlasEntry({
   id: "oracle",
   category: "case-study",
+  signatureStellarType: "relational",
   title: "ORACLE",
   subtitle:
     "Translating a complex enterprise cloud portfolio into a clearer, more adaptable customer experience.",
+  tags: ["INFORMATION CHOREOGRAPHY", "JOURNEY"],
   overview: {
     what:
       "A Higher Education microsite that organized Oracle’s cloud products into a clearer narrative and interactive product experience.",
@@ -349,6 +357,86 @@ export default defineAtlasEntry({
     radius: 115,
     speed: 0.95e-4,
     starPrefix: "orc",
+  },
+  overviewStars: [
+    {
+      id: "context",
+      label: "CONTEXT",
+      angle: 168,
+      x: -1.15,
+      y: 0.25,
+      scale: 0.96,
+      stellarType: "relational",
+      intensity: "balanced",
+      labelPosition: { side: "left", offset: 30 },
+    },
+    {
+      id: "problem",
+      label: "PROBLEM",
+      angle: -132,
+      x: -0.65,
+      y: -0.65,
+      scale: 1.02,
+      stellarType: "risk",
+      intensity: "bright",
+      labelPosition: { side: "top", offset: 30 },
+    },
+    {
+      id: "approach",
+      label: "APPROACH",
+      angle: -96,
+      x: -0.05,
+      y: -0.62,
+      scale: 1.15,
+      stellarType: "strategy",
+      intensity: "bright",
+      labelPosition: { side: "top", offset: 32 },
+    },
+    {
+      id: "decisions",
+      label: "DECISIONS",
+      angle: -63,
+      x: 0.45,
+      y: -0.88,
+      scale: 1.12,
+      stellarType: "judgment",
+      intensity: "bright",
+      labelPosition: { side: "top", offset: 32 },
+    },
+    {
+      id: "outcomes",
+      label: "OUTCOMES",
+      angle: -12,
+      x: 1.05,
+      y: -0.2,
+      scale: 1.05,
+      stellarType: "agentic",
+      intensity: "bright",
+      labelPosition: { side: "right", offset: 30 },
+    },
+    {
+      id: "lessons",
+      label: "LESSONS",
+      angle: 58,
+      x: 0.5,
+      y: 0.78,
+      scale: 0.98,
+      stellarType: "purpose",
+      intensity: "balanced",
+      labelPosition: { side: "bottom", offset: 30 },
+    },
+  ],
+  constellation: {
+    showCenterConnections: false,
+    connections: [
+      { from: "context", to: "problem", strength: "primary" },
+      { from: "context", to: "approach", strength: "secondary" },
+      { from: "problem", to: "approach", strength: "primary" },
+      { from: "approach", to: "decisions", strength: "primary" },
+      { from: "approach", to: "outcomes", strength: "secondary" },
+      { from: "decisions", to: "outcomes", strength: "primary" },
+      { from: "outcomes", to: "lessons", strength: "primary" },
+    ],
   },
   caseStudyId: "oracle",
   focus,

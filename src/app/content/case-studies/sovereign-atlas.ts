@@ -24,6 +24,7 @@ const focus = {
     {
       id: "context",
       label: "The Beginning",
+      accentStellarType: "relational",
       subtitle: "It Started with Echo",
       readingTime: 3,
       content: `Atlas did not begin as a portfolio.
@@ -93,6 +94,7 @@ That small usability problem became the first question Atlas tried to answer.`,
     {
       id: "problem",
       label: "The Pivot",
+      accentStellarType: "risk",
       subtitle: "When Search Stopped Being Enough",
       readingTime: 3,
       content: `Search could retrieve Echo instantly.
@@ -160,6 +162,7 @@ The moment the content became spatial, Atlas stopped being a search feature and 
     {
       id: "approach",
       label: "Emergence",
+      accentStellarType: "strategy",
       subtitle: "One Question Led to Another",
       readingTime: 6,
       content: `Looking back, Atlas was never designed through a conventional roadmap.
@@ -316,6 +319,7 @@ It became one because the questions kept exceeding the tools and skills I starte
     {
       id: "outcomes",
       label: "Transformation",
+      accentStellarType: "agentic",
       subtitle: "A Portfolio Became a Knowledge System",
       readingTime: 4,
       content: `Atlas transformed far beyond its original purpose.
@@ -359,6 +363,7 @@ It lets people experience one.`,
     {
       id: "lessons",
       label: "Reflection",
+      accentStellarType: "purpose",
       subtitle: "The Project Changed Me More Than I Changed It",
       readingTime: 4,
       content: `When I first began building Atlas, I thought I was adding search to a document.
@@ -419,9 +424,11 @@ There is no final version—only the current state of understanding.`,
 export default defineAtlasEntry({
   id: "sovereign-atlas-cs",
   category: "case-study",
+  signatureStellarType: "purpose",
   title: "SOVEREIGN ATLAS",
   subtitle:
     "A navigable knowledge system that began as a search feature and evolved through curiosity, constraint, and continuous building.",
+  tags: ["SYSTEMS THINKING", "DESIGN RESEARCH"],
   overview: {
     what:
       "The Atlas itself—a spatial, evidence-driven portfolio connecting UX, AI literacy, systems thinking, and design engineering.",
@@ -442,29 +449,69 @@ export default defineAtlasEntry({
     {
       id: "context",
       label: "THE BEGINNING",
-      angle: -90,
+      angle: -166,
+      x: -1,
+      y: -0.25,
+      scale: 0.98,
+      stellarType: "relational",
+      intensity: "balanced",
+      labelPosition: { side: "top", offset: 30 },
     },
     {
       id: "problem",
       label: "THE PIVOT",
-      angle: -18,
+      angle: -110,
+      x: -0.35,
+      y: -0.98,
+      scale: 1.08,
+      stellarType: "risk",
+      intensity: "bright",
+      labelPosition: { side: "top", offset: 30 },
     },
     {
       id: "approach",
       label: "EMERGENCE",
-      angle: 54,
+      angle: -39,
+      x: 0.72,
+      y: -0.58,
+      scale: 1.16,
+      stellarType: "strategy",
+      intensity: "bright",
+      labelPosition: { side: "right", offset: 31 },
     },
     {
       id: "outcomes",
       label: "TRANSFORMATION",
-      angle: 126,
+      angle: 34,
+      x: 0.72,
+      y: 0.48,
+      scale: 1.08,
+      stellarType: "agentic",
+      intensity: "bright",
+      labelPosition: { side: "right", offset: 31 },
     },
     {
       id: "lessons",
       label: "REFLECTION",
-      angle: 198,
+      angle: 126,
+      x: -0.65,
+      y: 0.86,
+      scale: 1,
+      stellarType: "purpose",
+      intensity: "bright",
+      labelPosition: { side: "left", offset: 30 },
     },
   ],
+  constellation: {
+    showCenterConnections: false,
+    connections: [
+      { from: "context", to: "problem", strength: "primary" },
+      { from: "problem", to: "approach", strength: "primary" },
+      { from: "approach", to: "outcomes", strength: "primary" },
+      { from: "outcomes", to: "lessons", strength: "primary" },
+      { from: "lessons", to: "context", strength: "secondary" },
+    ],
+  },
   caseStudyId: "sovereign-atlas-cs",
   focus,
   sections: focus.sections,

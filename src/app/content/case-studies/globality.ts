@@ -33,6 +33,7 @@ const focus = {
     {
       id: "context",
       label: "Context",
+      accentStellarType: "relational",
       subtitle: "A powerful platform that did not always communicate where users were",
       readingTime: 3,
       content: `Globality was an AI-assisted procurement platform designed to help enterprise teams create sourcing projects, develop briefs, discover providers, evaluate proposals, and move work toward launch.
@@ -93,6 +94,7 @@ What initially appeared to be a navigation redesign became a broader effort to i
     {
       id: "problem",
       label: "The Problem",
+      accentStellarType: "risk",
       subtitle: "Small orientation failures accumulated across the entire workflow",
       readingTime: 4,
       content: `The usability issues were not isolated to a single screen.
@@ -166,6 +168,7 @@ The problem was that the product repeatedly asked users to orient themselves.`,
     {
       id: "approach",
       label: "Approach",
+      accentStellarType: "strategy",
       subtitle: "Exploring how navigation could preserve context without consuming the workspace",
       readingTime: 4,
       content: `We did not need to begin with a completely new research program.
@@ -270,6 +273,7 @@ The interface could now communicate a meaningful shift between browsing the plat
     {
       id: "decisions",
       label: "Key Decisions",
+      accentStellarType: "judgment",
       subtitle: "Designing the interface around the next decision",
       readingTime: 5,
       content: `Several decisions reshaped the experience beyond navigation.
@@ -365,6 +369,7 @@ The assistant might appear after a brief was completed, when provider matches be
     {
       id: "outcomes",
       label: "Outcomes",
+      accentStellarType: "agentic",
       subtitle: "A clearer distinction between entering, managing, and progressing work",
       readingTime: 4,
       content: `We built and tested a three-screen prototype covering the Home experience, the project portfolio, and the Project Dashboard.
@@ -439,6 +444,7 @@ It became better at communicating which part of that complexity mattered now.`,
     {
       id: "lessons",
       label: "Lessons",
+      accentStellarType: "purpose",
       subtitle: "What navigation work taught me about orientation",
       readingTime: 3,
       content: `At the time, I thought I was redesigning navigation.
@@ -499,9 +505,11 @@ That thinking later became part of how I approached presence, context, and spati
 export default defineAtlasEntry({
   id: "globality",
   category: "case-study",
+  signatureStellarType: "strategy",
   title: "GLOBALITY",
   subtitle:
     "Redesigning an AI-assisted procurement platform around orientation, work states, and the decisions users needed to make next.",
+  tags: ["ENTERPRISE SYSTEMS", "WORKFLOW"],
   overview: {
     what:
       "A navigation and workflow redesign spanning Globality’s home experience, project portfolio, and in-project workspace.",
@@ -517,6 +525,84 @@ export default defineAtlasEntry({
     radius: 115,
     speed: 1.05e-4,
     starPrefix: "glob",
+  },
+  overviewStars: [
+    {
+      id: "context",
+      label: "CONTEXT",
+      angle: 165,
+      x: -1.35,
+      y: 0.52,
+      scale: 0.94,
+      stellarType: "relational",
+      intensity: "balanced",
+      labelPosition: { side: "left", offset: 28 },
+    },
+    {
+      id: "problem",
+      label: "PROBLEM",
+      angle: -150,
+      x: -0.88,
+      y: 0.12,
+      scale: 1.02,
+      stellarType: "risk",
+      intensity: "bright",
+      labelPosition: { side: "top", offset: 30 },
+    },
+    {
+      id: "approach",
+      label: "APPROACH",
+      angle: -105,
+      x: -0.3,
+      y: 0.34,
+      scale: 1.08,
+      stellarType: "strategy",
+      intensity: "bright",
+      labelPosition: { side: "left", offset: 30 },
+    },
+    {
+      id: "decisions",
+      label: "DECISIONS",
+      angle: -50,
+      x: 0.3,
+      y: -0.18,
+      scale: 1.18,
+      stellarType: "judgment",
+      intensity: "bright",
+      labelPosition: { side: "top", offset: 32 },
+    },
+    {
+      id: "outcomes",
+      label: "OUTCOMES",
+      angle: -5,
+      x: 0.88,
+      y: -0.02,
+      scale: 1.1,
+      stellarType: "agentic",
+      intensity: "bright",
+      labelPosition: { side: "bottom", offset: 30 },
+    },
+    {
+      id: "lessons",
+      label: "LESSONS",
+      angle: 32,
+      x: 1.34,
+      y: -0.58,
+      scale: 0.96,
+      stellarType: "purpose",
+      intensity: "balanced",
+      labelPosition: { side: "right", offset: 28 },
+    },
+  ],
+  constellation: {
+    showCenterConnections: false,
+    connections: [
+      { from: "context", to: "problem", strength: "primary" },
+      { from: "problem", to: "approach", strength: "primary" },
+      { from: "approach", to: "decisions", strength: "primary" },
+      { from: "decisions", to: "outcomes", strength: "primary" },
+      { from: "outcomes", to: "lessons", strength: "primary" },
+    ],
   },
   caseStudyId: "globality",
   focus,
