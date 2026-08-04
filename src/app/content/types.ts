@@ -101,7 +101,13 @@ export type AtlasEvidenceAnnotationCategory =
   | "governance"
   | "constraints"
   | "behavioral-integrity"
-  | "regenerative-capacity";
+  | "regenerative-capacity"
+  | "structural-drift"
+  | "cognitive-drift"
+  | "authority-drift"
+  | "semantic-drift"
+  | "invariant-preservation"
+  | "integrity-verification";
 
 export type AtlasDecisionRightHolder = "Human" | "AI" | "Shared";
 
@@ -128,8 +134,12 @@ export interface AtlasEvidenceCanvas {
   portalImage?: string;
   boardLabel: string;
   boardSubtitle: string;
+  /** Optional authored artboard height in canvas world pixels. */
+  boardHeight?: number;
   transitionFrom?: string;
   transitionTo?: string;
+  /** Labels rendered between boards when a comparison has three states. */
+  transitionLabels?: string[];
   annotations: AtlasEvidenceAnnotation[];
 }
 

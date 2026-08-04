@@ -14,10 +14,9 @@ import type {
 } from "../../content/types";
 import type { ReadingEvidenceItem } from "../shared/types";
 
-const WORLD_WIDTH = 2700;
 const WORLD_HEIGHT = 2080;
 const BOARD_WIDTH = 1050;
-const BOARD_HEIGHT = Math.round((BOARD_WIDTH * 2023) / 1374);
+const DEFAULT_BOARD_HEIGHT = Math.round((BOARD_WIDTH * 2023) / 1374);
 const OPENING_SCALE = 0.73;
 const MIN_SCALE = 0.28;
 const MAX_SCALE = 2;
@@ -25,6 +24,7 @@ const MAX_SCALE = 2;
 const BOARD_POSITIONS = [
   { x: 140, y: 260 },
   { x: 1510, y: 260 },
+  { x: 2880, y: 260 },
 ] as const;
 
 const CATEGORY_STYLE: Record<
@@ -45,6 +45,18 @@ const CATEGORY_STYLE: Record<
   "regenerative-capacity": {
     label: "REGENERATIVE CAPACITY",
     color: "#D99A6C",
+  },
+  "structural-drift": { label: "STRUCTURAL DRIFT", color: "#D47B68" },
+  "cognitive-drift": { label: "COGNITIVE DRIFT", color: "#E1C35C" },
+  "authority-drift": { label: "AUTHORITY DRIFT", color: "#D99A6C" },
+  "semantic-drift": { label: "SEMANTIC DRIFT", color: "#A78BDB" },
+  "invariant-preservation": {
+    label: "INVARIANT PRESERVATION",
+    color: "#76C79A",
+  },
+  "integrity-verification": {
+    label: "INTEGRITY VERIFICATION",
+    color: "#7CB4D5",
   },
 };
 
@@ -173,6 +185,7 @@ function EvidenceBoard({
   item,
   position,
   boardIndex,
+  boardHeight,
   viewScale,
   active,
   locked,
@@ -183,6 +196,7 @@ function EvidenceBoard({
   item: ReadingEvidenceItem;
   position: { x: number; y: number };
   boardIndex: number;
+  boardHeight: number;
   viewScale: number;
   active: ActiveAnnotation | null;
   locked: boolean;
@@ -257,7 +271,7 @@ function EvidenceBoard({
         style={{
           position: "relative",
           width: BOARD_WIDTH,
-          height: BOARD_HEIGHT,
+          height: boardHeight,
           transition: "opacity 240ms ease, filter 240ms ease",
           opacity: anotherBoardIsActive ? 0.42 : 1,
           filter: activeAnnotation ? "brightness(0.84)" : "none",
@@ -455,10 +469,28 @@ export default function FrameworkEvidenceCanvas({
     useState<TransitionPhase>("entering");
 
   const canvasItems = useMemo(
-    () => items.filter((item) => item.canvas && item.image).slice(0, 2),
+    () => items.filter((item) => item.canvas && item.image).slice(0, 3),
     [items],
   );
   const canvasMeta = canvasItems[0]?.canvas;
+  const worldWidth = useMemo(() => {
+    const lastPosition =
+      BOARD_POSITIONS[Math.max(0, canvasItems.length - 1)] ?? BOARD_POSITIONS[0];
+    return canvasItems.length <= 2
+      ? 2700
+      : lastPosition.x + BOARD_WIDTH + 140;
+  }, [canvasItems.length]);
+  const maxBoardHeight = useMemo(
+    () =>
+      canvasItems.length > 0
+        ? Math.max(
+            ...canvasItems.map(
+              (item) => item.canvas?.boardHeight ?? DEFAULT_BOARD_HEIGHT,
+            ),
+          )
+        : DEFAULT_BOARD_HEIGHT,
+    [canvasItems],
+  );
 
   const setOpeningView = useCallback(() => {
     const viewport = viewportRef.current;
@@ -483,7 +515,7 @@ export default function FrameworkEvidenceCanvas({
     const bottomInset = 70;
     const scale = clamp(
       Math.min(
-        (rect.width - horizontalPadding * 2) / WORLD_WIDTH,
+        (rect.width - horizontalPadding * 2) / worldWidth,
         (rect.height - topInset - bottomInset) / WORLD_HEIGHT,
       ),
       MIN_SCALE,
@@ -492,10 +524,10 @@ export default function FrameworkEvidenceCanvas({
     hasInteractedRef.current = true;
     setView({
       scale,
-      x: (rect.width - WORLD_WIDTH * scale) / 2,
+      x: (rect.width - worldWidth * scale) / 2,
       y: topInset + (rect.height - topInset - bottomInset - WORLD_HEIGHT * scale) / 2,
     });
-  }, []);
+  }, [worldWidth]);
 
   useEffect(() => {
     setOpeningView();
@@ -845,43 +877,84 @@ export default function FrameworkEvidenceCanvas({
             position: "absolute",
             left: 0,
             top: 0,
-            width: WORLD_WIDTH,
+            width: worldWidth,
             height: WORLD_HEIGHT,
             transformOrigin: "0 0",
             transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.scale})`,
             willChange: "transform",
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              left: 930,
-              top: 1900,
-              width: 840,
-              display: "flex",
-              alignItems: "center",
-              gap: 24,
-              color: "rgba(225,195,92,0.66)",
-              fontFamily: "'DM Mono', monospace",
-              fontSize: 13,
-              letterSpacing: "0.18em",
-              pointerEvents: "none",
-            }}
-          >
-            <span>{canvasMeta.transitionFrom ?? "RAW OPTIONS"}</span>
-            <span
+          {canvasItems.length <= 2 ? (
+            <div
               style={{
-                flex: 1,
-                height: 1,
-                background:
-                  "linear-gradient(90deg, rgba(225,195,92,0.18), rgba(225,195,92,0.72))",
+                position: "absolute",
+                left: 930,
+                top: 1900,
+                width: 840,
+                display: "flex",
+                alignItems: "center",
+                gap: 24,
+                color: "rgba(225,195,92,0.66)",
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 13,
+                letterSpacing: "0.18em",
+                pointerEvents: "none",
               }}
-            />
-            <span style={{ fontSize: 24 }}>→</span>
-            <span>
-              {canvasMeta.transitionTo ?? "SYNTHESIZED RECOMMENDATION"}
-            </span>
-          </div>
+            >
+              <span>{canvasMeta.transitionFrom ?? "RAW OPTIONS"}</span>
+              <span
+                style={{
+                  flex: 1,
+                  height: 1,
+                  background:
+                    "linear-gradient(90deg, rgba(225,195,92,0.18), rgba(225,195,92,0.72))",
+                }}
+              />
+              <span style={{ fontSize: 24 }}>→</span>
+              <span>
+                {canvasMeta.transitionTo ?? "SYNTHESIZED RECOMMENDATION"}
+              </span>
+            </div>
+          ) : (
+            canvasItems.slice(0, -1).map((item, index) => {
+              const current = BOARD_POSITIONS[index];
+              const next = BOARD_POSITIONS[index + 1];
+              const label =
+                canvasMeta.transitionLabels?.[index] ??
+                (index === 0 ? "DRIFT EMERGES" : "PRESERVATION CONSTRAINS");
+              return (
+                <div
+                  key={`transition-${item.id}`}
+                  style={{
+                    position: "absolute",
+                    left: current.x + BOARD_WIDTH + 22,
+                    top: BOARD_POSITIONS[0].y + maxBoardHeight + 68,
+                    width: next.x - current.x - BOARD_WIDTH - 44,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    color: "rgba(225,195,92,0.66)",
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: 10,
+                    letterSpacing: "0.14em",
+                    whiteSpace: "nowrap",
+                    pointerEvents: "none",
+                  }}
+                >
+                  <span>{label}</span>
+                  <span
+                    style={{
+                      flex: 1,
+                      height: 1,
+                      background:
+                        "linear-gradient(90deg, rgba(225,195,92,0.18), rgba(225,195,92,0.72))",
+                    }}
+                  />
+                  <span style={{ fontSize: 18 }}>→</span>
+                </div>
+              );
+            })
+          )}
 
           {canvasItems.map((item, index) => (
             <EvidenceBoard
@@ -889,6 +962,7 @@ export default function FrameworkEvidenceCanvas({
               item={item}
               position={BOARD_POSITIONS[index] ?? BOARD_POSITIONS[0]}
               boardIndex={index}
+              boardHeight={item.canvas?.boardHeight ?? DEFAULT_BOARD_HEIGHT}
               viewScale={view.scale}
               active={active}
               locked={locked}
