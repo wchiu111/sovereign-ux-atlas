@@ -1020,7 +1020,12 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
       {/* Main viewer body */}
       <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
         {/* Large image area */}
-        <div style={{ flex:1, overflow:"hidden", padding:"24px" }}>
+        <div style={{
+          flex:1,
+          overflow:"hidden",
+          padding: fullscreen ? "12px" : "24px",
+          transition:"padding 220ms ease",
+        }}>
           <div style={{
             width:"100%", height:"100%",
             background:"rgba(8,10,18,0.80)",

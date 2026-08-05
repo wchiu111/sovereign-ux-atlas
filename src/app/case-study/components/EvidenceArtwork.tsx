@@ -161,7 +161,7 @@ export function EvidenceLargeView({ item, color }: { item: EvidenceItem; color: 
   return (
     <div className="w-full h-full flex items-center justify-center"
       style={{ background:"#0A0B10" }}>
-      <div style={{ width:"100%", maxWidth:"700px", aspectRatio:"16/10", position:"relative" }}>
+      <div style={{ width:"100%", height:"100%", position:"relative" }}>
         <EvidenceThumbnail
           type={item.type}
           color={color}
@@ -169,20 +169,6 @@ export function EvidenceLargeView({ item, color }: { item: EvidenceItem; color: 
           alt={item.alt}
           imageFit={item.imageFit}
         />
-        {/* Subtle overlay label */}
-        <div style={{
-          position:"absolute", bottom:0, left:0, right:0,
-          padding:"16px", background:"linear-gradient(transparent, rgba(5,5,10,0.9))",
-        }}>
-          <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-            letterSpacing:"0.28em", color:"rgba(200,180,130,0.45)", marginBottom:"4px" }}>
-            {item.type.toUpperCase()}
-          </div>
-          <div style={{ fontFamily:"'EB Garamond',serif", fontSize:"16px",
-            color:"rgba(245,235,210,0.80)" }}>
-            {item.title}
-          </div>
-        </div>
       </div>
     </div>
   );
