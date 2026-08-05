@@ -7,6 +7,7 @@ import expectationManagement from "../../../imports/frameworks/relational-ai-lit
 import processTransparency from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/05-process-transparency.png";
 import commitment from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/06-commitment.png";
 import confirmation from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/07-confirmation.png";
+import encodedCognitionPortal from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/relational-ai-literacy-portal.jpg";
 
 const encodedCognitionCanvas = {
   id: "relational-ai-literacy-encoded-cognition",
@@ -14,8 +15,28 @@ const encodedCognitionCanvas = {
   title: "The prompt carries the profession",
   description:
     "Two language systems encode different definitions of success. One produces a persuasion system; the other turns understanding into a sequence. These generated artifacts are directional evidence, not a controlled model evaluation.",
+  portalImage: encodedCognitionPortal,
+  groups: [
+    {
+      id: "aspiration",
+      label: "DIRECTION 01 · ASPIRATION-LED",
+      question: "What should people believe?",
+      startIndex: 0,
+      endIndex: 0,
+      color: "#E1C35C",
+    },
+    {
+      id: "behavior",
+      label: "DIRECTION 02 · BEHAVIOR-LED",
+      question: "What should people experience?",
+      startIndex: 1,
+      endIndex: 6,
+      color: "#7CB4D5",
+    },
+  ],
+  groupDividerLabel: "SAME PRODUCT · DIFFERENT MENTAL MODEL",
   transitionLabels: [
-    "MENTAL MODEL SHIFTS",
+    "",
     "UNCERTAINTY DECREASES",
     "EXPECTATIONS CLARIFY",
     "PROCESS BECOMES VISIBLE",
@@ -257,7 +278,7 @@ export default defineAtlasEntry({
           imageFit: "contain",
           canvas: {
             ...encodedCognitionCanvas,
-            portalImage: orientation,
+            portalImage: encodedCognitionPortal,
             boardLabel: "ASPIRATION ENCODED",
             boardSubtitle: "Marketing language · persuasion system",
             boardHeight: 3813,
@@ -370,7 +391,7 @@ export default defineAtlasEntry({
             annotations: [
               {
                 id: "behavior-not-features",
-                number: "01",
+                number: "02",
                 x: 28,
                 y: 58,
                 category: "encoded-cognition",
@@ -407,7 +428,7 @@ export default defineAtlasEntry({
             annotations: [
               {
                 id: "expectations-over-time",
-                number: "01",
+                number: "03",
                 x: 27,
                 y: 61,
                 category: "expectation-clarity",
@@ -444,7 +465,7 @@ export default defineAtlasEntry({
             annotations: [
               {
                 id: "required-and-optional",
-                number: "01",
+                number: "04",
                 x: 27,
                 y: 59,
                 category: "visible-reasoning",
@@ -481,7 +502,7 @@ export default defineAtlasEntry({
             annotations: [
               {
                 id: "commitment-arrives-last",
-                number: "01",
+                number: "05",
                 x: 27,
                 y: 64,
                 category: "behavioral-sequencing",
@@ -518,7 +539,7 @@ export default defineAtlasEntry({
             annotations: [
               {
                 id: "closure-confirms-next-state",
-                number: "01",
+                number: "06",
                 x: 29,
                 y: 62,
                 category: "expectation-clarity",

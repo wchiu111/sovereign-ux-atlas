@@ -486,6 +486,16 @@ export default function FrameworkEvidenceCanvas({
     [items],
   );
   const canvasMeta = canvasItems[0]?.canvas;
+  const canvasGroups = useMemo(
+    () =>
+      (canvasMeta?.groups ?? []).filter(
+        (group) =>
+          group.startIndex >= 0 &&
+          group.endIndex >= group.startIndex &&
+          group.startIndex < canvasItems.length,
+      ),
+    [canvasItems.length, canvasMeta?.groups],
+  );
   const boardPositions = useMemo(
     () => canvasItems.map((_, index) => getBoardPosition(index)),
     [canvasItems],
@@ -904,6 +914,141 @@ export default function FrameworkEvidenceCanvas({
             willChange: "transform",
           }}
         >
+          {canvasGroups.map((group) => {
+            const startIndex = Math.min(
+              group.startIndex,
+              boardPositions.length - 1,
+            );
+            const endIndex = Math.min(
+              group.endIndex,
+              boardPositions.length - 1,
+            );
+            const start = boardPositions[startIndex];
+            const end = boardPositions[endIndex];
+            if (!start || !end) return null;
+
+            const width = end.x + BOARD_WIDTH - start.x;
+
+            return (
+              <section
+                key={group.id}
+                aria-label={`${group.label}. ${group.question}`}
+                style={{
+                  position: "absolute",
+                  left: start.x,
+                  top: 132,
+                  width,
+                  height: worldHeight - 214,
+                  pointerEvents: "none",
+                }}
+              >
+                <div
+                  style={{
+                    height: 1,
+                    background: `linear-gradient(90deg, ${group.color}88, ${group.color}18 48%, transparent)`,
+                  }}
+                />
+                <div
+                  style={{
+                    marginTop: 16,
+                    paddingLeft: 18,
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: 12,
+                    letterSpacing: "0.2em",
+                    color: group.color,
+                  }}
+                >
+                  {group.label}
+                </div>
+                <div
+                  style={{
+                    marginTop: 8,
+                    paddingLeft: 18,
+                    fontFamily: "'EB Garamond', serif",
+                    fontSize: 19,
+                    lineHeight: 1.2,
+                    color: "rgba(240,232,215,0.72)",
+                  }}
+                >
+                  {group.question}
+                </div>
+              </section>
+            );
+          })}
+
+          {canvasGroups.slice(0, -1).map((group, index) => {
+            const nextGroup = canvasGroups[index + 1];
+            if (!nextGroup) return null;
+            const leftBoard = boardPositions[
+              Math.min(group.endIndex, boardPositions.length - 1)
+            ];
+            const rightBoard = boardPositions[
+              Math.min(nextGroup.startIndex, boardPositions.length - 1)
+            ];
+            if (!leftBoard || !rightBoard) return null;
+
+            const dividerX =
+              leftBoard.x +
+              BOARD_WIDTH +
+              (rightBoard.x - leftBoard.x - BOARD_WIDTH) / 2;
+
+            return (
+              <div
+                key={`${group.id}-${nextGroup.id}-threshold`}
+                aria-label={canvasMeta.groupDividerLabel}
+                style={{
+                  position: "absolute",
+                  left: dividerX,
+                  top: 126,
+                  width: 1,
+                  height: worldHeight - 196,
+                  background:
+                    "linear-gradient(180deg, transparent, rgba(225,195,92,0.7) 7%, rgba(124,180,213,0.52) 42%, rgba(124,180,213,0.08) 88%, transparent)",
+                  pointerEvents: "none",
+                  zIndex: 3,
+                }}
+              >
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    left: "50%",
+                    top: 68,
+                    width: 10,
+                    height: 10,
+                    transform: "translate(-50%, -50%) rotate(45deg)",
+                    border: "1px solid rgba(225,195,92,0.88)",
+                    background: "#070A11",
+                    boxShadow:
+                      "0 0 24px rgba(225,195,92,0.22), 0 0 34px rgba(124,180,213,0.14)",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    left: "50%",
+                    top: 88,
+                    width: 210,
+                    transform: "translateX(-50%)",
+                    padding: "10px 12px",
+                    border: "1px solid rgba(225,195,92,0.2)",
+                    background: "rgba(4,6,11,0.94)",
+                    color: "rgba(220,205,175,0.74)",
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: 9,
+                    lineHeight: 1.55,
+                    letterSpacing: "0.16em",
+                    textAlign: "center",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  {canvasMeta.groupDividerLabel ??
+                    "SAME SOURCE · DIFFERENT DIRECTION"}
+                </div>
+              </div>
+            );
+          })}
+
           {canvasItems.length <= 2 ? (
             <div
               style={{
@@ -939,6 +1084,21 @@ export default function FrameworkEvidenceCanvas({
             canvasItems.slice(0, -1).map((item, index) => {
               const current = boardPositions[index];
               const next = boardPositions[index + 1];
+              const currentGroup = canvasGroups.find(
+                (group) => index >= group.startIndex && index <= group.endIndex,
+              );
+              const nextGroup = canvasGroups.find(
+                (group) =>
+                  index + 1 >= group.startIndex &&
+                  index + 1 <= group.endIndex,
+              );
+              if (
+                currentGroup &&
+                nextGroup &&
+                currentGroup.id !== nextGroup.id
+              ) {
+                return null;
+              }
               const label =
                 canvasMeta.transitionLabels?.[index] ??
                 (index === 0 ? "DRIFT EMERGES" : "PRESERVATION CONSTRAINS");

@@ -144,6 +144,17 @@ export interface AtlasEvidenceCanvas {
   transitionTo?: string;
   /** Labels rendered between boards when a comparison has three states. */
   transitionLabels?: string[];
+  /** Authored territories that distinguish parallel directions within a canvas. */
+  groups?: Array<{
+    id: string;
+    label: string;
+    question: string;
+    startIndex: number;
+    endIndex: number;
+    color: string;
+  }>;
+  /** Label rendered at the threshold between adjacent canvas groups. */
+  groupDividerLabel?: string;
   annotations: AtlasEvidenceAnnotation[];
 }
 
