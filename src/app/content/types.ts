@@ -107,7 +107,11 @@ export type AtlasEvidenceAnnotationCategory =
   | "authority-drift"
   | "semantic-drift"
   | "invariant-preservation"
-  | "integrity-verification";
+  | "integrity-verification"
+  | "aspiration-focus"
+  | "encoded-cognition"
+  | "behavioral-sequencing"
+  | "expectation-clarity";
 
 export type AtlasDecisionRightHolder = "Human" | "AI" | "Shared";
 

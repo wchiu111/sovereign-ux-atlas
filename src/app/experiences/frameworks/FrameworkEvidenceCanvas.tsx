@@ -14,18 +14,21 @@ import type {
 } from "../../content/types";
 import type { ReadingEvidenceItem } from "../shared/types";
 
-const WORLD_HEIGHT = 2080;
 const BOARD_WIDTH = 1050;
+const BOARD_X = 140;
+const BOARD_Y = 260;
+const BOARD_GAP = 320;
 const DEFAULT_BOARD_HEIGHT = Math.round((BOARD_WIDTH * 2023) / 1374);
 const OPENING_SCALE = 0.73;
-const MIN_SCALE = 0.28;
+const MIN_SCALE = 0.12;
 const MAX_SCALE = 2;
 
-const BOARD_POSITIONS = [
-  { x: 140, y: 260 },
-  { x: 1510, y: 260 },
-  { x: 2880, y: 260 },
-] as const;
+function getBoardPosition(index: number) {
+  return {
+    x: BOARD_X + index * (BOARD_WIDTH + BOARD_GAP),
+    y: BOARD_Y,
+  };
+}
 
 const CATEGORY_STYLE: Record<
   AtlasEvidenceAnnotationCategory,
@@ -57,6 +60,16 @@ const CATEGORY_STYLE: Record<
   "integrity-verification": {
     label: "INTEGRITY VERIFICATION",
     color: "#7CB4D5",
+  },
+  "aspiration-focus": { label: "ASPIRATION FOCUS", color: "#E1C35C" },
+  "encoded-cognition": { label: "ENCODED COGNITION", color: "#A78BDB" },
+  "behavioral-sequencing": {
+    label: "BEHAVIORAL SEQUENCING",
+    color: "#7CB4D5",
+  },
+  "expectation-clarity": {
+    label: "EXPECTATION CLARITY",
+    color: "#76C79A",
   },
 };
 
@@ -458,8 +471,8 @@ export default function FrameworkEvidenceCanvas({
     originY: number;
   } | null>(null);
   const [view, setView] = useState<ViewState>({
-    x: 32 - BOARD_POSITIONS[0].x * OPENING_SCALE,
-    y: 198 - BOARD_POSITIONS[0].y * OPENING_SCALE,
+    x: 32 - BOARD_X * OPENING_SCALE,
+    y: 198 - BOARD_Y * OPENING_SCALE,
     scale: OPENING_SCALE,
   });
   const [dragging, setDragging] = useState(false);
@@ -469,28 +482,33 @@ export default function FrameworkEvidenceCanvas({
     useState<TransitionPhase>("entering");
 
   const canvasItems = useMemo(
-    () => items.filter((item) => item.canvas && item.image).slice(0, 3),
+    () => items.filter((item) => item.canvas && item.image).slice(0, 8),
     [items],
   );
   const canvasMeta = canvasItems[0]?.canvas;
-  const worldWidth = useMemo(() => {
-    const lastPosition =
-      BOARD_POSITIONS[Math.max(0, canvasItems.length - 1)] ?? BOARD_POSITIONS[0];
-    return canvasItems.length <= 2
-      ? 2700
-      : lastPosition.x + BOARD_WIDTH + 140;
-  }, [canvasItems.length]);
-  const maxBoardHeight = useMemo(
-    () =>
-      canvasItems.length > 0
-        ? Math.max(
-            ...canvasItems.map(
-              (item) => item.canvas?.boardHeight ?? DEFAULT_BOARD_HEIGHT,
-            ),
-          )
-        : DEFAULT_BOARD_HEIGHT,
+  const boardPositions = useMemo(
+    () => canvasItems.map((_, index) => getBoardPosition(index)),
     [canvasItems],
   );
+  const boardHeights = useMemo(
+    () =>
+      canvasItems.map(
+        (item) => item.canvas?.boardHeight ?? DEFAULT_BOARD_HEIGHT,
+      ),
+    [canvasItems],
+  );
+  const worldWidth = useMemo(() => {
+    const lastPosition = boardPositions.at(-1) ?? getBoardPosition(0);
+    return Math.max(2700, lastPosition.x + BOARD_WIDTH + BOARD_X);
+  }, [boardPositions]);
+  const maxBoardHeight = useMemo(
+    () =>
+      boardHeights.length > 0
+        ? Math.max(...boardHeights)
+        : DEFAULT_BOARD_HEIGHT,
+    [boardHeights],
+  );
+  const worldHeight = BOARD_Y + maxBoardHeight + 220;
 
   const setOpeningView = useCallback(() => {
     const viewport = viewportRef.current;
@@ -501,8 +519,8 @@ export default function FrameworkEvidenceCanvas({
     const boardLabelTop = rect.width < 900 ? 174 : 198;
     setView({
       scale,
-      x: boardLeft - BOARD_POSITIONS[0].x * scale,
-      y: boardLabelTop - BOARD_POSITIONS[0].y * scale,
+      x: boardLeft - BOARD_X * scale,
+      y: boardLabelTop - BOARD_Y * scale,
     });
   }, []);
 
@@ -516,7 +534,7 @@ export default function FrameworkEvidenceCanvas({
     const scale = clamp(
       Math.min(
         (rect.width - horizontalPadding * 2) / worldWidth,
-        (rect.height - topInset - bottomInset) / WORLD_HEIGHT,
+        (rect.height - topInset - bottomInset) / worldHeight,
       ),
       MIN_SCALE,
       0.82,
@@ -525,9 +543,11 @@ export default function FrameworkEvidenceCanvas({
     setView({
       scale,
       x: (rect.width - worldWidth * scale) / 2,
-      y: topInset + (rect.height - topInset - bottomInset - WORLD_HEIGHT * scale) / 2,
+      y:
+        topInset +
+        (rect.height - topInset - bottomInset - worldHeight * scale) / 2,
     });
-  }, [worldWidth]);
+  }, [worldHeight, worldWidth]);
 
   useEffect(() => {
     setOpeningView();
@@ -878,7 +898,7 @@ export default function FrameworkEvidenceCanvas({
             left: 0,
             top: 0,
             width: worldWidth,
-            height: WORLD_HEIGHT,
+            height: worldHeight,
             transformOrigin: "0 0",
             transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.scale})`,
             willChange: "transform",
@@ -888,8 +908,8 @@ export default function FrameworkEvidenceCanvas({
             <div
               style={{
                 position: "absolute",
-                left: 930,
-                top: 1900,
+                left: boardPositions[0].x + BOARD_WIDTH - 120,
+                top: BOARD_Y + maxBoardHeight + 68,
                 width: 840,
                 display: "flex",
                 alignItems: "center",
@@ -917,8 +937,8 @@ export default function FrameworkEvidenceCanvas({
             </div>
           ) : (
             canvasItems.slice(0, -1).map((item, index) => {
-              const current = BOARD_POSITIONS[index];
-              const next = BOARD_POSITIONS[index + 1];
+              const current = boardPositions[index];
+              const next = boardPositions[index + 1];
               const label =
                 canvasMeta.transitionLabels?.[index] ??
                 (index === 0 ? "DRIFT EMERGES" : "PRESERVATION CONSTRAINS");
@@ -928,7 +948,10 @@ export default function FrameworkEvidenceCanvas({
                   style={{
                     position: "absolute",
                     left: current.x + BOARD_WIDTH + 22,
-                    top: BOARD_POSITIONS[0].y + maxBoardHeight + 68,
+                    top:
+                      BOARD_Y +
+                      Math.max(boardHeights[index], boardHeights[index + 1]) +
+                      68,
                     width: next.x - current.x - BOARD_WIDTH - 44,
                     display: "flex",
                     alignItems: "center",
@@ -960,9 +983,9 @@ export default function FrameworkEvidenceCanvas({
             <EvidenceBoard
               key={item.id}
               item={item}
-              position={BOARD_POSITIONS[index] ?? BOARD_POSITIONS[0]}
+              position={boardPositions[index] ?? getBoardPosition(0)}
               boardIndex={index}
-              boardHeight={item.canvas?.boardHeight ?? DEFAULT_BOARD_HEIGHT}
+              boardHeight={boardHeights[index] ?? DEFAULT_BOARD_HEIGHT}
               viewScale={view.scale}
               active={active}
               locked={locked}

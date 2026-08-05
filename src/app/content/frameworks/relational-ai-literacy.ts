@@ -1,5 +1,29 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
 
+import aspirationEncoded from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/01-aspiration-encoded.png";
+import orientation from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/02-orientation.png";
+import explanation from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/03-explanation.png";
+import expectationManagement from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/04-expectation-management.png";
+import processTransparency from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/05-process-transparency.png";
+import commitment from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/06-commitment.png";
+import confirmation from "../../../imports/frameworks/relational-ai-literacy/02-encoded-cognition/07-confirmation.png";
+
+const encodedCognitionCanvas = {
+  id: "relational-ai-literacy-encoded-cognition",
+  eyebrow: "GENERATED INTERACTION STUDY",
+  title: "The prompt carries the profession",
+  description:
+    "Two language systems encode different definitions of success. One produces a persuasion system; the other turns understanding into a sequence. These generated artifacts are directional evidence, not a controlled model evaluation.",
+  transitionLabels: [
+    "MENTAL MODEL SHIFTS",
+    "UNCERTAINTY DECREASES",
+    "EXPECTATIONS CLARIFY",
+    "PROCESS BECOMES VISIBLE",
+    "COMMITMENT ARRIVES",
+    "CLOSURE CONFIRMS",
+  ],
+};
+
 export default defineAtlasEntry({
   id: "relational-ai-literacy",
   aliases: ["relational literacy", "AI conversation literacy"],
@@ -14,6 +38,9 @@ export default defineAtlasEntry({
       "co-creation",
       "presence",
       "echo",
+      "encoded cognition",
+      "professional cognition",
+      "prompting as product thinking",
     ],
     aliases: [
       "relational literacy",
@@ -22,7 +49,7 @@ export default defineAtlasEntry({
       "human AI co-creation",
     ],
     summary:
-      "A framework for participating in human-AI interaction with presence, recursive awareness, grounded interpretation, and preserved human agency.",
+      "A framework for participating in human-AI interaction with presence, coherent intent, recursive awareness, grounded interpretation, and preserved human agency.",
   },
   category: "framework",
   frameworkKind: "core",
@@ -44,7 +71,7 @@ export default defineAtlasEntry({
   presentation: {
     mode: "practice-led",
     sequenceLabel: "RELATIONAL PRACTICE",
-    railLabel: "CONVERSATION STUDIES",
+    railLabel: "EXPLORE THE CANVAS",
     artifactLabel: "",
     emptyRailMessage:
       "This framework is learned through interaction rather than demonstrated through a fixed interface. Annotated conversation studies will appear here only when they add evidence beyond the written framework.",
@@ -194,17 +221,321 @@ export default defineAtlasEntry({
           "context",
           "uncertainty",
           "constraints",
+          "encoded cognition",
+          "professional cognition",
+          "behavioral prompting",
+          "marketing language",
+          "UX language",
         ],
-        aliases: ["clear intent", "interaction intent"],
+        aliases: [
+          "clear intent",
+          "interaction intent",
+          "professional cognition",
+          "prompt literacy",
+        ],
         summary:
-          "The capacity to communicate the purpose, context, uncertainty, and boundaries beneath an instruction.",
+          "The capacity to communicate the purpose, context, uncertainty, boundaries, and professional mental model beneath an instruction.",
       },
-      subtitle: "Better interaction begins with clearer inner context, not more elaborate syntax.",
-      readingTime: 2,
+      subtitle: "Language carries an objective, a mental model, and a definition of success.",
+      readingTime: 3,
       content:
-        "A technically precise prompt can still conceal an unclear purpose. Relational fluency requires the person to communicate what they are trying to understand, why it matters, what remains uncertain, and what kind of participation would be useful.\n\nThis may include emotional context without asking the system to simulate intimacy or assume authority. A person can say that a decision feels charged, that they want reflection before recommendations, or that they are not yet ready to resolve the question. These signals shape the interaction more meaningfully than ornamental prompt language.\n\nThe goal is not prompt perfection. It is alignment between the person's actual intent and the interaction they initiate. When intent changes, the conversation should be able to change with it.",
+        "A technically precise prompt can still conceal an unclear purpose. Relational fluency requires the person to communicate what they are trying to understand, why it matters, what remains uncertain, and what kind of participation would be useful.\n\nLanguage also carries professional cognition. A marketing brief may encode persuasion, positioning, excitement, and aspiration. A product-design brief may encode uncertainty reduction, sequencing, trust, expectations, and behavioral transitions. The model does not merely follow the visible request. It amplifies the system of thinking embedded within it.\n\nThis makes prompting less like syntax engineering and more like making judgment observable. Asking for a cutting-edge platform may produce a persuasive surface. Describing what a person should know before acting, when optionality should appear, and how uncertainty should decrease gives the model a behavioral structure to design around.\n\nThe goal is not prompt perfection. It is alignment between the person's actual intent, the professional mental model encoded in their language, and the interaction they initiate. When intent changes, the conversation should be able to change with it.",
       insight:
-        "The system cannot respond to context that remains invisible—even when the instruction sounds complete.",
+        "AI reveals the mental model inside the prompt: aspiration becomes persuasion, while behavioral intent becomes experience architecture.",
+      evidence: [
+        {
+          id: "encoded-cognition-aspiration",
+          number: "01",
+          title: "The Prompt Carries the Profession",
+          type: "INTERACTIVE COMPARISON",
+          description:
+            "Explore how two language systems encode different definitions of success: one organizes persuasion, while the other sequences understanding before commitment.",
+          caption:
+            "Illustrative generated output. The comparison is directional because the artifacts use different product identities and should not be treated as a controlled model evaluation.",
+          image: aspirationEncoded,
+          alt: "A generated AI platform landing page emphasizing speed, capability, metrics, and conversion.",
+          imageFit: "contain",
+          canvas: {
+            ...encodedCognitionCanvas,
+            portalImage: orientation,
+            boardLabel: "ASPIRATION ENCODED",
+            boardSubtitle: "Marketing language · persuasion system",
+            boardHeight: 3813,
+            annotations: [
+              {
+                id: "aspiration-leads",
+                number: "01",
+                x: 50,
+                y: 9,
+                category: "aspiration-focus",
+                title: "Aspiration leads",
+                observation:
+                  "The experience opens with velocity, intelligence, and transformation rather than the conditions of use.",
+                meaning:
+                  "The prompt encoded a belief objective, so the interface gives the desired future state the highest priority.",
+                rightHolder: "Shared",
+                footerLabel: "ENCODED OBJECTIVE",
+                footerValue: "PERSUASION",
+                cardSide: "right",
+              },
+              {
+                id: "proof-supports-persuasion",
+                number: "02",
+                x: 27,
+                y: 57,
+                category: "encoded-cognition",
+                title: "Proof supports persuasion",
+                observation:
+                  "Metrics, capabilities, and testimonials accumulate as evidence that the product is powerful and credible.",
+                meaning:
+                  "The model makes marketing cognition visible by turning differentiation and proof into the page's organizing logic.",
+                rightHolder: "Shared",
+                footerLabel: "PROFESSIONAL COGNITION",
+                footerValue: "MARKETING",
+                cardSide: "right",
+              },
+              {
+                id: "conversion-is-destination",
+                number: "03",
+                x: 67,
+                y: 89,
+                category: "aspiration-focus",
+                title: "Conversion is the destination",
+                observation:
+                  "The page resolves toward a trial CTA after repeatedly reinforcing speed, scale, and results.",
+                meaning:
+                  "The sequence is coherent for its encoded objective: establish desire, reduce doubt, then ask for commitment.",
+                rightHolder: "Shared",
+                footerLabel: "INTERACTION GOAL",
+                footerValue: "CONVERSION",
+                cardSide: "left",
+              },
+            ],
+          },
+        },
+        {
+          id: "encoded-cognition-orientation",
+          number: "02",
+          title: "Orientation",
+          type: "GENERATED EXPERIMENT",
+          description:
+            "UX language begins by reducing uncertainty and letting the person choose whether to explore before signing up.",
+          caption:
+            "The first screen creates orientation and preserves a direct path for people who already understand the offer.",
+          image: orientation,
+          alt: "A generated onboarding screen that offers a guided explanation before signup.",
+          imageFit: "contain",
+          canvas: {
+            ...encodedCognitionCanvas,
+            boardLabel: "ORIENTATION",
+            boardSubtitle: "UX language · reduce initial uncertainty",
+            boardHeight: 1021,
+            annotations: [
+              {
+                id: "orientation-before-commitment",
+                number: "01",
+                x: 21,
+                y: 63,
+                category: "behavioral-sequencing",
+                title: "Orientation before commitment",
+                observation:
+                  "The primary action begins a short explanation, while an explicit skip preserves a direct path to signup.",
+                meaning:
+                  "The prompt encoded what the person should understand before acting, so the system designs a reversible first step.",
+                rightHolder: "Shared",
+                footerLabel: "ENCODED OBJECTIVE",
+                footerValue: "ORIENTATION",
+                cardSide: "right",
+              },
+            ],
+          },
+        },
+        {
+          id: "encoded-cognition-explanation",
+          number: "03",
+          title: "Explanation",
+          type: "GENERATED EXPERIMENT",
+          description:
+            "The product explains what it does in three concrete behaviors before describing the exchange.",
+          caption:
+            "The sequence makes the system's role understandable in manageable pieces.",
+          image: explanation,
+          alt: "A generated onboarding screen explaining three product behaviors.",
+          imageFit: "contain",
+          canvas: {
+            ...encodedCognitionCanvas,
+            boardLabel: "EXPLANATION",
+            boardSubtitle: "Behavior becomes understandable",
+            boardHeight: 1022,
+            annotations: [
+              {
+                id: "behavior-not-features",
+                number: "01",
+                x: 28,
+                y: 58,
+                category: "encoded-cognition",
+                title: "Behavior replaces feature claims",
+                observation:
+                  "Each capability is described through what the system will do and what burden it removes for the person.",
+                meaning:
+                  "Product cognition appears as a model of lived interaction rather than a list of abstract capabilities.",
+                rightHolder: "Shared",
+                footerLabel: "PROFESSIONAL COGNITION",
+                footerValue: "PRODUCT DESIGN",
+                cardSide: "right",
+              },
+            ],
+          },
+        },
+        {
+          id: "encoded-cognition-expectations",
+          number: "04",
+          title: "Expectation Management",
+          type: "GENERATED EXPERIMENT",
+          description:
+            "The exchange becomes explicit before the person is asked to provide anything.",
+          caption:
+            "Timing, optionality, and the eventual decision are visible as part of the experience.",
+          image: expectationManagement,
+          alt: "A generated onboarding screen explaining what a person receives and when.",
+          imageFit: "contain",
+          canvas: {
+            ...encodedCognitionCanvas,
+            boardLabel: "EXPECTATION MANAGEMENT",
+            boardSubtitle: "The exchange becomes explicit",
+            boardHeight: 1022,
+            annotations: [
+              {
+                id: "expectations-over-time",
+                number: "01",
+                x: 27,
+                y: 61,
+                category: "expectation-clarity",
+                title: "Expectations become temporal",
+                observation:
+                  "The interface states what arrives immediately, on day one, on day three, and when a paid decision occurs.",
+                meaning:
+                  "Trust is treated as a sequence of knowable commitments rather than a claim the person is expected to accept.",
+                rightHolder: "Shared",
+                footerLabel: "ENCODED OBJECTIVE",
+                footerValue: "EXPECTATION CLARITY",
+                cardSide: "right",
+              },
+            ],
+          },
+        },
+        {
+          id: "encoded-cognition-process",
+          number: "05",
+          title: "Process Transparency",
+          type: "GENERATED EXPERIMENT",
+          description:
+            "Required and optional steps remain visible before the final commitment.",
+          caption:
+            "The process separates necessity from choice and names the consequence of continuing.",
+          image: processTransparency,
+          alt: "A generated onboarding screen disclosing required and optional signup steps.",
+          imageFit: "contain",
+          canvas: {
+            ...encodedCognitionCanvas,
+            boardLabel: "PROCESS TRANSPARENCY",
+            boardSubtitle: "Required and optional steps stay visible",
+            boardHeight: 1021,
+            annotations: [
+              {
+                id: "required-and-optional",
+                number: "01",
+                x: 27,
+                y: 59,
+                category: "visible-reasoning",
+                title: "Necessity and choice are separated",
+                observation:
+                  "Email and preference questions are marked required; calendar access remains explicitly optional.",
+                meaning:
+                  "The sequence preserves agency by making the operating conditions visible before the person continues.",
+                rightHolder: "Human",
+                footerLabel: "ENCODED OBJECTIVE",
+                footerValue: "TRANSPARENCY",
+                cardSide: "right",
+              },
+            ],
+          },
+        },
+        {
+          id: "encoded-cognition-commitment",
+          number: "06",
+          title: "Commitment",
+          type: "GENERATED EXPERIMENT",
+          description:
+            "The account request arrives only after the product, exchange, and process have been explained.",
+          caption:
+            "Commitment is the result of accumulated understanding rather than the first test of interest.",
+          image: commitment,
+          alt: "A generated account creation screen appearing at the end of onboarding.",
+          imageFit: "contain",
+          canvas: {
+            ...encodedCognitionCanvas,
+            boardLabel: "COMMITMENT",
+            boardSubtitle: "The request arrives after understanding",
+            boardHeight: 1022,
+            annotations: [
+              {
+                id: "commitment-arrives-last",
+                number: "01",
+                x: 27,
+                y: 64,
+                category: "behavioral-sequencing",
+                title: "Commitment arrives last",
+                observation:
+                  "The system asks for one required field after the person has seen how it works, what they receive, and what signup involves.",
+                meaning:
+                  "The UX prompt encodes cognitive timing, so the final request follows sufficient context instead of preceding it.",
+                rightHolder: "Human",
+                footerLabel: "ENCODED OBJECTIVE",
+                footerValue: "INFORMED COMMITMENT",
+                cardSide: "right",
+              },
+            ],
+          },
+        },
+        {
+          id: "encoded-cognition-confirmation",
+          number: "07",
+          title: "Confirmation",
+          type: "GENERATED EXPERIMENT",
+          description:
+            "The interaction closes by confirming what happened and what will happen next.",
+          caption:
+            "Clear closure preserves orientation after the person has acted.",
+          image: confirmation,
+          alt: "A generated confirmation screen explaining the next steps after signup.",
+          imageFit: "contain",
+          canvas: {
+            ...encodedCognitionCanvas,
+            boardLabel: "CONFIRMATION",
+            boardSubtitle: "The interaction closes cleanly",
+            boardHeight: 1022,
+            annotations: [
+              {
+                id: "closure-confirms-next-state",
+                number: "01",
+                x: 29,
+                y: 62,
+                category: "expectation-clarity",
+                title: "Closure confirms the next state",
+                observation:
+                  "The final screen confirms delivery, expiration, preparation, and the absence of an immediate payment obligation.",
+                meaning:
+                  "The sequence does not stop at conversion. It restores orientation after the state change.",
+                rightHolder: "Shared",
+                footerLabel: "ENCODED OBJECTIVE",
+                footerValue: "CLOSURE",
+                cardSide: "right",
+              },
+            ],
+          },
+        },
+      ],
     },
     {
       id: "recursive-listening",
