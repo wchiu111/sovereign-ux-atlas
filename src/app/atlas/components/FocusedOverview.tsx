@@ -131,20 +131,32 @@ export default function FocusedOverview({
   const familySettled = applicationKitDepth === "family";
 
   const focusTargetX = availableWidth * 0.5;
-  const focusTargetY = dims.h * 0.47;
-  const focusScale = 1.48;
+  const focusTargetY = dims.h * 0.46;
+  const focusActive =
+    applicationKitDepth === "entering-family" ||
+    applicationKitDepth === "family";
 
-  const behaviorTransform = behaviorAuthorityNode
-    ? familyCommitted
-      ? `translate(${focusTargetX} ${focusTargetY}) scale(${focusScale}) translate(${-behaviorAuthorityNode.x} ${-behaviorAuthorityNode.y})`
-      : "translate(0 0) scale(1)"
-    : undefined;
+  const focusScale =
+    applicationKitDepth === "entering-family"
+      ? 1.72
+      : applicationKitDepth === "family"
+        ? 2.18
+        : 1;
+
+  const behaviorTransform =
+    behaviorAuthorityNode && focusActive
+      ? `matrix(${focusScale} 0 0 ${focusScale} ${
+          focusTargetX - focusScale * behaviorAuthorityNode.x
+        } ${
+          focusTargetY - focusScale * behaviorAuthorityNode.y
+        })`
+      : "matrix(1 0 0 1 0 0)";
 
   const spatialTransition = reducedMotion
     ? "opacity 180ms ease-out"
     : [
         "opacity 620ms cubic-bezier(0.16,1,0.3,1)",
-        "transform 820ms cubic-bezier(0.16,1,0.3,1)",
+        "transform 940ms cubic-bezier(0.16,1,0.3,1)",
         "filter 620ms cubic-bezier(0.16,1,0.3,1)",
       ].join(", ");
 
@@ -226,7 +238,15 @@ export default function FocusedOverview({
         </defs>
 
         <g
-          opacity={familyCommitted ? 0 : 1}
+          opacity={
+            applicationKitDepth === "overview"
+              ? 1
+              : applicationKitDepth === "entering-family"
+                ? 0.08
+                : applicationKitDepth === "leaving-family"
+                  ? 0.06
+                  : 0.015
+          }
           style={{
             transition: spatialTransition,
             pointerEvents: familyCommitted ? "none" : "auto",
@@ -502,7 +522,7 @@ export default function FocusedOverview({
                     angle={angle}
                     orbitRadius={
                       familyCommitted && isBehaviorAuthority
-                        ? orbitRadius * 1.08
+                        ? orbitRadius * 1.58
                         : orbitRadius
                     }
                     color={node.nodeColor}
@@ -519,25 +539,19 @@ export default function FocusedOverview({
             pointerEvents="none"
             style={{ transition: spatialTransition }}
           >
-            <circle
-              cx={focusTargetX}
-              cy={focusTargetY}
-              r="112"
-              fill="none"
-              stroke={behaviorAuthorityNode.nodeColor}
-              strokeWidth="0.7"
-              strokeDasharray="5 12"
-            />
-            <circle
-              cx={focusTargetX}
-              cy={focusTargetY}
-              r="165"
-              fill="none"
-              stroke={behaviorAuthorityNode.nodeColor}
-              strokeWidth="0.45"
-              strokeDasharray="3 15"
-              opacity="0.5"
-            />
+            {[92, 146, 214, 286].map((radius, index) => (
+              <circle
+                key={radius}
+                cx={focusTargetX}
+                cy={focusTargetY}
+                r={radius}
+                fill="none"
+                stroke={behaviorAuthorityNode.nodeColor}
+                strokeWidth={index === 0 ? 0.75 : 0.45}
+                strokeDasharray={index % 2 === 0 ? "5 12" : "3 16"}
+                opacity={index === 0 ? 0.82 : 0.42}
+              />
+            ))}
           </g>
         )}
       </svg>

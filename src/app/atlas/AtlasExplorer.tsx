@@ -7,7 +7,10 @@ import FocusPullTransition, {
   FOCUS_TRANSITION_DURATION,
   REDUCED_FOCUS_TRANSITION_DURATION,
 } from "./components/FocusPullTransition";
-import FocusedOverview from "./components/FocusedOverview";
+import FocusedOverview, {
+  type ApplicationKitDepth,
+} from "./components/FocusedOverview";
+import ApplicationKitLevel2Drawer from "./components/ApplicationKitLevel2Drawer";
 import AtlasSystemPreview from "./components/AtlasSystemPreview";
 import type { AtlasPreviewId } from "./components/AtlasPreviewContent";
 import { SYSTEMS, SYSTEM_MAP } from "../data/atlasSystems";
@@ -73,6 +76,9 @@ export default function AtlasExplorer({
   const [hoveredNexus, setHoveredNexus] = useState(false);
   const [searchPreviewSystemId, setSearchPreviewSystemId] = useState<string | null>(null);
   const [reduceFocusMotion, setReduceFocusMotion] = useState(false);
+  const [applicationKitDepth, setApplicationKitDepth] =
+    useState<ApplicationKitDepth>("overview");
+  const applicationKitTimersRef = useRef<number[]>([]);
   const [hoveredSystemPreview, setHoveredSystemPreview] = useState<{
     id: AtlasPreviewId;
     x: number;
@@ -96,6 +102,12 @@ export default function AtlasExplorer({
     syncPreference();
     media.addEventListener?.("change", syncPreference);
     return () => media.removeEventListener?.("change", syncPreference);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      applicationKitTimersRef.current.forEach(window.clearTimeout);
+    };
   }, []);
 
   useEffect(() => {
@@ -355,12 +367,91 @@ useEffect(() => {
     });
   }, []);
 
+  const enterBehaviorAuthority = useCallback(() => {
+    if (
+      activePlanet?.id !== "application-kit" ||
+      applicationKitDepth !== "overview"
+    ) {
+      return;
+    }
+
+    applicationKitTimersRef.current.forEach(window.clearTimeout);
+    applicationKitTimersRef.current = [];
+
+    setApplicationKitDepth("entering-family");
+
+    applicationKitTimersRef.current.push(
+      window.setTimeout(
+        () => setApplicationKitDepth("family"),
+        reduceFocusMotion ? 120 : 1020,
+      ),
+    );
+  }, [
+    activePlanet?.id,
+    applicationKitDepth,
+    reduceFocusMotion,
+  ]);
+
+  const exitBehaviorAuthority = useCallback(() => {
+    if (
+      applicationKitDepth === "overview" ||
+      applicationKitDepth === "leaving-family"
+    ) {
+      return;
+    }
+
+    applicationKitTimersRef.current.forEach(window.clearTimeout);
+    applicationKitTimersRef.current = [];
+
+    setApplicationKitDepth("leaving-family");
+
+    applicationKitTimersRef.current.push(
+      window.setTimeout(
+        () => setApplicationKitDepth("overview"),
+        reduceFocusMotion ? 120 : 940,
+      ),
+    );
+  }, [applicationKitDepth, reduceFocusMotion]);
+
+  useEffect(() => {
+    if (applicationKitDepth === "overview") return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      exitBehaviorAuthority();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [applicationKitDepth, exitBehaviorAuthority]);
+
+  useEffect(() => {
+    if (activePlanet?.id === "application-kit") return;
+
+    applicationKitTimersRef.current.forEach(window.clearTimeout);
+    applicationKitTimersRef.current = [];
+    setApplicationKitDepth("overview");
+  }, [activePlanet?.id]);
+
   // Click-space-to-go-back
   const handleBgClick = useCallback(() => {
     if (level === 3) return;
+
+    if (level === 2 && applicationKitDepth !== "overview") {
+      exitBehaviorAuthority();
+      return;
+    }
+
     if (level === 2) backToSystem();
     else if (level === 1) goToAtlas();
-  }, [level, backToSystem, goToAtlas]);
+  }, [
+    level,
+    applicationKitDepth,
+    exitBehaviorAuthority,
+    backToSystem,
+    goToAtlas,
+  ]);
 
   const { w, h } = dims;
   const nexX = w * 0.5;
@@ -492,6 +583,8 @@ useEffect(() => {
           planet={activePlanet}
           onBack={backToSystem}
           transitioning={!!focusTransition}
+          applicationKitDepth={applicationKitDepth}
+          onEnterBehaviorAuthority={enterBehaviorAuthority}
           onOpenStar={(index, anchor) => {
             const selectedStar = activePlanet.stars[index];
 
@@ -681,7 +774,7 @@ useEffect(() => {
           Select a concept · Click space to zoom out
         </div>
       )}
-      {level === 2 && (
+      {level === 2 && applicationKitDepth === "overview" && (
         <div
           className="absolute bottom-7 left-1/2 -translate-x-1/2 z-25 pointer-events-none"
           style={{
@@ -713,11 +806,27 @@ useEffect(() => {
       {/* ── Right drawer ─────────────────────────────────────────────── */}
       {level === 2 && activeSystem && activePlanet && (
         <AtlasProjectIntelligenceDrawer
-          open={drawerOpen}
+          open={
+            drawerOpen &&
+            (
+              activePlanet.id !== "application-kit" ||
+              applicationKitDepth === "overview"
+            )
+          }
           system={activeSystem}
           planet={activePlanet}
         />
       )}
+
+      {level === 2 &&
+        activeSystem &&
+        activePlanet?.id === "application-kit" && (
+          <ApplicationKitLevel2Drawer
+            open={applicationKitDepth === "family"}
+            systemColor={activeSystem.color}
+            onBack={exitBehaviorAuthority}
+          />
+        )}
 
       {/* ── Focus Mode / Case Study Engine ─────────────────────────── */}
       {level === 3 && activeSystem && activePlanet && (
