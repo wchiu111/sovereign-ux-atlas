@@ -1,5 +1,6 @@
 import type { MouseEvent } from "react";
 import type { AtlasModuleFamily } from "../../content/types";
+import { resolveStellarColor } from "../constellation/stellarPalette";
 
 interface ApplicationKitModuleArcProps {
   family: AtlasModuleFamily;
@@ -47,9 +48,10 @@ export default function ApplicationKitModuleArc({
           (moduleCount === 1
             ? 0
             : -arcSweep / 2 + (moduleIndex / (moduleCount - 1)) * arcSweep);
-        const arcRadius = Math.min(82, orbitRadius * 0.43);
+        const arcRadius = Math.min(94, orbitRadius * 0.4);
         const moduleX = x + Math.cos(moduleAngle) * arcRadius;
         const moduleY = y + Math.sin(moduleAngle) * arcRadius;
+        const moduleColor = resolveStellarColor(module.stellarType, color);
         const labelX = moduleX + Math.cos(moduleAngle) * 16;
         const labelY = moduleY + Math.sin(moduleAngle) * 16;
         const labelAnchor =
@@ -65,7 +67,7 @@ export default function ApplicationKitModuleArc({
             <path
               d={`M ${x + Math.cos(moduleAngle) * 25} ${y + Math.sin(moduleAngle) * 25} L ${moduleX} ${moduleY}`}
               fill="none"
-              stroke={color}
+              stroke={moduleColor}
               strokeWidth="0.55"
               strokeOpacity="0.28"
               strokeDasharray="2 5"
@@ -75,7 +77,7 @@ export default function ApplicationKitModuleArc({
               cx={moduleX}
               cy={moduleY}
               r="13"
-              fill={color}
+              fill={moduleColor}
               opacity="0.055"
               filter="url(#fo-glow-sm)"
             />
@@ -84,7 +86,7 @@ export default function ApplicationKitModuleArc({
               cy={moduleY}
               r="7.5"
               fill="none"
-              stroke={color}
+              stroke={moduleColor}
               strokeWidth="0.65"
               strokeOpacity="0.42"
               strokeDasharray="2 4"
@@ -93,7 +95,7 @@ export default function ApplicationKitModuleArc({
               cx={moduleX}
               cy={moduleY}
               r="3.2"
-              fill={color}
+              fill={moduleColor}
               opacity="0.94"
               filter="url(#fo-glow-sm)"
             />
@@ -105,8 +107,8 @@ export default function ApplicationKitModuleArc({
               fontSize="8.5"
               fontFamily="'DM Mono',monospace"
               letterSpacing="0.55"
-              fill={color}
-              opacity="0.78"
+              fill={moduleColor}
+              opacity="0.86"
               pointerEvents="none"
             >
               {labelLines.map((line, lineIndex) => (

@@ -66,6 +66,7 @@ export interface AtlasEntryPresentation {
 export interface AtlasApplicationModule {
   id: string;
   title: string;
+  stellarType?: AtlasStellarType;
   purpose: string;
   includes: string[];
   useWhen: string;
@@ -107,11 +108,7 @@ export type AtlasEvidenceAnnotationCategory =
   | "authority-drift"
   | "semantic-drift"
   | "invariant-preservation"
-  | "integrity-verification"
-  | "aspiration-focus"
-  | "encoded-cognition"
-  | "behavioral-sequencing"
-  | "expectation-clarity";
+  | "integrity-verification";
 
 export type AtlasDecisionRightHolder = "Human" | "AI" | "Shared";
 
@@ -144,17 +141,6 @@ export interface AtlasEvidenceCanvas {
   transitionTo?: string;
   /** Labels rendered between boards when a comparison has three states. */
   transitionLabels?: string[];
-  /** Authored territories that distinguish parallel directions within a canvas. */
-  groups?: Array<{
-    id: string;
-    label: string;
-    question: string;
-    startIndex: number;
-    endIndex: number;
-    color: string;
-  }>;
-  /** Label rendered at the threshold between adjacent canvas groups. */
-  groupDividerLabel?: string;
   annotations: AtlasEvidenceAnnotation[];
 }
 

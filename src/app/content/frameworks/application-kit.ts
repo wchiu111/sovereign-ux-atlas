@@ -24,11 +24,56 @@ export default defineAtlasEntry({
     starPrefix: "ak",
   },
   overviewStars: [
-    { id: "adoption-sustainability", label: "ADOPTION & SUSTAINABILITY", angle: -90 },
-    { id: "behavior-authority", label: "BEHAVIOR & AUTHORITY", angle: -18 },
-    { id: "integrity-safety", label: "INTEGRITY & SAFETY", angle: 54 },
-    { id: "ethical-experience", label: "ETHICAL EXPERIENCE", angle: 126 },
-    { id: "validation-governance", label: "VALIDATION & GOVERNANCE", angle: 198 },
+    {
+      id: "adoption-sustainability",
+      label: "ADOPTION & SUSTAINABILITY",
+      angle: -90,
+      x: -0.52,
+      y: -0.92,
+      scale: 0.9,
+      stellarType: "strategy",
+      labelPosition: { side: "left", offset: 38 },
+    },
+    {
+      id: "behavior-authority",
+      label: "BEHAVIOR & AUTHORITY",
+      angle: -18,
+      x: 0.92,
+      y: -0.54,
+      scale: 1.04,
+      stellarType: "judgment",
+      labelPosition: { side: "top", offset: 34 },
+    },
+    {
+      id: "integrity-safety",
+      label: "INTEGRITY & SAFETY",
+      angle: 54,
+      x: 0.88,
+      y: 0.56,
+      scale: 1.1,
+      stellarType: "risk",
+      labelPosition: { side: "bottom", offset: 36 },
+    },
+    {
+      id: "ethical-experience",
+      label: "ETHICAL EXPERIENCE",
+      angle: 126,
+      x: -0.42,
+      y: 0.94,
+      scale: 0.96,
+      stellarType: "relational",
+      labelPosition: { side: "bottom", offset: 34 },
+    },
+    {
+      id: "validation-governance",
+      label: "VALIDATION & GOVERNANCE",
+      angle: 198,
+      x: -1.02,
+      y: 0.08,
+      scale: 1.06,
+      stellarType: "agentic",
+      labelPosition: { side: "left", offset: 38 },
+    },
   ],
   collection: {
     moduleCount: 14,
@@ -42,6 +87,7 @@ export default defineAtlasEntry({
           {
             id: "sovereign-onboarding",
             title: "SOVEREIGN ONBOARDING",
+            stellarType: "purpose",
             purpose:
               "Help teams align on intent, scope, and boundaries before applying the framework.",
             includes: [
@@ -58,6 +104,7 @@ export default defineAtlasEntry({
           {
             id: "presence-sustainability",
             title: "PRESENCE SUSTAINABILITY",
+            stellarType: "relational",
             purpose:
               "Protect teams from burnout and emotional overload while doing depth-heavy work.",
             includes: [
@@ -82,6 +129,7 @@ export default defineAtlasEntry({
           {
             id: "behavioral-decision-design",
             title: "BEHAVIORAL & DECISION DESIGN",
+            stellarType: "agentic",
             purpose:
               "Support AI and automation that interpret correctly, frame decisions clearly, and respond without assuming authority.",
             includes: [
@@ -102,6 +150,7 @@ export default defineAtlasEntry({
           {
             id: "multi-user-co-sovereignty",
             title: "MULTI-USER & CO-SOVEREIGNTY",
+            stellarType: "relational",
             purpose:
               "Handle shared systems where legitimate user needs and decision rights may conflict.",
             includes: [
@@ -119,6 +168,7 @@ export default defineAtlasEntry({
           {
             id: "constraint-scope-design",
             title: "CONSTRAINT & SCOPE DESIGN",
+            stellarType: "strategy",
             purpose:
               "Ensure systems operate within clear boundaries and do not imply capabilities they do not have.",
             includes: [
@@ -144,6 +194,7 @@ export default defineAtlasEntry({
           {
             id: "distortion-drift-detection",
             title: "DISTORTION & DRIFT DETECTION",
+            stellarType: "risk",
             purpose:
               "Help teams identify when systems quietly undermine agency.",
             includes: [
@@ -160,6 +211,7 @@ export default defineAtlasEntry({
           {
             id: "vulnerable-context-safeguards",
             title: "SAFEGUARDS FOR VULNERABLE CONTEXTS",
+            stellarType: "risk",
             purpose:
               "Prevent accidental harm in emotionally sensitive or consequential domains.",
             includes: [
@@ -177,6 +229,7 @@ export default defineAtlasEntry({
           {
             id: "signal-fidelity",
             title: "SIGNAL FIDELITY & EXPERIENCE ALIGNMENT",
+            stellarType: "purpose",
             purpose:
               "Ensure stated values remain consistent with actual system behavior.",
             includes: [
@@ -194,6 +247,7 @@ export default defineAtlasEntry({
           {
             id: "bias-projection-safeguards",
             title: "BIAS & PROJECTION SAFEGUARDS",
+            stellarType: "judgment",
             purpose:
               "Reduce misinterpretation and projection by designers and teams.",
             includes: [
@@ -219,6 +273,7 @@ export default defineAtlasEntry({
           {
             id: "value-aligned-growth",
             title: "VALUE-ALIGNED GROWTH & REVENUE",
+            stellarType: "strategy",
             purpose:
               "Help organizations grow without reverting to manipulation.",
             includes: [
@@ -236,6 +291,7 @@ export default defineAtlasEntry({
           {
             id: "stillness-closure-recovery",
             title: "STILLNESS, CLOSURE & RECOVERY",
+            stellarType: "relational",
             purpose:
               "Normalize rest, endings, repair, and penalty-free return in product design.",
             includes: [
@@ -252,6 +308,7 @@ export default defineAtlasEntry({
           {
             id: "cross-cultural-adaptation",
             title: "CROSS-CULTURAL ADAPTATION",
+            stellarType: "relational",
             purpose:
               "Apply Sovereign UX without imposing a single worldview.",
             includes: [
@@ -276,6 +333,7 @@ export default defineAtlasEntry({
           {
             id: "threshold-signal-stewardship",
             title: "THRESHOLD SIGNAL STEWARDSHIP",
+            stellarType: "judgment",
             purpose:
               "Prevent misuse of high-risk design signals.",
             includes: [
@@ -293,6 +351,7 @@ export default defineAtlasEntry({
           {
             id: "simulation-based-validation",
             title: "SIMULATION-BASED BEHAVIOR & DECISION VALIDATION",
+            stellarType: "agentic",
             purpose:
               "Model user behavior, system response, and decision outcomes before deployment.",
             includes: [

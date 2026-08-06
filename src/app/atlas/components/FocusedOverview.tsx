@@ -55,13 +55,16 @@ export default function FocusedOverview({
   const availableWidth = dims.w - PROJECT_DRAWER_WIDTH;
   const centerX = availableWidth * 0.46;
   const centerY = dims.h * 0.5;
-  const orbitRadius = Math.min(availableWidth * 0.25, dims.h * 0.3, 215);
+  const isApplicationKit = planet.id === "application-kit";
+  const orbitRadius = isApplicationKit
+    ? Math.min(availableWidth * 0.29, dims.h * 0.34, 260)
+    : Math.min(availableWidth * 0.25, dims.h * 0.3, 215);
   const planetColor = resolveStellarColor(
     planet.signatureStellarType,
     system.color,
   );
   const applicationKitFamilies =
-    planet.id === "application-kit"
+    isApplicationKit
       ? applicationKitEntry.collection?.families ?? []
       : [];
 
@@ -328,14 +331,14 @@ export default function FocusedOverview({
                 )
               }
             >
-              {active && applicationKitFamily && (
+              {applicationKitFamily && (
                 <ApplicationKitModuleArc
                   family={applicationKitFamily}
                   x={x}
                   y={y}
                   angle={angle}
                   orbitRadius={orbitRadius}
-                  color={system.color}
+                  color={node.nodeColor}
                 />
               )}
             </ConstellationNode>
