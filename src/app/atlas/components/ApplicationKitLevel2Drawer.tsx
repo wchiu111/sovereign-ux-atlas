@@ -45,21 +45,31 @@ export default function ApplicationKitLevel2Drawer({
   return (
     <motion.aside
       initial={false}
-      animate={{ x: open ? 0 : PROJECT_DRAWER_WIDTH }}
+      animate={{
+        x: open ? 0 : PROJECT_DRAWER_WIDTH,
+        opacity: open ? 1 : 0.98,
+      }}
       transition={{
-        duration: 0.56,
-        ease: [0.16, 1, 0.3, 1],
+        x: {
+          duration: 0.58,
+          ease: [0.16, 1, 0.3, 1],
+        },
+        opacity: {
+          duration: 0.22,
+          ease: "easeOut",
+        },
       }}
       className="absolute top-0 right-0 bottom-0 overflow-hidden"
       style={{
         zIndex: 38,
         width: PROJECT_DRAWER_WIDTH,
         background:
-          "linear-gradient(180deg, rgba(4,4,10,0.992), rgba(4,5,11,0.982))",
+          "linear-gradient(180deg, rgba(4,4,10,0.995), rgba(4,5,11,0.985))",
         borderLeft: "1px solid rgba(138,174,200,0.14)",
-        boxShadow: "-24px 0 80px rgba(0,0,0,0.42)",
-        backdropFilter: "blur(36px)",
+        boxShadow: "-28px 0 96px rgba(0,0,0,0.48)",
+        backdropFilter: "blur(38px)",
         color: "#F4EBD0",
+        pointerEvents: open ? "auto" : "none",
       }}
       aria-hidden={!open}
     >
@@ -173,16 +183,23 @@ export default function ApplicationKitLevel2Drawer({
               );
 
               return (
-                <div
+                <button
                   key={module.id}
+                  type="button"
+                  disabled
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "12px 1fr",
+                    width: "100%",
+                    gridTemplateColumns: "12px 1fr 16px",
                     alignItems: "start",
                     gap: 11,
                     padding: "15px 14px",
                     border: "1px solid rgba(245,235,210,0.1)",
                     background: "rgba(255,255,255,0.025)",
+                    color: "#F4EBD0",
+                    textAlign: "left",
+                    cursor: "default",
+                    opacity: 1,
                   }}
                 >
                   <span
@@ -222,7 +239,18 @@ export default function ApplicationKitLevel2Drawer({
                         module.purpose}
                     </span>
                   </span>
-                </div>
+
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      marginTop: 11,
+                      fontSize: 18,
+                      color: "rgba(245,235,210,0.58)",
+                    }}
+                  >
+                    ›
+                  </span>
+                </button>
               );
             })}
           </div>
@@ -231,6 +259,7 @@ export default function ApplicationKitLevel2Drawer({
             <div style={eyebrowStyle}>
               Connected Frameworks
             </div>
+
             <div style={{ display: "grid", gap: 12 }}>
               {CONNECTED_FRAMEWORKS.map((framework) => (
                 <div
@@ -303,6 +332,19 @@ export default function ApplicationKitLevel2Drawer({
             >
               ↑
             </span>
+          </div>
+
+          <div
+            style={{
+              marginTop: 11,
+              fontFamily: "'EB Garamond',serif",
+              fontSize: 10.5,
+              lineHeight: 1.4,
+              color: "rgba(245,235,210,0.46)",
+            }}
+          >
+            ◇ Responses are grounded in this family and its documented
+            connections.
           </div>
         </div>
       </div>

@@ -476,13 +476,11 @@ export default function FocusedOverview({
                   applicationKitFamily ? "EXPLORE" : "OPEN"
                 }
                 onActivate={() => {
-                  if (
-                    isBehaviorAuthority &&
-                    onEnterBehaviorAuthority
-                  ) {
-                    onEnterBehaviorAuthority();
+                  if (isBehaviorAuthority) {
+                    onEnterBehaviorAuthority?.();
                     return;
                   }
+
                   onOpenStar(index, { x, y });
                 }}
                 onAwaken={() => {
