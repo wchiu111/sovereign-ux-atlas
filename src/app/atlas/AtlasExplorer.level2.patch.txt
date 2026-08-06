@@ -1,0 +1,143 @@
+*** AtlasExplorer.tsx — Focused Overview Level 2 integration ***
+
+1. Add this import beside the other focused-overview imports:
+
+import ApplicationKitLevel2Drawer from "./components/ApplicationKitLevel2Drawer";
+import type { ApplicationKitDepth } from "./components/FocusedOverview";
+
+2. Add this local state near the other render-only state:
+
+const [applicationKitDepth, setApplicationKitDepth] =
+  useState<ApplicationKitDepth>("overview");
+const applicationKitTimersRef = useRef<number[]>([]);
+
+3. Add this cleanup effect after the existing reduced-motion effect:
+
+useEffect(() => {
+  return () => {
+    applicationKitTimersRef.current.forEach(window.clearTimeout);
+  };
+}, []);
+
+4. Add these callbacks before `const { w, h } = dims;`:
+
+const enterBehaviorAuthority = useCallback(() => {
+  if (
+    activePlanet?.id !== "application-kit" ||
+    applicationKitDepth !== "overview"
+  ) {
+    return;
+  }
+
+  applicationKitTimersRef.current.forEach(window.clearTimeout);
+  applicationKitTimersRef.current = [];
+
+  setApplicationKitDepth("entering-family");
+
+  const settleDelay = reduceFocusMotion ? 120 : 720;
+  applicationKitTimersRef.current.push(
+    window.setTimeout(() => {
+      setApplicationKitDepth("family");
+    }, settleDelay),
+  );
+}, [
+  activePlanet?.id,
+  applicationKitDepth,
+  reduceFocusMotion,
+]);
+
+const exitBehaviorAuthority = useCallback(() => {
+  if (
+    applicationKitDepth === "overview" ||
+    applicationKitDepth === "leaving-family"
+  ) {
+    return;
+  }
+
+  applicationKitTimersRef.current.forEach(window.clearTimeout);
+  applicationKitTimersRef.current = [];
+
+  setApplicationKitDepth("leaving-family");
+
+  const restoreDelay = reduceFocusMotion ? 120 : 760;
+  applicationKitTimersRef.current.push(
+    window.setTimeout(() => {
+      setApplicationKitDepth("overview");
+    }, restoreDelay),
+  );
+}, [applicationKitDepth, reduceFocusMotion]);
+
+useEffect(() => {
+  if (applicationKitDepth === "overview") return;
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    exitBehaviorAuthority();
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, [applicationKitDepth, exitBehaviorAuthority]);
+
+useEffect(() => {
+  if (activePlanet?.id === "application-kit") return;
+  applicationKitTimersRef.current.forEach(window.clearTimeout);
+  applicationKitTimersRef.current = [];
+  setApplicationKitDepth("overview");
+}, [activePlanet?.id]);
+
+5. Update the `FocusedOverview` instance by adding these props:
+
+applicationKitDepth={applicationKitDepth}
+onEnterBehaviorAuthority={enterBehaviorAuthority}
+
+The final opening should resemble:
+
+<FocusedOverview
+  system={activeSystem}
+  planet={activePlanet}
+  onBack={backToSystem}
+  transitioning={!!focusTransition}
+  applicationKitDepth={applicationKitDepth}
+  onEnterBehaviorAuthority={enterBehaviorAuthority}
+  onOpenStar={...}
+/>
+
+6. Change the existing project drawer `open` prop:
+
+BEFORE:
+open={drawerOpen}
+
+AFTER:
+open={
+  drawerOpen &&
+  (
+    activePlanet.id !== "application-kit" ||
+    applicationKitDepth === "overview"
+  )
+}
+
+This makes the original drawer slide out immediately when Level 2 begins.
+
+7. Mount the new drawer immediately after the existing project drawer block:
+
+{level === 2 &&
+  activeSystem &&
+  activePlanet?.id === "application-kit" && (
+    <ApplicationKitLevel2Drawer
+      open={applicationKitDepth === "family"}
+      systemColor={activeSystem.color}
+      onBack={exitBehaviorAuthority}
+    />
+  )}
+
+8. Optional but recommended: hide the Level 1 idle hint while Level 2 is committed.
+
+Change:
+{level === 2 && (
+
+To:
+{level === 2 && applicationKitDepth === "overview" && (
+
+This prevents “SELECT A NODE TO READ” from appearing beneath the focused family state.
