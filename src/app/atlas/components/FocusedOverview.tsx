@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { PROJECT_DRAWER_WIDTH } from "../../components/AtlasProjectIntelligenceDrawer";
 import applicationKitEntry from "../../content/frameworks/application-kit";
 import type { Planet, StarSystem } from "../../types/atlas";
@@ -130,27 +130,18 @@ export default function FocusedOverview({
     isApplicationKit && applicationKitDepth !== "overview";
   const familySettled = applicationKitDepth === "family";
 
-  const focusTargetX = availableWidth * 0.5;
-  const focusTargetY = dims.h * 0.46;
+  const focusTargetX = availableWidth * 0.45;
+  const focusTargetY = dims.h * 0.69;
   const focusActive =
     applicationKitDepth === "entering-family" ||
     applicationKitDepth === "family";
 
   const focusScale =
     applicationKitDepth === "entering-family"
-      ? 1.72
+      ? 2.0
       : applicationKitDepth === "family"
-        ? 2.18
+        ? 2.0
         : 1;
-
-  const behaviorTransform =
-    behaviorAuthorityNode && focusActive
-      ? `matrix(${focusScale} 0 0 ${focusScale} ${
-          focusTargetX - focusScale * behaviorAuthorityNode.x
-        } ${
-          focusTargetY - focusScale * behaviorAuthorityNode.y
-        })`
-      : "matrix(1 0 0 1 0 0)";
 
   const spatialTransition = reducedMotion
     ? "opacity 180ms ease-out"
@@ -462,23 +453,72 @@ export default function FocusedOverview({
             hiddenByFamilyFocus ||
             (Boolean(hoveredStarId) && !active && !related);
 
+          const shouldPullIntoFocus =
+            isBehaviorAuthority && focusActive;
+
           return (
-            <g
+            <motion.g
               key={star.id}
-              transform={
-                isBehaviorAuthority
-                  ? behaviorTransform
-                  : undefined
+              initial={false}
+              animate={{
+                x: shouldPullIntoFocus
+                  ? focusTargetX - x
+                  : 0,
+                y: shouldPullIntoFocus
+                  ? focusTargetY - y
+                  : 0,
+                scale: shouldPullIntoFocus
+                  ? focusScale
+                  : 1,
+                opacity: hiddenByFamilyFocus ? 0 : 1,
+              }}
+              transition={
+                reducedMotion
+                  ? { duration: 0.01 }
+                  : {
+                      x: {
+                        duration: 0.94,
+                        ease: [0.16, 1, 0.3, 1],
+                      },
+                      y: {
+                        duration: 0.94,
+                        ease: [0.16, 1, 0.3, 1],
+                      },
+                      scale: {
+                        duration: 0.94,
+                        ease: [0.16, 1, 0.3, 1],
+                      },
+                      opacity: {
+                        duration: hiddenByFamilyFocus
+                          ? 0.42
+                          : 0.58,
+                        ease: [0.16, 1, 0.3, 1],
+                      },
+                    }
               }
-              opacity={hiddenByFamilyFocus ? 0 : 1}
               style={{
+                transformBox: "view-box",
                 transformOrigin: `${x}px ${y}px`,
-                transition: spatialTransition,
                 pointerEvents: hiddenByFamilyFocus
                   ? "none"
                   : "auto",
               }}
             >
+              {applicationKitFamily && (
+                <ApplicationKitModuleArc
+                  family={applicationKitFamily}
+                  x={x}
+                  y={y}
+                  angle={angle}
+                  orbitRadius={
+                    familyCommitted && isBehaviorAuthority
+                      ? orbitRadius * 1.58
+                      : orbitRadius
+                  }
+                  color={node.nodeColor}
+                />
+              )}
+
               <ConstellationNode
                 node={node}
                 domainColor={system.color}
@@ -513,23 +553,8 @@ export default function FocusedOverview({
                     current === star.id ? null : current,
                   )
                 }
-              >
-                {applicationKitFamily && (
-                  <ApplicationKitModuleArc
-                    family={applicationKitFamily}
-                    x={x}
-                    y={y}
-                    angle={angle}
-                    orbitRadius={
-                      familyCommitted && isBehaviorAuthority
-                        ? orbitRadius * 1.58
-                        : orbitRadius
-                    }
-                    color={node.nodeColor}
-                  />
-                )}
-              </ConstellationNode>
-            </g>
+              />
+            </motion.g>
           );
         })}
 
