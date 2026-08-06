@@ -11,12 +11,137 @@ interface ApplicationKitModuleArcProps {
   color: string;
 }
 
+
+interface ModuleNodeOffset {
+  x: number;
+  y: number;
+}
+
+/**
+ * Small authored node adjustments used only where the default arc places a
+ * module directly on top of a family label.
+ */
+const MODULE_NODE_OFFSETS: Record<string, ModuleNodeOffset> = {
+  "sovereign-onboarding": {
+    x: 24,
+    y: -60,
+  },
+};
+
+interface ModuleLabelPosition {
+  x: number;
+  y: number;
+  anchor: "start" | "middle" | "end";
+  maxCharacters?: number;
+  lineGap?: number;
+}
+
+/**
+ * Authored label choreography for the Application Kit overview.
+ *
+ * Values are offsets from each module node—not absolute screen coordinates—so
+ * the composition remains responsive when the focused constellation scales.
+ *
+ * Keep these values local to the renderer during the Figma exploration pass.
+ * Once the layout is approved, they can be promoted into the content schema.
+ */
+const MODULE_LABEL_POSITIONS: Record<string, ModuleLabelPosition> = {
+  "sovereign-onboarding": {
+    // Lift the module label above its star so it clears the
+    // ADOPTION & SUSTAINABILITY family label running through this orbit.
+    x: -2,
+    y: -22,
+    anchor: "middle",
+    maxCharacters: 11,
+    lineGap: 9,
+  },
+  "presence-sustainability": {
+    x: 8,
+    y: -20,
+    anchor: "start",
+    maxCharacters: 14,
+  },
+  "behavioral-decision-design": {
+    x: 0,
+    y: -22,
+    anchor: "middle",
+    maxCharacters: 15,
+  },
+  "multi-user-co-sovereignty": {
+    x: 18,
+    y: -8,
+    anchor: "start",
+    maxCharacters: 14,
+  },
+  "constraint-scope-design": {
+    x: 20,
+    y: 6,
+    anchor: "start",
+    maxCharacters: 14,
+  },
+  "distortion-drift-detection": {
+    x: 18,
+    y: -5,
+    anchor: "start",
+    maxCharacters: 14,
+  },
+  "vulnerable-context-safeguards": {
+    x: 19,
+    y: 1,
+    anchor: "start",
+    maxCharacters: 13,
+  },
+  "signal-fidelity": {
+    x: 18,
+    y: 10,
+    anchor: "start",
+    maxCharacters: 14,
+  },
+  "bias-projection-safeguards": {
+    x: -18,
+    y: 8,
+    anchor: "end",
+    maxCharacters: 14,
+  },
+  "value-aligned-growth": {
+    x: 18,
+    y: 11,
+    anchor: "start",
+    maxCharacters: 14,
+  },
+  "stillness-closure-recovery": {
+    x: -18,
+    y: 10,
+    anchor: "end",
+    maxCharacters: 14,
+  },
+  "cross-cultural-adaptation": {
+    x: -18,
+    y: 2,
+    anchor: "end",
+    maxCharacters: 14,
+  },
+  "threshold-signal-stewardship": {
+    x: -18,
+    y: 8,
+    anchor: "end",
+    maxCharacters: 14,
+  },
+  "simulation-based-validation": {
+    x: -18,
+    y: -4,
+    anchor: "end",
+    maxCharacters: 16,
+  },
+};
+
 function wrapModuleTitle(title: string, maxCharacters = 18) {
   const words = title.split(" ");
   const lines: string[] = [];
 
   words.forEach((word) => {
     const current = lines[lines.length - 1];
+
     if (!current || current.length + word.length + 1 > maxCharacters) {
       lines.push(word);
     } else {
@@ -49,18 +174,31 @@ export default function ApplicationKitModuleArc({
             ? 0
             : -arcSweep / 2 + (moduleIndex / (moduleCount - 1)) * arcSweep);
         const arcRadius = Math.min(94, orbitRadius * 0.4);
-        const moduleX = x + Math.cos(moduleAngle) * arcRadius;
-        const moduleY = y + Math.sin(moduleAngle) * arcRadius;
+        const nodeOffset = MODULE_NODE_OFFSETS[module.id];
+        const moduleX =
+          x + Math.cos(moduleAngle) * arcRadius + (nodeOffset?.x ?? 0);
+        const moduleY =
+          y + Math.sin(moduleAngle) * arcRadius + (nodeOffset?.y ?? 0);
         const moduleColor = resolveStellarColor(module.stellarType, color);
-        const labelX = moduleX + Math.cos(moduleAngle) * 16;
-        const labelY = moduleY + Math.sin(moduleAngle) * 16;
-        const labelAnchor =
+
+        const authoredLabel = MODULE_LABEL_POSITIONS[module.id];
+        const fallbackAnchor =
           Math.cos(moduleAngle) > 0.25
             ? "start"
             : Math.cos(moduleAngle) < -0.25
               ? "end"
               : "middle";
-        const labelLines = wrapModuleTitle(module.title);
+
+        const labelX =
+          moduleX + (authoredLabel?.x ?? Math.cos(moduleAngle) * 16);
+        const labelY =
+          moduleY + (authoredLabel?.y ?? Math.sin(moduleAngle) * 16);
+        const labelAnchor = authoredLabel?.anchor ?? fallbackAnchor;
+        const lineGap = authoredLabel?.lineGap ?? 10;
+        const labelLines = wrapModuleTitle(
+          module.title,
+          authoredLabel?.maxCharacters ?? 18,
+        );
 
         return (
           <g key={module.id}>
@@ -102,7 +240,7 @@ export default function ApplicationKitModuleArc({
             <circle cx={moduleX} cy={moduleY} r="14" fill="transparent" />
             <text
               x={labelX}
-              y={labelY - (labelLines.length - 1) * 4.5}
+              y={labelY - ((labelLines.length - 1) * lineGap) / 2}
               textAnchor={labelAnchor}
               fontSize="8.5"
               fontFamily="'DM Mono',monospace"
@@ -112,7 +250,11 @@ export default function ApplicationKitModuleArc({
               pointerEvents="none"
             >
               {labelLines.map((line, lineIndex) => (
-                <tspan key={`${module.id}-${lineIndex}`} x={labelX} dy={lineIndex === 0 ? 0 : 10}>
+                <tspan
+                  key={`${module.id}-${lineIndex}`}
+                  x={labelX}
+                  dy={lineIndex === 0 ? 0 : lineGap}
+                >
                   {line}
                 </tspan>
               ))}
