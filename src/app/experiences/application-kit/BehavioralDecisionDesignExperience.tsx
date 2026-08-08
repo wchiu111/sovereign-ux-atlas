@@ -4,6 +4,7 @@ import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
 import ProgressiveBehaviorCanvas from "./ProgressiveBehaviorCanvas";
 import AppliedBehaviorCanvas from "./AppliedBehaviorCanvas";
 import ExperienceAnnotation from "./ExperienceAnnotation";
+import behavioralFrameworkSpaceBg from "./assets/behavioral-framework-space-bg.png";
 import {
   BEHAVIORAL_STAGES,
   CHECKLIST,
@@ -89,20 +90,49 @@ export default function BehavioralDecisionDesignExperience({
         gridTemplateRows: "64px minmax(0,1fr)",
         overflow: "hidden",
         color: "#F4EBD0",
-        background:
-          "radial-gradient(circle at 18% 26%, rgba(55,76,104,.10), transparent 28%), radial-gradient(circle at 82% 18%, rgba(84,62,105,.08), transparent 25%), radial-gradient(circle at 58% 78%, rgba(120,84,56,.055), transparent 27%), linear-gradient(180deg, rgba(5,7,13,.998), rgba(3,4,9,.998))",
+        background: "#030409",
       }}
     >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: "-7%",
+          zIndex: 0,
+          pointerEvents: "none",
+          backgroundImage: `url(${behavioralFrameworkSpaceBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+          transform: "scale(1.03)",
+          filter: "saturate(.78) brightness(.58) contrast(1.04)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: "none",
+          background:
+            "radial-gradient(circle at 48% 46%, rgba(3,4,9,.08) 0%, rgba(3,4,9,.26) 44%, rgba(3,4,9,.54) 100%), linear-gradient(180deg, rgba(3,4,9,.20), rgba(3,4,9,.44))",
+        }}
+      />
+
       <header
         style={{
+          position: "relative",
+          zIndex: 3,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 20,
           padding: "0 24px",
           borderBottom: "1px solid rgba(245,235,210,.07)",
-          background: "rgba(4,5,11,.80)",
-          backdropFilter: "blur(16px)",
+          background: "rgba(4,5,11,.86)",
+          backdropFilter: "blur(18px)",
         }}
       >
         <button
@@ -176,9 +206,7 @@ export default function BehavioralDecisionDesignExperience({
                       ? `1px solid ${moduleColor}55`
                       : "1px solid transparent",
                   background:
-                    mode === id
-                      ? `${moduleColor}0B`
-                      : "transparent",
+                    mode === id ? `${moduleColor}0B` : "transparent",
                   color: disabled
                     ? "rgba(245,235,210,.22)"
                     : mode === id
@@ -201,25 +229,13 @@ export default function BehavioralDecisionDesignExperience({
       <main
         style={{
           position: "relative",
+          zIndex: 2,
           minWidth: 0,
           overflowY: "auto",
           scrollbarWidth: "none",
           padding: "22px 28px 44px",
         }}
       >
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            pointerEvents: "none",
-            opacity: 0.34,
-            background:
-              "radial-gradient(circle at 26% 30%, rgba(101,133,170,.06), transparent 28%), radial-gradient(circle at 74% 36%, rgba(125,93,147,.055), transparent 26%), radial-gradient(circle at 55% 72%, rgba(152,111,79,.04), transparent 24%)",
-            filter: "blur(26px)",
-          }}
-        />
-
         <AnimatePresence mode="wait">
           {mode === "learn" && (
             <motion.div
@@ -227,7 +243,6 @@ export default function BehavioralDecisionDesignExperience({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              style={{ position: "relative", zIndex: 1 }}
             >
               <div
                 style={{
@@ -242,6 +257,7 @@ export default function BehavioralDecisionDesignExperience({
                     fontSize: 25,
                     lineHeight: 1.35,
                     color: "rgba(255,248,230,.93)",
+                    textShadow: "0 2px 18px rgba(0,0,0,.34)",
                   }}
                 >
                   Complex systems reveal themselves at the pace
@@ -254,7 +270,8 @@ export default function BehavioralDecisionDesignExperience({
                     fontFamily: "'EB Garamond',serif",
                     fontSize: 14.5,
                     lineHeight: 1.55,
-                    color: "rgba(245,235,210,.54)",
+                    color: "rgba(245,235,210,.58)",
+                    textShadow: "0 2px 14px rgba(0,0,0,.28)",
                   }}
                 >
                   Begin with one point of attention. Commit when it makes
@@ -282,7 +299,6 @@ export default function BehavioralDecisionDesignExperience({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              style={{ position: "relative", zIndex: 1 }}
             >
               <div
                 style={{
@@ -344,8 +360,6 @@ export default function BehavioralDecisionDesignExperience({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               style={{
-                position: "relative",
-                zIndex: 1,
                 display: "grid",
                 gridTemplateColumns: "minmax(0,1fr) 350px",
                 gap: 22,
@@ -357,7 +371,8 @@ export default function BehavioralDecisionDesignExperience({
                 style={{
                   padding: 22,
                   border: "1px solid rgba(245,235,210,.07)",
-                  background: "rgba(255,255,255,.012)",
+                  background: "rgba(3,4,9,.72)",
+                  backdropFilter: "blur(12px)",
                 }}
               >
                 <div
