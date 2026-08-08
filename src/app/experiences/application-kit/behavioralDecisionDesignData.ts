@@ -8,7 +8,6 @@ export type BehavioralStageId =
 
 export interface BehavioralStage {
   id: BehavioralStageId;
-  number: string;
   title: string;
   summary: string;
   detail: string;
@@ -20,12 +19,17 @@ export interface BehavioralStage {
     | "judgment"
     | "risk"
     | "relational";
+  annotation: {
+    what: string;
+    why: string;
+    principle: string;
+    question: string;
+  };
 }
 
 export const BEHAVIORAL_STAGES: BehavioralStage[] = [
   {
     id: "interpret",
-    number: "01",
     title: "Interpret",
     summary: "Understand context before forming a response.",
     detail:
@@ -36,24 +40,34 @@ export const BEHAVIORAL_STAGES: BehavioralStage[] = [
       "Which assumptions affect the outcome?",
     ],
     colorRole: "agentic",
+    annotation: {
+      what: "The experience begins with one observable point of attention.",
+      why: "Orientation comes before analysis. The system should not rush into a conclusion before the user can see what is being interpreted.",
+      principle: "Presence before complexity.",
+      question: "What are we observing before we decide what it means?",
+    },
   },
   {
     id: "separate",
-    number: "02",
     title: "Separate",
     summary: "Keep information, interpretation, and recommendation distinct.",
     detail:
-      "Prevent a system from presenting inference as fact or recommendation as inevitability. Users should be able to tell what is known, inferred, and suggested.",
+      "Prevent inference from appearing as fact or recommendation as inevitability. Users should be able to tell what is known, inferred, and suggested.",
     prompts: [
       "What is observable information?",
       "What has the system inferred?",
       "What is merely being recommended?",
     ],
     colorRole: "purpose",
+    annotation: {
+      what: "The interface exposes distinct layers of meaning.",
+      why: "Users can only challenge a recommendation when they can see where observation ends and inference begins.",
+      principle: "Information ≠ interpretation ≠ recommendation.",
+      question: "Could a user tell which part of this answer is fact?",
+    },
   },
   {
     id: "frame",
-    number: "03",
     title: "Frame",
     summary: "Expose options, trade-offs, assumptions, and consequences.",
     detail:
@@ -64,10 +78,15 @@ export const BEHAVIORAL_STAGES: BehavioralStage[] = [
       "What would change the framing?",
     ],
     colorRole: "strategy",
+    annotation: {
+      what: "Alternative paths become visible without competing equally for attention.",
+      why: "Framing determines what feels possible before any recommendation is made.",
+      principle: "Reveal the decision space before narrowing it.",
+      question: "What choice disappears if this framing is accepted?",
+    },
   },
   {
     id: "recommend",
-    number: "04",
     title: "Recommend",
     summary: "Offer a next step with proportional strength.",
     detail:
@@ -78,10 +97,15 @@ export const BEHAVIORAL_STAGES: BehavioralStage[] = [
       "When should the system remain neutral?",
     ],
     colorRole: "judgment",
+    annotation: {
+      what: "The recommendation appears only after the supporting context has been exposed.",
+      why: "A recommendation should feel earned by the reasoning that precedes it.",
+      principle: "Meaning before authority.",
+      question: "How strongly should the system speak given the evidence available?",
+    },
   },
   {
     id: "confirm",
-    number: "05",
     title: "Confirm",
     summary: "Return consequential choice to the human.",
     detail:
@@ -92,10 +116,15 @@ export const BEHAVIORAL_STAGES: BehavioralStage[] = [
       "Can the user reject the recommendation cleanly?",
     ],
     colorRole: "risk",
+    annotation: {
+      what: "The user receives an explicit decision checkpoint.",
+      why: "Consequential action should not be hidden inside momentum or automation.",
+      principle: "Human authority remains visible.",
+      question: "What can the user still change before action occurs?",
+    },
   },
   {
     id: "act",
-    number: "06",
     title: "Act",
     summary: "Proceed only within confirmed authority and scope.",
     detail:
@@ -106,19 +135,14 @@ export const BEHAVIORAL_STAGES: BehavioralStage[] = [
       "Can the action be reversed or audited?",
     ],
     colorRole: "relational",
+    annotation: {
+      what: "The system acts only after the earlier conditions have been established.",
+      why: "Action becomes a consequence of clear authority rather than a default expression of intelligence.",
+      principle: "Act within confirmed scope.",
+      question: "What proves that the system is authorized to continue?",
+    },
   },
 ];
-
-export const PATTERNS = [
-  ["Reflection Before Action", "Pause to interpret before responding", "AI response or automation"],
-  ["Information / Interpretation / Recommendation", "Keep meaning visibly separated", "Recommendations and summaries"],
-  ["Decision Framing", "Expose options, criteria, and trade-offs", "Complex or consequential choices"],
-  ["Confidence Disclosure", "Calibrate certainty to evidence", "Predictions and recommendations"],
-  ["Assumption Disclosure", "Reveal what the system is presuming", "Incomplete or ambiguous context"],
-  ["Confirmation Loop", "Return consequential choice to the user", "Before action"],
-  ["Correction Loop", "Allow interpretation and criteria to change", "When system inference may be wrong"],
-  ["Tone Modulation", "Match response intensity to context", "Routine vs stressed states"],
-] as const;
 
 export const CHECKLIST = [
   "Can users distinguish facts from interpretation?",
