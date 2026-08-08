@@ -16,12 +16,12 @@ interface ProgressiveBehaviorCanvasProps {
 }
 
 const POSITIONS: Record<BehavioralStageId, { x: number; y: number }> = {
-  interpret: { x: 53, y: 22 },
-  separate: { x: 30, y: 44 },
-  frame: { x: 37, y: 72 },
+  interpret: { x: 34, y: 36 },
+  separate: { x: 29, y: 53 },
+  frame: { x: 36, y: 72 },
   recommend: { x: 58, y: 80 },
-  confirm: { x: 79, y: 67 },
-  act: { x: 78, y: 35 },
+  confirm: { x: 78, y: 67 },
+  act: { x: 76, y: 37 },
 };
 
 const ORDER: BehavioralStageId[] = [
@@ -46,10 +46,12 @@ export default function ProgressiveBehaviorCanvas({
     () => new Set(ORDER.slice(0, revealedCount)),
     [revealedCount],
   );
+
   const activeStage =
     stages.find((stage) => stage.id === activeStageId) ?? stages[0];
   const activeIndex = ORDER.indexOf(activeStageId);
   const canAdvance = revealedCount < ORDER.length;
+  const nextStage = stages[revealedCount];
 
   return (
     <div
@@ -64,8 +66,8 @@ export default function ProgressiveBehaviorCanvas({
         aria-hidden="true"
         style={{
           position: "absolute",
-          left: "51%",
-          top: "49%",
+          left: "46%",
+          top: "54%",
           width: 420,
           height: 420,
           transform: "translate(-50%, -50%)",
@@ -225,6 +227,7 @@ export default function ProgressiveBehaviorCanvas({
                   >
                     {stage.title}
                   </span>
+
                   {active && (
                     <span
                       style={{
@@ -249,79 +252,102 @@ export default function ProgressiveBehaviorCanvas({
       <div
         style={{
           position: "absolute",
-          left: "50%",
-          bottom: 22,
-          transform: "translateX(-50%)",
-          display: "grid",
-          justifyItems: "center",
-          gap: 12,
+          left: activeIndex <= 1 ? "62%" : activeIndex >= 4 ? "43%" : "63%",
+          top: activeIndex <= 1 ? "8%" : "10%",
         }}
       >
-        <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
-          {ORDER.map((id, index) => (
-            <span
-              key={id}
-              aria-hidden="true"
-              style={{
-                width: index < revealedCount ? 7 : 4,
-                height: index < revealedCount ? 7 : 4,
-                borderRadius: "50%",
-                background:
-                  index < revealedCount
-                    ? "rgba(200,169,110,.70)"
-                    : "rgba(245,235,210,.12)",
-              }}
-            />
-          ))}
+        <div style={{ pointerEvents: "none" }}>
+          <ExperienceAnnotation
+            stage={activeStage}
+            color={resolveColor(activeStage.colorRole)}
+            compact
+          />
         </div>
 
-        {canAdvance ? (
-          <button
-            type="button"
-            onClick={onAdvance}
+        {canAdvance && (
+          <motion.div
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: reducedMotion ? 0 : 0.18,
+              duration: reducedMotion ? 0.16 : 0.42,
+              ease: [0.16, 1, 0.3, 1],
+            }}
             style={{
-              minHeight: 44,
-              padding: "0 16px",
-              border: "1px solid rgba(200,169,110,.22)",
-              background: "rgba(7,9,16,.66)",
-              color: "rgba(245,235,210,.72)",
-              fontFamily: "'DM Mono',monospace",
-              fontSize: 8.5,
-              letterSpacing: ".13em",
-              textTransform: "uppercase",
-              cursor: "pointer",
+              marginTop: 12,
+              width: 280,
             }}
           >
-            Reveal next step
-          </button>
-        ) : (
-          <div
-            style={{
-              fontFamily: "'DM Mono',monospace",
-              fontSize: 8,
-              letterSpacing: ".18em",
-              color: "rgba(101,214,154,.52)",
-              textTransform: "uppercase",
-            }}
-          >
-            Complete model · explore freely
-          </div>
+            <button
+              type="button"
+              onClick={onAdvance}
+              style={{
+                width: "100%",
+                minHeight: 46,
+                padding: "0 14px",
+                border: "1px solid rgba(138,174,200,.34)",
+                background: "rgba(7,9,16,.72)",
+                color: "rgba(190,220,245,.86)",
+                fontFamily: "'DM Mono',monospace",
+                fontSize: 8.5,
+                letterSpacing: ".15em",
+                textTransform: "uppercase",
+                textAlign: "left",
+                cursor: "pointer",
+              }}
+            >
+              Next step
+              <span
+                aria-hidden="true"
+                style={{ margin: "0 10px", opacity: 0.72 }}
+              >
+                →
+              </span>
+              {nextStage?.title ?? "Continue"}
+            </button>
+
+            <div
+              style={{
+                marginTop: 8,
+                paddingLeft: 2,
+                fontFamily: "'EB Garamond',serif",
+                fontSize: 12,
+                lineHeight: 1.4,
+                color: "rgba(245,235,210,.44)",
+              }}
+            >
+              Commit to reveal the next relationship.
+            </div>
+          </motion.div>
         )}
       </div>
 
       <div
         style={{
           position: "absolute",
-          left: activeIndex <= 1 ? "61%" : activeIndex >= 4 ? "43%" : "63%",
-          top: activeIndex <= 1 ? "7%" : "10%",
-          pointerEvents: "none",
+          left: "46%",
+          bottom: 22,
+          transform: "translateX(-50%)",
+          display: "flex",
+          gap: 7,
+          alignItems: "center",
         }}
       >
-        <ExperienceAnnotation
-          stage={activeStage}
-          color={resolveColor(activeStage.colorRole)}
-          compact
-        />
+        {ORDER.map((id, index) => (
+          <span
+            key={id}
+            aria-hidden="true"
+            style={{
+              width: index < revealedCount ? 7 : 4,
+              height: index < revealedCount ? 7 : 4,
+              borderRadius: "50%",
+              background:
+                index < revealedCount
+                  ? "rgba(200,169,110,.70)"
+                  : "rgba(245,235,210,.12)",
+            }}
+          />
+        ))}
       </div>
     </div>
   );
