@@ -47,12 +47,18 @@ export default function BehavioralDecisionDesignExperience({
 
   const advance = () => {
     if (complete) return;
+
     const nextCount = Math.min(
       BEHAVIORAL_STAGES.length,
       revealedCount + 1,
     );
+
     setRevealedCount(nextCount);
     setActiveStageId(BEHAVIORAL_STAGES[nextCount - 1].id);
+  };
+
+  const revealAll = () => {
+    setRevealedCount(BEHAVIORAL_STAGES.length);
   };
 
   return (
@@ -102,10 +108,10 @@ export default function BehavioralDecisionDesignExperience({
             padding: "0 10px 0 0",
             border: 0,
             background: "transparent",
-            color: "rgba(200,180,130,.66)",
+            color: "rgba(200,180,130,.70)",
             fontFamily: "'DM Mono',monospace",
-            fontSize: 8.5,
-            letterSpacing: ".15em",
+            fontSize: 9.5,
+            letterSpacing: ".14em",
             textTransform: "uppercase",
             cursor: "pointer",
           }}
@@ -118,21 +124,22 @@ export default function BehavioralDecisionDesignExperience({
           <div
             style={{
               fontFamily: "'DM Mono',monospace",
-              fontSize: 7.5,
-              letterSpacing: ".20em",
+              fontSize: 8.5,
+              letterSpacing: ".18em",
               textTransform: "uppercase",
-              color: "rgba(200,180,130,.46)",
+              color: "rgba(200,180,130,.52)",
             }}
           >
             Behavioral &amp; Decision Design
           </div>
+
           <div
             id="behavioral-design-title"
             style={{
-              marginTop: 2,
+              marginTop: 3,
               fontFamily: "'EB Garamond',serif",
-              fontSize: 17,
-              color: "rgba(255,248,230,.88)",
+              fontSize: 18,
+              color: "rgba(255,248,230,.90)",
             }}
           >
             Experience the framework
@@ -146,6 +153,7 @@ export default function BehavioralDecisionDesignExperience({
             ["explore", "Explore"],
           ] as [ExperienceMode, string][]).map(([id, label]) => {
             const disabled = id !== "learn" && !complete;
+
             return (
               <button
                 key={id}
@@ -154,24 +162,22 @@ export default function BehavioralDecisionDesignExperience({
                 onClick={() => setMode(id)}
                 aria-pressed={mode === id}
                 style={{
-                  minHeight: 40,
-                  padding: "0 11px",
+                  minHeight: 42,
+                  padding: "0 12px",
                   border:
                     mode === id
                       ? `1px solid ${moduleColor}55`
                       : "1px solid transparent",
                   background:
-                    mode === id
-                      ? `${moduleColor}0B`
-                      : "transparent",
+                    mode === id ? `${moduleColor}0B` : "transparent",
                   color: disabled
-                    ? "rgba(245,235,210,.20)"
+                    ? "rgba(245,235,210,.22)"
                     : mode === id
-                      ? "rgba(245,235,210,.84)"
-                      : "rgba(245,235,210,.42)",
+                      ? "rgba(245,235,210,.88)"
+                      : "rgba(245,235,210,.48)",
                   fontFamily: "'DM Mono',monospace",
-                  fontSize: 8,
-                  letterSpacing: ".12em",
+                  fontSize: 9,
+                  letterSpacing: ".115em",
                   textTransform: "uppercase",
                   cursor: disabled ? "default" : "pointer",
                 }}
@@ -202,7 +208,7 @@ export default function BehavioralDecisionDesignExperience({
             >
               <div
                 style={{
-                  maxWidth: 680,
+                  maxWidth: 720,
                   margin: "12px auto 0",
                   textAlign: "center",
                 }}
@@ -211,22 +217,26 @@ export default function BehavioralDecisionDesignExperience({
                   style={{
                     fontFamily: "'EB Garamond',serif",
                     fontSize: 25,
+                    lineHeight: 1.35,
                     color: "rgba(255,248,230,.92)",
                   }}
                 >
-                  Complex systems reveal themselves at the pace understanding is formed.
+                  Complex systems reveal themselves at the pace
+                  understanding is formed.
                 </div>
+
                 <div
                   style={{
-                    marginTop: 8,
+                    marginTop: 10,
                     fontFamily: "'EB Garamond',serif",
-                    fontSize: 13.5,
-                    lineHeight: 1.5,
-                    color: "rgba(245,235,210,.46)",
+                    fontSize: 14.5,
+                    lineHeight: 1.55,
+                    color: "rgba(245,235,210,.52)",
                   }}
                 >
-                  Begin with one point of attention. Commit when it makes sense.
-                  The next relationship appears only after context exists.
+                  Begin with one point of attention. Commit when it makes
+                  sense. The next relationship appears only after context
+                  exists.
                 </div>
               </div>
 
@@ -236,6 +246,7 @@ export default function BehavioralDecisionDesignExperience({
                 activeStageId={activeStageId}
                 onCommitStage={setActiveStageId}
                 onAdvance={advance}
+                onRevealAll={revealAll}
                 resolveColor={resolveColor}
               />
             </motion.div>
@@ -264,17 +275,18 @@ export default function BehavioralDecisionDesignExperience({
                 >
                   The framework becomes the interface.
                 </div>
+
                 <div
                   style={{
-                    marginTop: 7,
+                    marginTop: 8,
                     fontFamily: "'EB Garamond',serif",
-                    fontSize: 13.5,
-                    lineHeight: 1.5,
-                    color: "rgba(245,235,210,.46)",
+                    fontSize: 14.5,
+                    lineHeight: 1.55,
+                    color: "rgba(245,235,210,.52)",
                   }}
                 >
-                  Inspect a real recommendation experience through the same six
-                  behavioral decisions you just revealed.
+                  Inspect a real recommendation experience through the same
+                  six behavioral decisions you just revealed.
                 </div>
               </div>
 
@@ -308,8 +320,8 @@ export default function BehavioralDecisionDesignExperience({
               exit={{ opacity: 0 }}
               style={{
                 display: "grid",
-                gridTemplateColumns: "minmax(0,1fr) 340px",
-                gap: 20,
+                gridTemplateColumns: "minmax(0,1fr) 350px",
+                gap: 22,
                 maxWidth: 1180,
                 margin: "18px auto 0",
               }}
@@ -325,16 +337,16 @@ export default function BehavioralDecisionDesignExperience({
                   style={{
                     marginBottom: 16,
                     fontFamily: "'DM Mono',monospace",
-                    fontSize: 8,
-                    letterSpacing: ".18em",
+                    fontSize: 9,
+                    letterSpacing: ".17em",
                     textTransform: "uppercase",
-                    color: "rgba(101,214,154,.64)",
+                    color: "rgba(101,214,154,.68)",
                   }}
                 >
                   Implementation reflection
                 </div>
 
-                <div style={{ display: "grid", gap: 9 }}>
+                <div style={{ display: "grid", gap: 10 }}>
                   {CHECKLIST.map((item) => (
                     <div
                       key={item}
@@ -343,12 +355,12 @@ export default function BehavioralDecisionDesignExperience({
                         gridTemplateColumns: "16px 1fr",
                         gap: 9,
                         fontFamily: "'EB Garamond',serif",
-                        fontSize: 14,
-                        lineHeight: 1.5,
-                        color: "rgba(245,235,210,.62)",
+                        fontSize: 15,
+                        lineHeight: 1.52,
+                        color: "rgba(245,235,210,.66)",
                       }}
                     >
-                      <span style={{ color: "rgba(101,214,154,.64)" }}>
+                      <span style={{ color: "rgba(101,214,154,.68)" }}>
                         ◇
                       </span>
                       <span>{item}</span>

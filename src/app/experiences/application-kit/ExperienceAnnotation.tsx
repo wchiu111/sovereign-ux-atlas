@@ -17,16 +17,18 @@ export default function ExperienceAnnotation({
   return (
     <motion.aside
       key={stage.id}
-      initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+      initial={
+        reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }
+      }
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: reducedMotion ? 0.16 : 0.42,
         ease: [0.16, 1, 0.3, 1],
       }}
       style={{
-        width: compact ? 280 : 330,
-        maxWidth: "min(330px, 82vw)",
-        padding: compact ? "14px 15px" : "17px 18px",
+        width: compact ? 300 : 350,
+        maxWidth: "min(350px, 84vw)",
+        padding: compact ? "16px 17px" : "19px 20px",
         border: "1px solid rgba(245,235,210,.10)",
         background:
           "linear-gradient(145deg, rgba(12,15,24,.94), rgba(7,9,16,.90))",
@@ -36,10 +38,10 @@ export default function ExperienceAnnotation({
     >
       <div
         style={{
-          marginBottom: 9,
+          marginBottom: 11,
           fontFamily: "'DM Mono',monospace",
-          fontSize: 8,
-          letterSpacing: ".20em",
+          fontSize: 9.5,
+          letterSpacing: ".18em",
           textTransform: "uppercase",
           color,
         }}
@@ -47,7 +49,7 @@ export default function ExperienceAnnotation({
         {stage.title}
       </div>
 
-      <div style={{ display: "grid", gap: compact ? 10 : 12 }}>
+      <div style={{ display: "grid", gap: compact ? 13 : 15 }}>
         <Block label="What you're seeing" value={stage.annotation.what} />
         <Block label="Why it matters" value={stage.annotation.why} />
         {!compact && (
@@ -78,22 +80,23 @@ function Block({
     <div>
       <div
         style={{
-          marginBottom: 4,
+          marginBottom: 6,
           fontFamily: "'DM Mono',monospace",
-          fontSize: 7,
-          letterSpacing: ".17em",
+          fontSize: 8,
+          letterSpacing: ".16em",
           textTransform: "uppercase",
-          color: "rgba(200,180,130,.48)",
+          color: "rgba(200,180,130,.54)",
         }}
       >
         {label}
       </div>
+
       <div
         style={{
           fontFamily: "'EB Garamond',serif",
-          fontSize: 13,
-          lineHeight: 1.48,
-          color: "rgba(245,235,210,.72)",
+          fontSize: 14.5,
+          lineHeight: 1.55,
+          color: "rgba(245,235,210,.76)",
         }}
       >
         {value}

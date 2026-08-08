@@ -12,6 +12,7 @@ interface ProgressiveBehaviorCanvasProps {
   activeStageId: BehavioralStageId;
   onCommitStage: (stageId: BehavioralStageId) => void;
   onAdvance: () => void;
+  onRevealAll: () => void;
   resolveColor: (role: BehavioralStage["colorRole"]) => string;
 }
 
@@ -39,6 +40,7 @@ export default function ProgressiveBehaviorCanvas({
   activeStageId,
   onCommitStage,
   onAdvance,
+  onRevealAll,
   resolveColor,
 }: ProgressiveBehaviorCanvasProps) {
   const reducedMotion = useReducedMotion();
@@ -111,6 +113,7 @@ export default function ProgressiveBehaviorCanvas({
             const toId = ORDER[index + 1];
             const a = POSITIONS[fromId];
             const b = POSITIONS[toId];
+
             return (
               <motion.line
                 key={`${fromId}-${toId}`}
@@ -169,7 +172,7 @@ export default function ProgressiveBehaviorCanvas({
                 position: "absolute",
                 left: `${p.x}%`,
                 top: `${p.y}%`,
-                width: 180,
+                width: 200,
                 transform: "translate(-50%, -50%)",
                 padding: 0,
                 border: 0,
@@ -183,7 +186,7 @@ export default function ProgressiveBehaviorCanvas({
                 style={{
                   display: "grid",
                   gridTemplateColumns: "44px 1fr",
-                  gap: 12,
+                  gap: 13,
                   alignItems: "center",
                 }}
               >
@@ -217,8 +220,8 @@ export default function ProgressiveBehaviorCanvas({
                     style={{
                       display: "block",
                       fontFamily: "'DM Mono',monospace",
-                      fontSize: 10,
-                      letterSpacing: ".12em",
+                      fontSize: 11.5,
+                      letterSpacing: ".115em",
                       textTransform: "uppercase",
                       color: active
                         ? "rgba(255,248,230,.96)"
@@ -232,11 +235,11 @@ export default function ProgressiveBehaviorCanvas({
                     <span
                       style={{
                         display: "block",
-                        marginTop: 4,
+                        marginTop: 5,
                         fontFamily: "'EB Garamond',serif",
-                        fontSize: 12.5,
-                        lineHeight: 1.35,
-                        color: "rgba(245,235,210,.58)",
+                        fontSize: 14,
+                        lineHeight: 1.4,
+                        color: "rgba(245,235,210,.62)",
                       }}
                     >
                       {stage.summary}
@@ -252,7 +255,12 @@ export default function ProgressiveBehaviorCanvas({
       <div
         style={{
           position: "absolute",
-          left: activeIndex <= 1 ? "62%" : activeIndex >= 4 ? "43%" : "63%",
+          left:
+            activeIndex <= 1
+              ? "62%"
+              : activeIndex >= 4
+                ? "43%"
+                : "63%",
           top: activeIndex <= 1 ? "8%" : "10%",
         }}
       >
@@ -266,7 +274,9 @@ export default function ProgressiveBehaviorCanvas({
 
         {canAdvance && (
           <motion.div
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+            initial={
+              reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }
+            }
             animate={{ opacity: 1, y: 0 }}
             transition={{
               delay: reducedMotion ? 0 : 0.18,
@@ -275,7 +285,7 @@ export default function ProgressiveBehaviorCanvas({
             }}
             style={{
               marginTop: 12,
-              width: 280,
+              width: 300,
             }}
           >
             <button
@@ -283,14 +293,14 @@ export default function ProgressiveBehaviorCanvas({
               onClick={onAdvance}
               style={{
                 width: "100%",
-                minHeight: 46,
-                padding: "0 14px",
+                minHeight: 48,
+                padding: "0 15px",
                 border: "1px solid rgba(138,174,200,.34)",
                 background: "rgba(7,9,16,.72)",
                 color: "rgba(190,220,245,.86)",
                 fontFamily: "'DM Mono',monospace",
-                fontSize: 8.5,
-                letterSpacing: ".15em",
+                fontSize: 9.5,
+                letterSpacing: ".145em",
                 textTransform: "uppercase",
                 textAlign: "left",
                 cursor: "pointer",
@@ -305,19 +315,6 @@ export default function ProgressiveBehaviorCanvas({
               </span>
               {nextStage?.title ?? "Continue"}
             </button>
-
-            <div
-              style={{
-                marginTop: 8,
-                paddingLeft: 2,
-                fontFamily: "'EB Garamond',serif",
-                fontSize: 12,
-                lineHeight: 1.4,
-                color: "rgba(245,235,210,.44)",
-              }}
-            >
-              Commit to reveal the next relationship.
-            </div>
           </motion.div>
         )}
       </div>
@@ -326,28 +323,59 @@ export default function ProgressiveBehaviorCanvas({
         style={{
           position: "absolute",
           left: "46%",
-          bottom: 22,
+          bottom: 20,
           transform: "translateX(-50%)",
-          display: "flex",
-          gap: 7,
-          alignItems: "center",
+          display: "grid",
+          justifyItems: "center",
+          gap: 12,
         }}
       >
-        {ORDER.map((id, index) => (
-          <span
-            key={id}
-            aria-hidden="true"
+        <div
+          aria-label={`${revealedCount} of ${ORDER.length} stages revealed`}
+          style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+          }}
+        >
+          {ORDER.map((id, index) => (
+            <span
+              key={id}
+              aria-hidden="true"
+              style={{
+                width: index < revealedCount ? 7 : 5,
+                height: index < revealedCount ? 7 : 5,
+                borderRadius: "50%",
+                background:
+                  index < revealedCount
+                    ? "rgba(200,169,110,.72)"
+                    : "rgba(245,235,210,.14)",
+              }}
+            />
+          ))}
+        </div>
+
+        {canAdvance && (
+          <button
+            type="button"
+            onClick={onRevealAll}
+            aria-label="Reveal all behavioral stages"
             style={{
-              width: index < revealedCount ? 7 : 4,
-              height: index < revealedCount ? 7 : 4,
-              borderRadius: "50%",
-              background:
-                index < revealedCount
-                  ? "rgba(200,169,110,.70)"
-                  : "rgba(245,235,210,.12)",
+              minHeight: 44,
+              padding: "0 14px",
+              border: "1px solid rgba(245,235,210,.10)",
+              background: "transparent",
+              color: "rgba(245,235,210,.48)",
+              fontFamily: "'DM Mono',monospace",
+              fontSize: 9,
+              letterSpacing: ".14em",
+              textTransform: "uppercase",
+              cursor: "pointer",
             }}
-          />
-        ))}
+          >
+            Reveal all
+          </button>
+        )}
       </div>
     </div>
   );
