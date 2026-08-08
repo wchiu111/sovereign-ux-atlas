@@ -17,7 +17,9 @@ interface ProgressiveBehaviorCanvasProps {
   resolveColor: (role: BehavioralStage["colorRole"]) => string;
 }
 
-const POSITIONS: Record<BehavioralStageId, { x: number; y: number }> = {
+type Point = { x: number; y: number };
+
+const POSITIONS: Record<BehavioralStageId, Point> = {
   interpret: { x: 34, y: 36 },
   separate: { x: 29, y: 53 },
   frame: { x: 36, y: 72 },
@@ -35,44 +37,49 @@ const ORDER: BehavioralStageId[] = [
   "act",
 ];
 
-type Connection = {
-  from: BehavioralStageId;
-  to: BehavioralStageId;
-  d: string;
-};
+/**
+ * Normalized ranges along the single master trajectory.
+ * These correspond to the six stage-to-stage arcs:
+ *
+ * Interpret→Separate→Frame→Recommend→Confirm→Act→Interpret
+ *
+ * The geometry is one continuous path. These ranges are used only for
+ * progressive reveal and semantic hover color—not to construct separate
+ * connector geometry.
+ */
+const PATH_STOPS = [0, 0.145, 0.305, 0.49, 0.665, 0.835, 1];
 
-const CONNECTIONS: Connection[] = [
-  {
-    from: "interpret",
-    to: "separate",
-    d: "M 34 36 C 27 39, 25 46, 29 53",
-  },
-  {
-    from: "separate",
-    to: "frame",
-    d: "M 29 53 C 27 62, 29 69, 36 72",
-  },
-  {
-    from: "frame",
-    to: "recommend",
-    d: "M 36 72 C 43 80, 51 83, 58 80",
-  },
-  {
-    from: "recommend",
-    to: "confirm",
-    d: "M 58 80 C 68 81, 76 75, 78 67",
-  },
-  {
-    from: "confirm",
-    to: "act",
-    d: "M 78 67 C 83 58, 82 46, 76 37",
-  },
-  {
-    from: "act",
-    to: "interpret",
-    d: "M 76 37 C 65 24, 46 23, 34 36",
-  },
-];
+function buildClosedCatmullRomPath(
+  points: Point[],
+  tension = 0.92,
+) {
+  if (points.length < 3) return "";
+
+  const count = points.length;
+  let d = `M ${points[0].x} ${points[0].y}`;
+
+  for (let index = 0; index < count; index += 1) {
+    const p0 = points[(index - 1 + count) % count];
+    const p1 = points[index];
+    const p2 = points[(index + 1) % count];
+    const p3 = points[(index + 2) % count];
+
+    const cp1 = {
+      x: p1.x + ((p2.x - p0.x) / 6) * tension,
+      y: p1.y + ((p2.y - p0.y) / 6) * tension,
+    };
+
+    const cp2 = {
+      x: p2.x - ((p3.x - p1.x) / 6) * tension,
+      y: p2.y - ((p3.y - p1.y) / 6) * tension,
+    };
+
+    d += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${p2.x} ${p2.y}`;
+  }
+
+  d += " Z";
+  return d;
+}
 
 export default function ProgressiveBehaviorCanvas({
   stages,
@@ -85,12 +92,16 @@ export default function ProgressiveBehaviorCanvas({
   resolveColor,
 }: ProgressiveBehaviorCanvasProps) {
   const reducedMotion = useReducedMotion();
-  const [hoveredConnection, setHoveredConnection] =
-    useState<string | null>(null);
+  const [trajectoryHovered, setTrajectoryHovered] = useState(false);
 
   const revealedIds = useMemo(
     () => new Set(ORDER.slice(0, revealedCount)),
     [revealedCount],
+  );
+
+  const masterPath = useMemo(
+    () => buildClosedCatmullRomPath(ORDER.map((id) => POSITIONS[id])),
+    [],
   );
 
   const activeStage =
@@ -100,19 +111,12 @@ export default function ProgressiveBehaviorCanvas({
   const complete = revealedCount >= ORDER.length;
   const nextStage = stages[revealedCount];
 
-  const visibleConnections = CONNECTIONS.filter((connection) => {
-    if (
-      connection.from === "act" &&
-      connection.to === "interpret"
-    ) {
-      return complete;
-    }
-
-    return (
-      revealedIds.has(connection.from) &&
-      revealedIds.has(connection.to)
-    );
-  });
+  const revealedProgress =
+    revealedCount <= 1
+      ? 0
+      : complete
+        ? 1
+        : PATH_STOPS[revealedCount - 1];
 
   const getStage = (id: BehavioralStageId) =>
     stages.find((stage) => stage.id === id)!;
@@ -174,74 +178,132 @@ export default function ProgressiveBehaviorCanvas({
         }}
       >
         <defs>
-          {visibleConnections.map((connection, index) => {
-            const from = getStage(connection.from);
-            const to = getStage(connection.to);
-            const fromColor = resolveColor(from.colorRole);
-            const toColor = resolveColor(to.colorRole);
+          {ORDER.map((fromId, index) => {
+            const toId = ORDER[(index + 1) % ORDER.length];
+            const from = POSITIONS[fromId];
+            const to = POSITIONS[toId];
+            const fromStage = getStage(fromId);
+            const toStage = getStage(toId);
 
             return (
               <linearGradient
-                key={`gradient-${connection.from}-${connection.to}`}
-                id={`connection-gradient-${index}`}
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
+                key={`trajectory-gradient-${fromId}-${toId}`}
+                id={`trajectory-gradient-${index}`}
+                x1={from.x}
+                y1={from.y}
+                x2={to.x}
+                y2={to.y}
+                gradientUnits="userSpaceOnUse"
               >
-                <stop offset="0%" stopColor={fromColor} />
-                <stop offset="100%" stopColor={toColor} />
+                <stop
+                  offset="0%"
+                  stopColor={resolveColor(fromStage.colorRole)}
+                  stopOpacity="0.8"
+                />
+                <stop
+                  offset="100%"
+                  stopColor={resolveColor(toStage.colorRole)}
+                  stopOpacity="0.8"
+                />
               </linearGradient>
             );
           })}
+
+          <filter
+            id="trajectory-glow"
+            x="-60%"
+            y="-60%"
+            width="220%"
+            height="220%"
+          >
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="3.5"
+              result="blurred"
+            />
+            <feMerge>
+              <feMergeNode in="blurred" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
 
-        {visibleConnections.map((connection, index) => {
-          const key = `${connection.from}-${connection.to}`;
-          const hovered = hoveredConnection === key;
+        {/* One structural trajectory. Progressive disclosure changes only
+            how much of the same path is visible. */}
+        <motion.path
+          d={masterPath}
+          pathLength={1}
+          fill="none"
+          stroke="rgba(150,166,184,.34)"
+          strokeWidth="0.18"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray={`${revealedProgress} ${1 - revealedProgress}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: revealedProgress > 0 ? 0.92 : 0 }}
+          transition={{
+            duration: reducedMotion ? 0.16 : 0.72,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+        />
+
+        {/* Hover treatment uses the exact same master path. Each semantic
+            color band is a dash-range overlay, so the geometry remains
+            visually continuous rather than becoming six connector curves. */}
+        {ORDER.map((fromId, index) => {
+          const start = PATH_STOPS[index];
+          const end = PATH_STOPS[index + 1];
+          const range = end - start;
+          const rangeVisible = revealedProgress >= end - 0.001;
+
+          if (!rangeVisible) return null;
 
           return (
-            <g key={key}>
-              <motion.path
-                d={connection.d}
-                fill="none"
-                stroke={
-                  hovered
-                    ? `url(#connection-gradient-${index})`
-                    : "rgba(150,166,184,.34)"
-                }
-                strokeWidth={hovered ? 0.42 : 0.18}
-                strokeLinecap="round"
-                initial={{ opacity: 0, pathLength: 0 }}
-                animate={{
-                  opacity: hovered ? 1 : 0.92,
-                  pathLength: 1,
-                }}
-                transition={{
-                  duration: reducedMotion ? 0.16 : 0.72,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                style={{
-                  filter: hovered
-                    ? "drop-shadow(0 0 4px rgba(120,165,220,.45)) drop-shadow(0 0 9px rgba(190,120,220,.22))"
-                    : "none",
-                }}
-              />
-
-              <path
-                d={connection.d}
-                fill="none"
-                stroke="transparent"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                pointerEvents="stroke"
-                onMouseEnter={() => setHoveredConnection(key)}
-                onMouseLeave={() => setHoveredConnection(null)}
-                style={{ cursor: "pointer" }}
-              />
-            </g>
+            <motion.path
+              key={`trajectory-hover-${fromId}`}
+              d={masterPath}
+              pathLength={1}
+              fill="none"
+              stroke={`url(#trajectory-gradient-${index})`}
+              strokeWidth={trajectoryHovered ? 0.34 : 0.18}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray={`${range} ${1 - range}`}
+              strokeDashoffset={-start}
+              initial={{ opacity: 0 }}
+              animate={{
+                opacity: trajectoryHovered ? 0.92 : 0,
+              }}
+              transition={{
+                duration: reducedMotion ? 0.16 : 0.45,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              filter={
+                trajectoryHovered && !reducedMotion
+                  ? "url(#trajectory-glow)"
+                  : undefined
+              }
+            />
           );
         })}
+
+        {/* Wide invisible hit target over only the revealed portion. */}
+        {revealedProgress > 0 && (
+          <path
+            d={masterPath}
+            pathLength={1}
+            fill="none"
+            stroke="transparent"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray={`${revealedProgress} ${1 - revealedProgress}`}
+            pointerEvents="stroke"
+            onMouseEnter={() => setTrajectoryHovered(true)}
+            onMouseLeave={() => setTrajectoryHovered(false)}
+            style={{ cursor: "pointer" }}
+          />
+        )}
       </svg>
 
       <AnimatePresence>
