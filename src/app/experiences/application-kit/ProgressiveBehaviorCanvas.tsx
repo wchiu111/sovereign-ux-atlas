@@ -37,6 +37,7 @@ const ORDER: BehavioralStageId[] = [
 const DESIGN_WIDTH = 1155;
 const SYSTEM_TOP = 180;
 const SYSTEM_HEIGHT = 605;
+const READING_COLUMN_WIDTH = 395;
 
 const NODE_GEOMETRY: Record<
   BehavioralStageId,
@@ -85,6 +86,8 @@ export default function ProgressiveBehaviorCanvas({
   const getStage = (id: BehavioralStageId) =>
     stages.find((stage) => stage.id === id)!;
 
+  const coreColor = resolveColor(getStage("interpret").colorRole);
+
   const outerActive =
     orbitHovered === "outer" ||
     hoveredStageId === "interpret" ||
@@ -117,10 +120,17 @@ export default function ProgressiveBehaviorCanvas({
           width: "43.72%",
           aspectRatio: "1 / 1",
           borderRadius: "50%",
-          background:
-            "radial-gradient(circle at 42% 34%, rgba(229,195,117,.88) 0%, rgba(204,170,100,.82) 31%, rgba(174,140,81,.76) 62%, rgba(123,95,59,.70) 100%)",
-          boxShadow:
-            "0 0 156px rgba(200,169,110,.17), 0 0 358px rgba(200,169,110,.07)",
+          background: `radial-gradient(
+            circle at 42% 34%,
+            ${coreColor}E6 0%,
+            ${coreColor}C2 31%,
+            ${coreColor}94 62%,
+            ${coreColor}66 100%
+          )`,
+          boxShadow: `
+            0 0 156px ${coreColor}24,
+            0 0 358px ${coreColor}12
+          `,
           pointerEvents: "none",
         }}
       />
@@ -422,9 +432,8 @@ export default function ProgressiveBehaviorCanvas({
           position: "absolute",
           left: pctX(691),
           top: pctY(229 - SYSTEM_TOP),
-          width: "34.21%",
-          minWidth: 340,
-          maxWidth: 395,
+          width: READING_COLUMN_WIDTH,
+          maxWidth: "34.21vw",
         }}
       >
         <div style={{ pointerEvents: "none" }}>
@@ -453,13 +462,13 @@ export default function ProgressiveBehaviorCanvas({
               onClick={onAdvance}
               style={{
                 width: "100%",
-                minHeight: 63,
-                padding: "0 20px",
+                minHeight: 54,
+                padding: "0 18px",
                 border: "1.3px solid rgba(138,174,200,.34)",
                 background: "rgba(7,9,16,.78)",
                 color: "rgba(190,220,245,.90)",
                 fontFamily: "'DM Mono', monospace",
-                fontSize: 12.5,
+                fontSize: 11.5,
                 letterSpacing: ".145em",
                 textTransform: "uppercase",
                 textAlign: "left",
@@ -492,7 +501,9 @@ export default function ProgressiveBehaviorCanvas({
             }}
             style={{
               marginTop: 16,
-              padding: "18px 20px",
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "20px 20px",
               border: "1px solid rgba(200,169,110,.26)",
               background:
                 "linear-gradient(145deg, rgba(18,14,8,.80), rgba(8,9,14,.92))",
@@ -529,7 +540,8 @@ export default function ProgressiveBehaviorCanvas({
               type="button"
               onClick={onApply}
               style={{
-                minHeight: 46,
+                width: "100%",
+                minHeight: 50,
                 padding: "0 16px",
                 border: "1px solid rgba(218,179,98,.54)",
                 background:

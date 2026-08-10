@@ -33,10 +33,7 @@ export default function BehavioralDecisionDesignExperience({
     BEHAVIORAL_STAGES[0];
 
   const moduleColor = resolveStellarColor("agentic", systemColor);
-  const stageColor = resolveStellarColor(
-    activeStage.colorRole,
-    systemColor,
-  );
+  const stageColor = resolveStellarColor(activeStage.colorRole, systemColor);
 
   const resolveColor = useMemo(
     () => (role: (typeof BEHAVIORAL_STAGES)[number]["colorRole"]) =>
@@ -67,17 +64,9 @@ export default function BehavioralDecisionDesignExperience({
       role="dialog"
       aria-modal="true"
       aria-labelledby="behavioral-design-title"
-      initial={
-        reducedMotion
-          ? { opacity: 0 }
-          : { opacity: 0, scale: 0.996 }
-      }
+      initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.996 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={
-        reducedMotion
-          ? { opacity: 0 }
-          : { opacity: 0, scale: 0.998 }
-      }
+      exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.998 }}
       transition={{
         duration: reducedMotion ? 0.18 : 0.56,
         ease: [0.16, 1, 0.3, 1],
@@ -105,7 +94,7 @@ export default function BehavioralDecisionDesignExperience({
           backgroundPosition: "center center",
           backgroundRepeat: "no-repeat",
           transform: "scale(1.03)",
-          filter: "saturate(.78) brightness(.58) contrast(1.04)",
+          filter: "saturate(.78) brightness(.62) contrast(1.04)",
         }}
       />
 
@@ -117,7 +106,7 @@ export default function BehavioralDecisionDesignExperience({
           zIndex: 1,
           pointerEvents: "none",
           background:
-            "radial-gradient(circle at 48% 46%, rgba(3,4,9,.08) 0%, rgba(3,4,9,.26) 44%, rgba(3,4,9,.54) 100%), linear-gradient(180deg, rgba(3,4,9,.20), rgba(3,4,9,.44))",
+            "radial-gradient(circle at 48% 46%, rgba(3,4,9,.04) 0%, rgba(3,4,9,.18) 46%, rgba(3,4,9,.42) 100%), linear-gradient(180deg, rgba(3,4,9,.08), rgba(3,4,9,.30))",
         }}
       />
 
@@ -130,9 +119,9 @@ export default function BehavioralDecisionDesignExperience({
           justifyContent: "space-between",
           gap: 20,
           padding: "0 24px",
-          borderBottom: "1px solid rgba(245,235,210,.07)",
-          background: "rgba(4,5,11,.86)",
-          backdropFilter: "blur(18px)",
+          borderBottom: "1px solid rgba(245,235,210,.08)",
+          background: "rgba(3,4,9,.20)",
+          backdropFilter: "blur(6px)",
         }}
       >
         <button
@@ -143,7 +132,7 @@ export default function BehavioralDecisionDesignExperience({
             padding: "0 10px 0 0",
             border: 0,
             background: "transparent",
-            color: "rgba(200,180,130,.70)",
+            color: "rgba(200,180,130,.78)",
             fontFamily: "'DM Mono',monospace",
             fontSize: 9.5,
             letterSpacing: ".14em",
@@ -151,9 +140,7 @@ export default function BehavioralDecisionDesignExperience({
             cursor: "pointer",
           }}
         >
-          <span style={{ color: moduleColor, marginRight: 9 }}>
-            ←
-          </span>
+          <span style={{ color: moduleColor, marginRight: 9 }}>←</span>
           Behavior &amp; Authority
         </button>
 
@@ -164,7 +151,7 @@ export default function BehavioralDecisionDesignExperience({
               fontSize: 8.5,
               letterSpacing: ".18em",
               textTransform: "uppercase",
-              color: "rgba(200,180,130,.54)",
+              color: "rgba(200,180,130,.62)",
             }}
           >
             Behavioral &amp; Decision Design
@@ -176,7 +163,7 @@ export default function BehavioralDecisionDesignExperience({
               marginTop: 3,
               fontFamily: "'EB Garamond',serif",
               fontSize: 18,
-              color: "rgba(255,248,230,.92)",
+              color: "rgba(255,248,230,.94)",
             }}
           >
             Experience the framework
@@ -246,37 +233,36 @@ export default function BehavioralDecisionDesignExperience({
             >
               <div
                 style={{
-                  maxWidth: 720,
+                  maxWidth: 1120,
                   margin: "12px auto 0",
+                  padding: "0 24px",
                   textAlign: "center",
                 }}
               >
                 <div
                   style={{
                     fontFamily: "'EB Garamond',serif",
-                    fontSize: 25,
-                    lineHeight: 1.35,
-                    color: "rgba(255,248,230,.93)",
+                    fontSize: "clamp(30px, 2.2vw, 36px)",
+                    lineHeight: 1.28,
+                    color: "rgba(255,248,230,.95)",
                     textShadow: "0 2px 18px rgba(0,0,0,.34)",
                   }}
                 >
-                  Complex systems reveal themselves at the pace
-                  understanding is formed.
+                  Complex systems reveal themselves at the pace understanding is formed.
                 </div>
 
                 <div
                   style={{
-                    marginTop: 10,
+                    marginTop: 12,
                     fontFamily: "'EB Garamond',serif",
-                    fontSize: 14.5,
+                    fontSize: "clamp(16.5px, 1.1vw, 18px)",
                     lineHeight: 1.55,
-                    color: "rgba(245,235,210,.58)",
+                    color: "rgba(245,235,210,.64)",
                     textShadow: "0 2px 14px rgba(0,0,0,.28)",
                   }}
                 >
-                  Begin with one point of attention. Commit when it makes
-                  sense. The next relationship appears only after context
-                  exists.
+                  Begin with one point of attention. Commit when it makes sense.
+                  The next relationship appears only after context exists.
                 </div>
               </div>
 
@@ -296,13 +282,17 @@ export default function BehavioralDecisionDesignExperience({
           {mode === "apply" && (
             <motion.div
               key="apply"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
+              transition={{
+                duration: reducedMotion ? 0.16 : 0.5,
+                ease: [0.16, 1, 0.3, 1],
+              }}
             >
               <div
                 style={{
-                  maxWidth: 720,
+                  maxWidth: 800,
                   margin: "12px auto 24px",
                   textAlign: "center",
                 }}
@@ -310,7 +300,7 @@ export default function BehavioralDecisionDesignExperience({
                 <div
                   style={{
                     fontFamily: "'EB Garamond',serif",
-                    fontSize: 24,
+                    fontSize: "clamp(27px, 1.8vw, 32px)",
                     color: "rgba(255,248,230,.92)",
                   }}
                 >
@@ -321,13 +311,13 @@ export default function BehavioralDecisionDesignExperience({
                   style={{
                     marginTop: 8,
                     fontFamily: "'EB Garamond',serif",
-                    fontSize: 14.5,
+                    fontSize: "clamp(16px, 1vw, 17.5px)",
                     lineHeight: 1.55,
-                    color: "rgba(245,235,210,.52)",
+                    color: "rgba(245,235,210,.58)",
                   }}
                 >
-                  Inspect a real recommendation experience through the
-                  same six behavioral decisions you just revealed.
+                  Inspect a real recommendation experience through the same six
+                  behavioral decisions you just revealed.
                 </div>
               </div>
 
@@ -335,21 +325,6 @@ export default function BehavioralDecisionDesignExperience({
                 activeStageId={activeStageId}
                 onStageChange={setActiveStageId}
               />
-
-              <div
-                style={{
-                  position: "fixed",
-                  right: 24,
-                  bottom: 24,
-                  zIndex: 8,
-                }}
-              >
-                <ExperienceAnnotation
-                  stage={activeStage}
-                  color={stageColor}
-                  compact
-                />
-              </div>
             </motion.div>
           )}
 
@@ -402,13 +377,7 @@ export default function BehavioralDecisionDesignExperience({
                         color: "rgba(245,235,210,.66)",
                       }}
                     >
-                      <span
-                        style={{
-                          color: "rgba(101,214,154,.68)",
-                        }}
-                      >
-                        ◇
-                      </span>
+                      <span style={{ color: "rgba(101,214,154,.68)" }}>◇</span>
                       <span>{item}</span>
                     </div>
                   ))}
