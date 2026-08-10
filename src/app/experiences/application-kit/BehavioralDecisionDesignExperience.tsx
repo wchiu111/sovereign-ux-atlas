@@ -218,9 +218,10 @@ export default function BehavioralDecisionDesignExperience({
           position: "relative",
           zIndex: 2,
           minWidth: 0,
-          overflowY: "auto",
+          minHeight: "calc(100dvh - 64px)",
+          overflow: mode === "learn" ? "visible" : "auto",
           scrollbarWidth: "none",
-          padding: "22px 28px 44px",
+          padding: mode === "learn" ? "22px 28px 0" : "22px 28px 44px",
         }}
       >
         <AnimatePresence mode="wait">
@@ -230,6 +231,11 @@ export default function BehavioralDecisionDesignExperience({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              style={{
+                position: "relative",
+                minHeight: "calc(100dvh - 86px)",
+                overflow: "visible",
+              }}
             >
               <div
                 style={{
