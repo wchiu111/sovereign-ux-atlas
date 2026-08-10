@@ -17,17 +17,6 @@ interface ProgressiveBehaviorCanvasProps {
   resolveColor: (role: BehavioralStage["colorRole"]) => string;
 }
 
-type Point = { x: number; y: number };
-
-const POSITIONS: Record<BehavioralStageId, Point> = {
-  interpret: { x: 34, y: 36 },
-  separate: { x: 29, y: 53 },
-  frame: { x: 36, y: 72 },
-  recommend: { x: 58, y: 80 },
-  confirm: { x: 78, y: 67 },
-  act: { x: 76, y: 37 },
-};
-
 const ORDER: BehavioralStageId[] = [
   "interpret",
   "separate",
@@ -38,48 +27,78 @@ const ORDER: BehavioralStageId[] = [
 ];
 
 /**
- * Normalized ranges along the single master trajectory.
- * These correspond to the six stage-to-stage arcs:
- *
- * Interpret→Separate→Frame→Recommend→Confirm→Act→Interpret
- *
- * The geometry is one continuous path. These ranges are used only for
- * progressive reveal and semantic hover color—not to construct separate
- * connector geometry.
+ * This is the actual 420 × 420 outer ring already present in the experience.
+ * The stage nodes now sit directly on this circle.
  */
-const PATH_STOPS = [0, 0.145, 0.305, 0.49, 0.665, 0.835, 1];
+const ORBIT_SIZE = 420;
+const ORBIT_CENTER = ORBIT_SIZE / 2;
+const ORBIT_RADIUS = 204;
 
-function buildClosedCatmullRomPath(
-  points: Point[],
-  tension = 0.92,
-) {
-  if (points.length < 3) return "";
+const ANGLES: Record<BehavioralStageId, number> = {
+  interpret: 220,
+  separate: 180,
+  frame: 135,
+  recommend: 55,
+  confirm: 15,
+  act: -35,
+};
 
-  const count = points.length;
-  let d = `M ${points[0].x} ${points[0].y}`;
+type Point = { x: number; y: number };
 
-  for (let index = 0; index < count; index += 1) {
-    const p0 = points[(index - 1 + count) % count];
-    const p1 = points[index];
-    const p2 = points[(index + 1) % count];
-    const p3 = points[(index + 2) % count];
+function pointOnCircle(angleDeg: number): Point {
+  const radians = (angleDeg * Math.PI) / 180;
 
-    const cp1 = {
-      x: p1.x + ((p2.x - p0.x) / 6) * tension,
-      y: p1.y + ((p2.y - p0.y) / 6) * tension,
-    };
-
-    const cp2 = {
-      x: p2.x - ((p3.x - p1.x) / 6) * tension,
-      y: p2.y - ((p3.y - p1.y) / 6) * tension,
-    };
-
-    d += ` C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${p2.x} ${p2.y}`;
-  }
-
-  d += " Z";
-  return d;
+  return {
+    x: ORBIT_CENTER + ORBIT_RADIUS * Math.cos(radians),
+    y: ORBIT_CENTER + ORBIT_RADIUS * Math.sin(radians),
+  };
 }
+
+const NODE_POINTS: Record<BehavioralStageId, Point> = ORDER.reduce(
+  (acc, id) => {
+    acc[id] = pointOnCircle(ANGLES[id]);
+    return acc;
+  },
+  {} as Record<BehavioralStageId, Point>,
+);
+
+function describeArc(
+  fromAngle: number,
+  toAngle: number,
+  radius = ORBIT_RADIUS,
+) {
+  const from = pointOnCircle(fromAngle);
+  const to = pointOnCircle(toAngle);
+
+  let delta = fromAngle - toAngle;
+  if (delta < 0) delta += 360;
+
+  const largeArcFlag = delta > 180 ? 1 : 0;
+  const sweepFlag = 0;
+
+  return [
+    "M",
+    from.x,
+    from.y,
+    "A",
+    radius,
+    radius,
+    0,
+    largeArcFlag,
+    sweepFlag,
+    to.x,
+    to.y,
+  ].join(" ");
+}
+
+const SEGMENTS = [
+  { from: "interpret", to: "separate", fromAngle: 220, toAngle: 180 },
+  { from: "separate", to: "frame", fromAngle: 180, toAngle: 135 },
+  { from: "frame", to: "recommend", fromAngle: 135, toAngle: 55 },
+  { from: "recommend", to: "confirm", fromAngle: 55, toAngle: 15 },
+  { from: "confirm", to: "act", fromAngle: 15, toAngle: -35 },
+  { from: "act", to: "interpret", fromAngle: -35, toAngle: -140 },
+] as const;
 
 export default function ProgressiveBehaviorCanvas({
   stages,
@@ -92,16 +111,13 @@ export default function ProgressiveBehaviorCanvas({
   resolveColor,
 }: ProgressiveBehaviorCanvasProps) {
   const reducedMotion = useReducedMotion();
-  const [trajectoryHovered, setTrajectoryHovered] = useState(false);
+  const [orbitHovered, setOrbitHovered] = useState(false);
+  const [hoveredStageId, setHoveredStageId] =
+    useState<BehavioralStageId | null>(null);
 
   const revealedIds = useMemo(
     () => new Set(ORDER.slice(0, revealedCount)),
     [revealedCount],
-  );
-
-  const masterPath = useMemo(
-    () => buildClosedCatmullRomPath(ORDER.map((id) => POSITIONS[id])),
-    [],
   );
 
   const activeStage =
@@ -110,13 +126,7 @@ export default function ProgressiveBehaviorCanvas({
   const canAdvance = revealedCount < ORDER.length;
   const complete = revealedCount >= ORDER.length;
   const nextStage = stages[revealedCount];
-
-  const revealedProgress =
-    revealedCount <= 1
-      ? 0
-      : complete
-        ? 1
-        : PATH_STOPS[revealedCount - 1];
+  const orbitActive = orbitHovered || hoveredStageId !== null;
 
   const getStage = (id: BehavioralStageId) =>
     stages.find((stage) => stage.id === id)!;
@@ -130,300 +140,276 @@ export default function ProgressiveBehaviorCanvas({
         overflow: "hidden",
       }}
     >
+      {/* Actual 420px outer ring + all stage nodes share the same coordinate space. */}
       <div
-        aria-hidden="true"
         style={{
           position: "absolute",
           left: "46%",
           top: "54%",
-          width: 420,
-          height: 420,
+          width: ORBIT_SIZE,
+          height: ORBIT_SIZE,
           transform: "translate(-50%, -50%)",
-          borderRadius: "50%",
-          border: "1px solid rgba(200,169,110,.08)",
-          boxShadow: "0 0 100px rgba(0,0,0,.18)",
+          overflow: "visible",
         }}
       >
-        <div
+        <svg
+          viewBox={`0 0 ${ORBIT_SIZE} ${ORBIT_SIZE}`}
+          width={ORBIT_SIZE}
+          height={ORBIT_SIZE}
           style={{
             position: "absolute",
-            inset: 62,
-            borderRadius: "50%",
-            border: "1px solid rgba(138,174,200,.06)",
+            inset: 0,
+            overflow: "visible",
+            pointerEvents: "none",
           }}
-        />
+        >
+          <defs>
+            {SEGMENTS.map((segment, index) => {
+              const fromId = segment.from as BehavioralStageId;
+              const toId = segment.to as BehavioralStageId;
+              const fromStage = getStage(fromId);
+              const toStage = getStage(toId);
+              const fromPoint = NODE_POINTS[fromId];
+              const toPoint = NODE_POINTS[toId];
+
+              return (
+                <linearGradient
+                  key={`outer-ring-gradient-${index}`}
+                  id={`outer-ring-gradient-${index}`}
+                  x1={fromPoint.x}
+                  y1={fromPoint.y}
+                  x2={toPoint.x}
+                  y2={toPoint.y}
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop
+                    offset="0%"
+                    stopColor={resolveColor(fromStage.colorRole)}
+                    stopOpacity="0.82"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={resolveColor(toStage.colorRole)}
+                    stopOpacity="0.82"
+                  />
+                </linearGradient>
+              );
+            })}
+
+            <filter
+              id="outer-ring-glow"
+              x="-40%"
+              y="-40%"
+              width="180%"
+              height="180%"
+            >
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation="3.5"
+                result="ringBlur"
+              />
+              <feMerge>
+                <feMergeNode in="ringBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Quiet structural outer ring. */}
+          <circle
+            cx={ORBIT_CENTER}
+            cy={ORBIT_CENTER}
+            r={ORBIT_RADIUS}
+            fill="none"
+            stroke="rgba(150,166,184,.24)"
+            strokeWidth="1"
+          />
+
+          {/* Semantic color lives on the same ring, never on a second route. */}
+          {SEGMENTS.map((segment, index) => (
+            <motion.path
+              key={`outer-ring-segment-${index}`}
+              d={describeArc(segment.fromAngle, segment.toAngle)}
+              fill="none"
+              stroke={`url(#outer-ring-gradient-${index})`}
+              strokeWidth={orbitActive ? 2.1 : 1}
+              strokeLinecap="round"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: orbitActive ? 0.96 : 0 }}
+              transition={{
+                duration: reducedMotion ? 0.16 : 0.46,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              filter={
+                orbitActive && !reducedMotion
+                  ? "url(#outer-ring-glow)"
+                  : undefined
+              }
+            />
+          ))}
+
+          {/* One wide hit target for the ring itself. */}
+          <circle
+            cx={ORBIT_CENTER}
+            cy={ORBIT_CENTER}
+            r={ORBIT_RADIUS}
+            fill="none"
+            stroke="transparent"
+            strokeWidth="18"
+            pointerEvents="stroke"
+            onMouseEnter={() => setOrbitHovered(true)}
+            onMouseLeave={() => setOrbitHovered(false)}
+            style={{ cursor: "pointer" }}
+          />
+
+          {/* Inner guide ring remains atmospheric only. */}
+          <circle
+            cx={ORBIT_CENTER}
+            cy={ORBIT_CENTER}
+            r={146}
+            fill="none"
+            stroke="rgba(138,174,200,.05)"
+            strokeWidth="1"
+          />
+        </svg>
+
         <div
+          aria-hidden="true"
           style={{
             position: "absolute",
-            inset: 154,
+            left: "50%",
+            top: "50%",
+            width: 112,
+            height: 112,
+            transform: "translate(-50%, -50%)",
             borderRadius: "50%",
             background:
               "radial-gradient(circle at 42% 34%, rgba(229,195,117,.88), rgba(174,140,81,.76) 62%, rgba(123,95,59,.70) 100%)",
             boxShadow:
               "0 0 34px rgba(200,169,110,.17), 0 0 78px rgba(200,169,110,.07)",
+            pointerEvents: "none",
           }}
         />
-      </div>
 
-      <svg
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          overflow: "visible",
-          pointerEvents: "none",
-        }}
-      >
-        <defs>
-          {ORDER.map((fromId, index) => {
-            const toId = ORDER[(index + 1) % ORDER.length];
-            const from = POSITIONS[fromId];
-            const to = POSITIONS[toId];
-            const fromStage = getStage(fromId);
-            const toStage = getStage(toId);
+        <AnimatePresence>
+          {stages.map((stage) => {
+            if (!revealedIds.has(stage.id)) return null;
+
+            const p = NODE_POINTS[stage.id];
+            const color = resolveColor(stage.colorRole);
+            const active = stage.id === activeStageId;
+            const hovered = stage.id === hoveredStageId;
 
             return (
-              <linearGradient
-                key={`trajectory-gradient-${fromId}-${toId}`}
-                id={`trajectory-gradient-${index}`}
-                x1={from.x}
-                y1={from.y}
-                x2={to.x}
-                y2={to.y}
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop
-                  offset="0%"
-                  stopColor={resolveColor(fromStage.colorRole)}
-                  stopOpacity="0.8"
-                />
-                <stop
-                  offset="100%"
-                  stopColor={resolveColor(toStage.colorRole)}
-                  stopOpacity="0.8"
-                />
-              </linearGradient>
-            );
-          })}
-
-          <filter
-            id="trajectory-glow"
-            x="-60%"
-            y="-60%"
-            width="220%"
-            height="220%"
-          >
-            <feGaussianBlur
-              in="SourceGraphic"
-              stdDeviation="3.5"
-              result="blurred"
-            />
-            <feMerge>
-              <feMergeNode in="blurred" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {/* One structural trajectory. Progressive disclosure changes only
-            how much of the same path is visible. */}
-        <motion.path
-          d={masterPath}
-          pathLength={1}
-          fill="none"
-          stroke="rgba(150,166,184,.34)"
-          strokeWidth="0.18"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray={`${revealedProgress} ${1 - revealedProgress}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: revealedProgress > 0 ? 0.92 : 0 }}
-          transition={{
-            duration: reducedMotion ? 0.16 : 0.72,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        />
-
-        {/* Hover treatment uses the exact same master path. Each semantic
-            color band is a dash-range overlay, so the geometry remains
-            visually continuous rather than becoming six connector curves. */}
-        {ORDER.map((fromId, index) => {
-          const start = PATH_STOPS[index];
-          const end = PATH_STOPS[index + 1];
-          const range = end - start;
-          const rangeVisible = revealedProgress >= end - 0.001;
-
-          if (!rangeVisible) return null;
-
-          return (
-            <motion.path
-              key={`trajectory-hover-${fromId}`}
-              d={masterPath}
-              pathLength={1}
-              fill="none"
-              stroke={`url(#trajectory-gradient-${index})`}
-              strokeWidth={trajectoryHovered ? 0.34 : 0.18}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray={`${range} ${1 - range}`}
-              strokeDashoffset={-start}
-              initial={{ opacity: 0 }}
-              animate={{
-                opacity: trajectoryHovered ? 0.92 : 0,
-              }}
-              transition={{
-                duration: reducedMotion ? 0.16 : 0.45,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              filter={
-                trajectoryHovered && !reducedMotion
-                  ? "url(#trajectory-glow)"
-                  : undefined
-              }
-            />
-          );
-        })}
-
-        {/* Wide invisible hit target over only the revealed portion. */}
-        {revealedProgress > 0 && (
-          <path
-            d={masterPath}
-            pathLength={1}
-            fill="none"
-            stroke="transparent"
-            strokeWidth="2.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray={`${revealedProgress} ${1 - revealedProgress}`}
-            pointerEvents="stroke"
-            onMouseEnter={() => setTrajectoryHovered(true)}
-            onMouseLeave={() => setTrajectoryHovered(false)}
-            style={{ cursor: "pointer" }}
-          />
-        )}
-      </svg>
-
-      <AnimatePresence>
-        {stages.map((stage) => {
-          if (!revealedIds.has(stage.id)) return null;
-
-          const p = POSITIONS[stage.id];
-          const color = resolveColor(stage.colorRole);
-          const active = stage.id === activeStageId;
-
-          return (
-            <motion.button
-              key={stage.id}
-              type="button"
-              onClick={() => onCommitStage(stage.id)}
-              initial={
-                reducedMotion
-                  ? { opacity: 0 }
-                  : { opacity: 0, scale: 0.94 }
-              }
-              animate={{
-                opacity: active ? 1 : 0.64,
-                scale: active ? 1.05 : 1,
-              }}
-              exit={{ opacity: 0 }}
-              whileHover={
-                reducedMotion
-                  ? undefined
-                  : {
-                      scale: active ? 1.05 : 1.025,
-                      opacity: 0.9,
-                    }
-              }
-              transition={{
-                duration: reducedMotion ? 0.16 : 0.56,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              style={{
-                position: "absolute",
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-                width: 200,
-                transform: "translate(-50%, -50%)",
-                padding: 0,
-                border: 0,
-                background: "transparent",
-                textAlign: "left",
-                cursor: "pointer",
-                color: "#F4EBD0",
-              }}
-            >
-              <div
+              <motion.button
+                key={stage.id}
+                type="button"
+                onClick={() => onCommitStage(stage.id)}
+                onMouseEnter={() => setHoveredStageId(stage.id)}
+                onMouseLeave={() => setHoveredStageId(null)}
+                initial={
+                  reducedMotion
+                    ? { opacity: 0 }
+                    : { opacity: 0, scale: 0.94 }
+                }
+                animate={{
+                  opacity: active ? 1 : hovered ? 0.94 : 0.66,
+                  scale: active ? 1.05 : hovered ? 1.025 : 1,
+                }}
+                exit={{ opacity: 0 }}
+                transition={{
+                  duration: reducedMotion ? 0.16 : 0.5,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "44px 1fr",
-                  gap: 13,
-                  alignItems: "center",
+                  position: "absolute",
+                  left: p.x,
+                  top: p.y,
+                  width: 200,
+                  transform: "translate(-22px, -22px)",
+                  padding: 0,
+                  border: 0,
+                  background: "transparent",
+                  textAlign: "left",
+                  cursor: "pointer",
+                  color: "#F4EBD0",
                 }}
               >
-                <span
+                <div
                   style={{
                     display: "grid",
-                    placeItems: "center",
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    border: `1px solid ${color}${active ? "D8" : "70"}`,
-                    background: `${color}${active ? "1E" : "0C"}`,
-                    boxShadow: active
-                      ? `0 0 28px ${color}38`
-                      : `0 0 14px ${color}18`,
+                    gridTemplateColumns: "44px 1fr",
+                    gap: 13,
+                    alignItems: "center",
                   }}
                 >
                   <span
                     style={{
-                      width: 8,
-                      height: 8,
+                      display: "grid",
+                      placeItems: "center",
+                      width: 44,
+                      height: 44,
                       borderRadius: "50%",
-                      background: color,
-                      boxShadow: `0 0 12px ${color}`,
-                    }}
-                  />
-                </span>
-
-                <span>
-                  <span
-                    style={{
-                      display: "block",
-                      fontFamily: "'DM Mono',monospace",
-                      fontSize: 11.5,
-                      letterSpacing: ".115em",
-                      textTransform: "uppercase",
-                      color: active
-                        ? "rgba(255,248,230,.98)"
-                        : "rgba(245,235,210,.74)",
+                      border: `1px solid ${color}${
+                        active ? "D8" : hovered ? "B8" : "70"
+                      }`,
+                      background: `${color}${
+                        active ? "1E" : hovered ? "16" : "0C"
+                      }`,
+                      boxShadow:
+                        active || hovered
+                          ? `0 0 28px ${color}38`
+                          : `0 0 14px ${color}18`,
                     }}
                   >
-                    {stage.title}
+                    <span
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: color,
+                        boxShadow: `0 0 12px ${color}`,
+                      }}
+                    />
                   </span>
 
-                  {active && (
+                  <span>
                     <span
                       style={{
                         display: "block",
-                        marginTop: 5,
-                        fontFamily: "'EB Garamond',serif",
-                        fontSize: 14,
-                        lineHeight: 1.4,
-                        color: "rgba(245,235,210,.66)",
+                        fontFamily: "'DM Mono',monospace",
+                        fontSize: 11.5,
+                        letterSpacing: ".115em",
+                        textTransform: "uppercase",
+                        color: active
+                          ? "rgba(255,248,230,.98)"
+                          : "rgba(245,235,210,.74)",
                       }}
                     >
-                      {stage.summary}
+                      {stage.title}
                     </span>
-                  )}
-                </span>
-              </div>
-            </motion.button>
-          );
-        })}
-      </AnimatePresence>
+
+                    {active && (
+                      <span
+                        style={{
+                          display: "block",
+                          marginTop: 5,
+                          fontFamily: "'EB Garamond',serif",
+                          fontSize: 14,
+                          lineHeight: 1.4,
+                          color: "rgba(245,235,210,.66)",
+                        }}
+                      >
+                        {stage.summary}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </motion.button>
+            );
+          })}
+        </AnimatePresence>
+      </div>
 
       <div
         style={{
