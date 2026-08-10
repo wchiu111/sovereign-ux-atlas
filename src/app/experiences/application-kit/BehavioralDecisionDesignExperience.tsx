@@ -3,11 +3,10 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
 import ProgressiveBehaviorCanvas from "./ProgressiveBehaviorCanvas";
 import AppliedBehaviorCanvas from "./AppliedBehaviorCanvas";
-import ExperienceAnnotation from "./ExperienceAnnotation";
+import ExploreBehaviorCanvas from "./ExploreBehaviorCanvas";
 import behavioralFrameworkSpaceBg from "./assets/behavioral-framework-space-bg.png";
 import {
   BEHAVIORAL_STAGES,
-  CHECKLIST,
   type BehavioralStageId,
 } from "./behavioralDecisionDesignData";
 
@@ -22,9 +21,7 @@ export default function BehavioralDecisionDesignExperience({ systemColor, onExit
   const [activeStageId, setActiveStageId] = useState<BehavioralStageId>("interpret");
   const [mode, setMode] = useState<ExperienceMode>("learn");
   const reducedMotion = useReducedMotion();
-  const activeStage = BEHAVIORAL_STAGES.find((stage) => stage.id === activeStageId) ?? BEHAVIORAL_STAGES[0];
   const moduleColor = resolveStellarColor("agentic", systemColor);
-  const stageColor = resolveStellarColor(activeStage.colorRole, systemColor);
   const resolveColor = useMemo(() => (role: (typeof BEHAVIORAL_STAGES)[number]["colorRole"]) => resolveStellarColor(role, systemColor), [systemColor]);
   const complete = revealedCount >= BEHAVIORAL_STAGES.length;
   const advance = () => {
@@ -97,12 +94,8 @@ export default function BehavioralDecisionDesignExperience({ systemColor, onExit
             </div>
             <AppliedBehaviorCanvas />
           </motion.div>}
-          {mode==="explore" && <motion.div key="explore" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) 350px",gap:22,maxWidth:1180,margin:"18px auto 0"}}>
-            <section style={{padding:22,border:"1px solid rgba(245,235,210,.07)",background:"rgba(3,4,9,.72)",backdropFilter:"blur(12px)"}}>
-              <div style={{marginBottom:16,fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:".17em",textTransform:"uppercase",color:"rgba(101,214,154,.68)"}}>Implementation reflection</div>
-              <div style={{display:"grid",gap:10}}>{CHECKLIST.map(item=><div key={item} style={{display:"grid",gridTemplateColumns:"16px 1fr",gap:9,fontFamily:"'EB Garamond',serif",fontSize:15,lineHeight:1.52,color:"rgba(245,235,210,.66)"}}><span style={{color:"rgba(101,214,154,.68)"}}>◇</span><span>{item}</span></div>)}</div>
-            </section>
-            <ExperienceAnnotation stage={activeStage} color={stageColor}/>
+          {mode==="explore" && <motion.div key="explore" initial={reducedMotion?{opacity:0}:{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0}} transition={{duration:reducedMotion?0.16:0.5,ease:[0.16,1,0.3,1]}}>
+            <ExploreBehaviorCanvas />
           </motion.div>}
         </AnimatePresence>
       </main>
