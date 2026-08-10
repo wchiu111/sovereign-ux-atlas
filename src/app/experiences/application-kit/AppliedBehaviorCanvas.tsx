@@ -46,7 +46,10 @@ export default function AppliedBehaviorCanvas() {
             <button
               key={id}
               type="button"
-              onClick={() => setMode(id)}
+              onClick={() => {
+                setMode(id);
+                setActive(null);
+              }}
               aria-pressed={mode === id}
               style={{
                 minHeight: 42,
@@ -92,7 +95,7 @@ export default function AppliedBehaviorCanvas() {
 
         <div
           style={{
-            opacity: mode === "with" ? 1 : 0.26,
+            opacity: mode === "with" ? 1 : 0.24,
             transition: "opacity .35s ease",
             pointerEvents: mode === "with" ? "auto" : "none",
           }}

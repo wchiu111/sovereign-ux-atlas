@@ -51,11 +51,34 @@ export default function BehavioralDecisionDesignExperience({ systemColor, onExit
           <div id="behavioral-design-title" style={{ marginTop:3, fontFamily:"'EB Garamond',serif", fontSize:18, color:"rgba(255,248,230,.94)" }}>Experience the framework</div>
         </div>
         <div style={{ display:"flex", gap:6 }}>
-          {([["learn","Learn"],["apply","Apply"],["explore","Explore"]] as [ExperienceMode,string][]).map(([id,label]) => {
-            const disabled=id!=="learn"&&!complete;
-            return <button key={id} type="button" disabled={disabled} onClick={()=>setMode(id)} aria-pressed={mode===id}
-              style={{ minHeight:42, padding:"0 12px", border:mode===id?`1px solid ${moduleColor}55`:"1px solid transparent", background:mode===id?`${moduleColor}0B`:"transparent", color:disabled?"rgba(245,235,210,.22)":mode===id?"rgba(245,235,210,.90)":"rgba(245,235,210,.50)", fontFamily:"'DM Mono',monospace", fontSize:9, letterSpacing:".115em", textTransform:"uppercase", cursor:disabled?"default":"pointer" }}>{label}</button>
-          })}
+          {([["learn","Learn"],["apply","Apply"],["explore","Explore"]] as [ExperienceMode,string][]).map(([id,label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setMode(id)}
+              aria-pressed={mode === id}
+              style={{
+                minHeight: 42,
+                padding: "0 12px",
+                border: mode === id
+                  ? `1px solid ${moduleColor}55`
+                  : "1px solid transparent",
+                background: mode === id
+                  ? `${moduleColor}0B`
+                  : "transparent",
+                color: mode === id
+                  ? "rgba(245,235,210,.90)"
+                  : "rgba(245,235,210,.50)",
+                fontFamily: "'DM Mono',monospace",
+                fontSize: 9,
+                letterSpacing: ".115em",
+                textTransform: "uppercase",
+                cursor: "pointer",
+              }}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </header>
       <main style={{ position:"relative", zIndex:2, minWidth:0, minHeight:"calc(100dvh - 64px)", overflow:mode==="learn"?"visible":"auto", scrollbarWidth:"none", padding:mode==="learn"?"22px 28px 0":"22px 28px 44px" }}>

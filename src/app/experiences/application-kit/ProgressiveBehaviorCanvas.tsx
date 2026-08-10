@@ -344,14 +344,14 @@ export default function ProgressiveBehaviorCanvas({
             const active = stage.id === activeStageId;
             const unlocked = stageIndex < revealedCount;
             const future = !unlocked;
-            const hovered = unlocked && stage.id === hoveredStageId;
+            const hovered = stage.id === hoveredStageId;
 
             return (
               <motion.button
                 key={stage.id}
                 type="button"
-                onClick={() => unlocked && onCommitStage(stage.id)}
-                onMouseEnter={() => unlocked && setHoveredStageId(stage.id)}
+                onClick={() => onCommitStage(stage.id)}
+                onMouseEnter={() => setHoveredStageId(stage.id)}
                 onMouseLeave={() => setHoveredStageId(null)}
                 initial={
                   reducedMotion
@@ -359,7 +359,7 @@ export default function ProgressiveBehaviorCanvas({
                     : { opacity: 0, scale: 0.96 }
                 }
                 animate={{
-                  opacity: active ? 1 : future ? 0.24 : hovered ? 0.82 : 0.48,
+                  opacity: active ? 1 : hovered ? 0.68 : future ? 0.24 : 0.48,
                   scale: active ? 1.05 : hovered ? 1.02 : 1,
                 }}
                 exit={{ opacity: 0 }}
@@ -378,9 +378,9 @@ export default function ProgressiveBehaviorCanvas({
                   border: 0,
                   background: "transparent",
                   textAlign: "left",
-                  cursor: unlocked ? "pointer" : "default",
+                  cursor: "pointer",
                   color: "#F4EBD0",
-                  pointerEvents: unlocked ? "auto" : "none",
+                  pointerEvents: "auto",
                 }}
               >
                 <div
@@ -398,14 +398,16 @@ export default function ProgressiveBehaviorCanvas({
                       width: active ? 49 : 46,
                       height: active ? 49 : 46,
                       borderRadius: "50%",
-                      border: future
-                        ? "1px solid rgba(245,235,210,.22)"
-                        : `1px solid ${color}${
-                            active ? "D9" : hovered ? "A0" : "58"
-                          }`,
-                      background: future
-                        ? "rgba(245,235,210,.025)"
-                        : `${color}${active ? "1F" : hovered ? "12" : "08"}`,
+                      border:
+                        future && !hovered
+                          ? "1px solid rgba(245,235,210,.22)"
+                          : `1px solid ${color}${
+                              active ? "D9" : hovered ? "A0" : "58"
+                            }`,
+                      background:
+                        future && !hovered
+                          ? "rgba(245,235,210,.025)"
+                          : `${color}${active ? "1F" : hovered ? "12" : "08"}`,
                       boxShadow:
                         active || hovered
                           ? `0 0 31px ${color}38`
@@ -417,9 +419,10 @@ export default function ProgressiveBehaviorCanvas({
                         width: active ? 9 : 8,
                         height: active ? 9 : 8,
                         borderRadius: "50%",
-                        background: future
-                          ? "rgba(245,235,210,.28)"
-                          : color,
+                        background:
+                          future && !hovered
+                            ? "rgba(245,235,210,.28)"
+                            : color,
                         boxShadow: active || hovered
                           ? `0 0 13px ${color}`
                           : "none",
