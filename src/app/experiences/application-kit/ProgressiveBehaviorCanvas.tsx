@@ -82,7 +82,7 @@ export default function ProgressiveBehaviorCanvas({
   revealedCount,
   activeStageId,
   onCommitStage,
-  onAdvance,
+  onAdvance: _onAdvance,
   onRevealAll: _onRevealAll,
   onApply,
   resolveColor,
@@ -98,9 +98,15 @@ export default function ProgressiveBehaviorCanvas({
   const activeStage =
     stages.find((stage) => stage.id === activeStageId) ?? stages[0];
 
-  const canAdvance = revealedCount < ORDER.length;
-  const complete = revealedCount >= ORDER.length;
-  const nextStage = stages[revealedCount];
+  const activeStageIndex = ORDER.indexOf(activeStageId);
+  const nextStageId =
+    activeStageIndex >= 0 && activeStageIndex < ORDER.length - 1
+      ? ORDER[activeStageIndex + 1]
+      : null;
+  const nextStage = nextStageId
+    ? stages.find((stage) => stage.id === nextStageId)
+    : undefined;
+  const canAdvance = nextStage !== undefined;
 
   const getStage = (id: BehavioralStageId) =>
     stages.find((stage) => stage.id === id)!;
@@ -505,7 +511,11 @@ export default function ProgressiveBehaviorCanvas({
           >
             <button
               type="button"
-              onClick={onAdvance}
+              onClick={() => {
+                if (nextStage) {
+                  onCommitStage(nextStage.id);
+                }
+              }}
               style={{
                 width: "100%",
                 minHeight: 54,
