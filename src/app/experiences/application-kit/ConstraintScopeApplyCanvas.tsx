@@ -2,7 +2,6 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 
 import {
-  CONSTRAINT_SCOPE_APPLY,
   CONSTRAINT_SCOPE_STAGES,
   type ConstraintScopeStageId,
 } from "./constraintScopeDesignData";
@@ -13,6 +12,8 @@ const VARIANTS: Array<{ id: Variant; label: string }> = [
   { id: "without", label: "Without framework" },
   { id: "with", label: "With framework" },
 ];
+
+const QUESTION = "Is this procedure covered by my health plan?";
 
 export default function ConstraintScopeApplyCanvas() {
   const reducedMotion = useReducedMotion();
@@ -83,11 +84,11 @@ function VariantToggle({
                     ? "1px solid rgba(245,235,210,.10)"
                     : 0,
                 background: active
-                  ? "rgba(221,180,90,.08)"
+                  ? "rgba(221,184,90,.07)"
                   : "transparent",
                 color: active
-                  ? "rgba(255,248,230,.92)"
-                  : "rgba(245,235,210,.48)",
+                  ? "rgba(255,248,230,.94)"
+                  : "rgba(245,235,210,.46)",
               }}
             >
               {label}
@@ -112,7 +113,7 @@ function FrameworkPanel({
     <aside
       style={{
         ...styles.frameworkPanel,
-        opacity: active ? 1 : 0.22,
+        opacity: active ? 1 : 0.2,
         pointerEvents: active ? "auto" : "none",
       }}
     >
@@ -120,7 +121,7 @@ function FrameworkPanel({
 
       <div style={styles.stageList}>
         {CONSTRAINT_SCOPE_STAGES.map((stage, index) => {
-          const focused = stage.id === focusId;
+          const focused = focusId === stage.id;
 
           return (
             <button
@@ -136,7 +137,7 @@ function FrameworkPanel({
               style={{
                 ...styles.stageButton,
                 background: focused
-                  ? `${stage.color}0A`
+                  ? `${stage.color}08`
                   : "transparent",
               }}
             >
@@ -150,14 +151,24 @@ function FrameworkPanel({
               </span>
 
               <span style={styles.stageName}>{stage.title}</span>
-              <span style={styles.stageSummary}>{stage.summary}</span>
+
+              <span
+                style={{
+                  ...styles.stageSummary,
+                  maxHeight: focused ? 56 : 0,
+                  marginTop: focused ? 6 : 0,
+                  opacity: focused ? 1 : 0,
+                }}
+              >
+                {stage.summary}
+              </span>
             </button>
           );
         })}
       </div>
 
       <div style={styles.frameworkPanelFooter}>
-        Hover a principle to focus on how it changes the interface.
+        Hover a principle to see how it changes this interface.
       </div>
     </aside>
   );
@@ -168,52 +179,52 @@ function WithoutFramework() {
     <>
       <InterfaceHeader />
 
-      <div style={eyebrow("#EF6B63")}>AI coverage answer</div>
-
-      <div style={styles.userQuestion}>
-        “{CONSTRAINT_SCOPE_APPLY.question}”
+      <div style={styles.questionBlock}>
+        <div style={styles.eyebrow}>You asked</div>
+        <div style={styles.userQuestion}>{QUESTION}</div>
       </div>
 
-      <div
-        style={{
-          ...styles.answerPanel,
-          marginTop: 18,
-          borderColor: "rgba(239,84,84,.34)",
-        }}
-      >
-        <div style={styles.smallLabel}>Coverage determination</div>
-        <h3 style={styles.headline}>
-          {CONSTRAINT_SCOPE_APPLY.without.answer}
+      <section style={styles.resultSection}>
+        <div style={styles.sectionLabel}>Coverage result</div>
+
+        <h3 style={styles.resultValue}>
+          Yes, this procedure is covered.
         </h3>
-        <div style={{ ...styles.body, marginTop: 7 }}>
-          {CONSTRAINT_SCOPE_APPLY.without.rationale}
+
+        <p style={styles.resultCopy}>
+          Based on your current plan benefits.
+        </p>
+
+        <div style={styles.inlineMeta}>
+          <span>In-network benefit</span>
+          <span aria-hidden="true">·</span>
+          <span>Specialist referral may apply</span>
         </div>
-      </div>
+      </section>
 
       <button
         type="button"
         style={{
-          ...styles.primaryButton,
-          marginTop: 18,
-          background: "#EF5454",
+          ...styles.primaryAction,
+          marginTop: 24,
         }}
       >
-        {CONSTRAINT_SCOPE_APPLY.without.primaryAction}
+        Continue to authorization →
       </button>
 
       <button
         type="button"
         style={{
-          ...styles.secondaryButton,
+          ...styles.secondaryAction,
           marginTop: 10,
         }}
       >
-        {CONSTRAINT_SCOPE_APPLY.without.secondaryAction}
+        View coverage details
       </button>
 
       <div style={styles.footnote}>
-        The answer appears definitive even though final coverage depends on
-        information the assistant cannot verify.
+        Final coverage may still depend on coding, network status, and prior
+        authorization requirements.
       </div>
     </>
   );
@@ -231,68 +242,89 @@ function WithFramework({
     <>
       <InterfaceHeader />
 
-      <div style={eyebrow("#D9B759")}>Coverage guidance</div>
-
-      <div style={styles.userQuestion}>
-        “{CONSTRAINT_SCOPE_APPLY.question}”
+      <div style={styles.questionBlock}>
+        <div style={styles.eyebrow}>You asked</div>
+        <div style={styles.userQuestion}>{QUESTION}</div>
       </div>
 
       <FocusSection
-        label="Capability & boundary"
         dim={!visible(["capability", "boundary", "disclosure"])}
       >
         <div
           style={{
-            ...styles.answerPanel,
-            borderColor: "rgba(221,180,90,.34)",
+            ...styles.resultQualified,
+            borderColor: "rgba(221,184,90,.42)",
           }}
         >
-          <div style={styles.smallLabel}>Guidance, not final determination</div>
-          <h3 style={styles.headline}>
-            {CONSTRAINT_SCOPE_APPLY.with.answer}
+          <div style={styles.sectionLabel}>Coverage result</div>
+
+          <h3
+            style={{
+              ...styles.resultValue,
+              color: "#E2BE62",
+            }}
+          >
+            Likely covered under your plan
           </h3>
+
+          <p style={styles.boundaryCopy}>
+            This is guidance, not a final coverage determination.
+          </p>
         </div>
       </FocusSection>
 
-      <FocusSection
-        label="What I can verify"
-        dim={!visible(["capability", "disclosure"])}
-      >
-        <BulletList
-          items={CONSTRAINT_SCOPE_APPLY.with.verified}
-          color="#78C88E"
+      <FocusSection dim={!visible(["capability", "disclosure"])}>
+        <EvidenceSection
+          label="What I can verify"
+          color="#79C98E"
+          icon="✓"
+          items={[
+            "This category of service appears in your plan benefits.",
+            "Your current plan is active.",
+          ]}
         />
       </FocusSection>
 
       <FocusSection
-        label="What I can't verify"
         dim={!visible(["boundary", "limitation", "non-action"])}
       >
-        <BulletList
-          items={CONSTRAINT_SCOPE_APPLY.with.cannotVerify}
-          color="#D88C46"
+        <EvidenceSection
+          label="Still needs verification"
+          color="#D98A42"
+          icon="◇"
+          columns
+          items={[
+            "Final procedure code",
+            "Provider network status",
+            "Prior authorization requirements",
+            "Eligibility at time of service",
+          ]}
         />
       </FocusSection>
 
       <FocusSection
-        label="Next best action"
         dim={!visible(["escalation", "handoff", "non-action"])}
       >
-        <div style={styles.handoffPanel}>
-          <div style={styles.body}>
-            {CONSTRAINT_SCOPE_APPLY.with.nextAction}
+        <div style={styles.handoff}>
+          <div
+            style={{
+              ...styles.sectionLabel,
+              color: "#B99AE5",
+            }}
+          >
+            Next step
           </div>
+
+          <p style={styles.handoffCopy}>
+            A benefits specialist can confirm final coverage. Your plan
+            details and this request will be included automatically.
+          </p>
 
           <button
             type="button"
-            style={{
-              ...styles.primaryButton,
-              marginTop: 14,
-              background: "#D9B759",
-              color: "#0B0905",
-            }}
+            style={styles.handoffAction}
           >
-            {CONSTRAINT_SCOPE_APPLY.with.primaryAction}
+            Review with specialist →
           </button>
         </div>
       </FocusSection>
@@ -300,54 +332,72 @@ function WithFramework({
   );
 }
 
-function BulletList({
-  items,
+function EvidenceSection({
+  label,
   color,
+  icon,
+  items,
+  columns = false,
 }: {
-  items: readonly string[];
+  label: string;
   color: string;
+  icon: string;
+  items: string[];
+  columns?: boolean;
 }) {
   return (
-    <div style={{ display: "grid", gap: 8 }}>
-      {items.map((item) => (
-        <div key={item} style={styles.bulletRow}>
-          <span
-            aria-hidden="true"
-            style={{
-              color,
-              fontFamily: "'DM Mono',monospace",
-            }}
-          >
-            ◇
-          </span>
+    <section style={styles.evidenceSection}>
+      <div
+        style={{
+          ...styles.sectionLabel,
+          color,
+        }}
+      >
+        {label}
+      </div>
 
-          <span style={styles.body}>{item}</span>
-        </div>
-      ))}
-    </div>
+      <div
+        style={{
+          ...styles.evidenceList,
+          gridTemplateColumns: columns
+            ? "repeat(2,minmax(0,1fr))"
+            : "1fr",
+        }}
+      >
+        {items.map((item) => (
+          <div key={item} style={styles.evidenceRow}>
+            <span
+              aria-hidden="true"
+              style={{
+                ...styles.evidenceIcon,
+                color,
+              }}
+            >
+              {icon}
+            </span>
+
+            <span style={styles.evidenceCopy}>{item}</span>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
 function FocusSection({
-  label,
   dim,
   children,
 }: {
-  label: string;
   dim: boolean;
   children: React.ReactNode;
 }) {
   return (
     <section
       style={{
-        marginTop: 16,
         opacity: dim ? 0.18 : 1,
         transition: "opacity .28s ease",
       }}
     >
-      <div style={{ ...styles.smallLabel, marginBottom: 8 }}>
-        {label}
-      </div>
       {children}
     </section>
   );
@@ -355,37 +405,26 @@ function FocusSection({
 
 function InterfaceHeader() {
   return (
-    <div style={styles.interfaceHeader}>
+    <header style={styles.interfaceHeader}>
       <div style={styles.interfaceIdentity}>
         <div style={styles.assistantIcon}>✦</div>
-        <div
-          style={{
-            ...styles.body,
-            fontSize: 16,
-            color: "rgba(255,248,230,.90)",
-          }}
-        >
-          Benefits Assistant
+
+        <div>
+          <div style={styles.productName}>Benefits Assistant</div>
+          <div style={styles.productSubtitle}>Coverage guidance</div>
         </div>
       </div>
 
-      <div style={{ color: "rgba(245,235,210,.38)" }}>⋮</div>
-    </div>
+      <div style={styles.planLabel}>PPO Gold</div>
+    </header>
   );
 }
 
-function eyebrow(color: string) {
-  return {
-    fontFamily: "'DM Mono',monospace",
-    fontSize: 8,
-    letterSpacing: ".14em",
-    textTransform: "uppercase" as const,
-    color,
-  };
-}
-
 const styles = {
-  canvas: { maxWidth: 1030, margin: "0 auto" },
+  canvas: {
+    width: "min(1120px,100%)",
+    margin: "0 auto",
+  },
   toggleWrapper: {
     display: "flex",
     justifyContent: "center",
@@ -408,133 +447,136 @@ const styles = {
   },
   contentGrid: {
     display: "grid",
-    gridTemplateColumns: "minmax(0,1fr) 330px",
-    gap: 24,
+    gridTemplateColumns: "minmax(0,1fr) 280px",
+    gap: 26,
     alignItems: "start",
   },
   interfacePanel: {
-    padding: 22,
-    border: "1px solid rgba(245,235,210,.10)",
+    padding: "28px 30px 30px",
+    border: "1px solid rgba(245,235,210,.12)",
     background:
-      "linear-gradient(180deg,rgba(8,11,18,.91),rgba(4,7,12,.88))",
-  },
-  frameworkPanel: {
-    padding: "18px 17px",
-    border: "1px solid rgba(245,235,210,.09)",
-    background: "rgba(4,7,12,.74)",
-    transition: "opacity .35s cubic-bezier(.16,1,.3,1)",
-  },
-  frameworkPanelTitle: {
-    marginBottom: 14,
-    fontFamily: "'DM Mono',monospace",
-    fontSize: 8,
-    letterSpacing: ".16em",
-    textTransform: "uppercase" as const,
-    color: "rgba(200,180,130,.66)",
-  },
-  stageList: { display: "grid", gap: 4 },
-  stageButton: {
-    display: "grid",
-    gridTemplateColumns: "34px 110px 1fr",
-    gap: 10,
-    minHeight: 55,
-    padding: "9px 8px",
-    border: 0,
-    color: "inherit",
-    textAlign: "left" as const,
-    cursor: "pointer",
-  },
-  stageNumber: {
-    fontFamily: "'DM Mono',monospace",
-    fontSize: 9,
-  },
-  stageName: {
-    fontFamily: "'DM Mono',monospace",
-    fontSize: 8.5,
-    letterSpacing: ".10em",
-    textTransform: "uppercase" as const,
-    color: "rgba(245,235,210,.72)",
-  },
-  stageSummary: {
-    fontFamily: "'EB Garamond',serif",
-    fontSize: 14,
-    lineHeight: 1.3,
-    color: "rgba(245,235,210,.58)",
-  },
-  frameworkPanelFooter: {
-    marginTop: 16,
-    paddingTop: 14,
-    borderTop: "1px solid rgba(245,235,210,.08)",
-    fontFamily: "'EB Garamond',serif",
-    fontSize: 13.5,
-    lineHeight: 1.45,
-    color: "rgba(245,235,210,.42)",
+      "linear-gradient(180deg,rgba(8,11,18,.94),rgba(4,7,12,.90))",
+    backdropFilter: "blur(14px)",
   },
   interfaceHeader: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingBottom: 16,
-    marginBottom: 18,
-    borderBottom: "1px solid rgba(245,235,210,.08)",
+    gap: 20,
+    paddingBottom: 20,
+    marginBottom: 24,
+    borderBottom: "1px solid rgba(245,235,210,.09)",
   },
   interfaceIdentity: {
     display: "flex",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
   },
   assistantIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 7,
+    width: 32,
+    height: 32,
     display: "grid",
     placeItems: "center",
-    background: "rgba(217,183,89,.78)",
-    color: "#0B0905",
+    borderRadius: 6,
+    background: "#DDB85A",
+    color: "#090805",
   },
-  userQuestion: {
-    marginTop: 10,
+  productName: {
     fontFamily: "'EB Garamond',serif",
-    fontSize: 20,
-    lineHeight: 1.35,
-    color: "rgba(245,235,210,.72)",
+    fontSize: 17,
+    lineHeight: 1.2,
+    color: "rgba(255,248,230,.94)",
   },
-  answerPanel: {
-    padding: "15px 16px",
-    border: "1px solid rgba(245,235,210,.12)",
-    background: "rgba(9,13,20,.54)",
-  },
-  headline: {
-    margin: "8px 0 0",
+  productSubtitle: {
+    marginTop: 2,
     fontFamily: "'EB Garamond',serif",
-    fontSize: 28,
-    lineHeight: 1.16,
-    fontWeight: 500,
-    color: "rgba(255,248,230,.95)",
+    fontSize: 13.5,
+    color: "rgba(245,235,210,.48)",
   },
-  body: {
-    fontFamily: "'EB Garamond',serif",
-    fontSize: 14.5,
-    lineHeight: 1.42,
-    color: "rgba(245,235,210,.62)",
-  },
-  smallLabel: {
+  planLabel: {
     fontFamily: "'DM Mono',monospace",
-    fontSize: 8,
+    fontSize: 9,
     letterSpacing: ".13em",
     textTransform: "uppercase" as const,
-    color: "rgba(200,180,130,.56)",
+    color: "rgba(221,184,90,.82)",
   },
-  primaryButton: {
-    width: "100%",
-    minHeight: 48,
-    border: 0,
-    color: "rgba(255,255,255,.96)",
+  questionBlock: {
+    paddingBottom: 24,
+    borderBottom: "1px solid rgba(245,235,210,.08)",
+  },
+  eyebrow: {
+    fontFamily: "'DM Mono',monospace",
+    fontSize: 8.5,
+    letterSpacing: ".15em",
+    textTransform: "uppercase" as const,
+    color: "rgba(221,184,90,.72)",
+  },
+  userQuestion: {
+    marginTop: 9,
     fontFamily: "'EB Garamond',serif",
-    fontSize: 15.5,
+    fontSize: 21,
+    lineHeight: 1.35,
+    color: "rgba(255,248,230,.90)",
+  },
+  resultSection: {
+    marginTop: 26,
+  },
+  resultQualified: {
+    marginTop: 26,
+    padding: "18px 20px",
+    border: "1px solid rgba(221,184,90,.42)",
+    background:
+      "linear-gradient(180deg,rgba(221,184,90,.065),rgba(9,13,20,.42))",
+  },
+  sectionLabel: {
+    fontFamily: "'DM Mono',monospace",
+    fontSize: 8.5,
+    letterSpacing: ".15em",
+    textTransform: "uppercase" as const,
+    color: "rgba(221,184,90,.68)",
+  },
+  resultValue: {
+    margin: "12px 0 0",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 30,
+    lineHeight: 1.15,
+    fontWeight: 500,
+    color: "rgba(255,248,230,.96)",
+  },
+  resultCopy: {
+    margin: "7px 0 0",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 15,
+    lineHeight: 1.45,
+    color: "rgba(245,235,210,.64)",
+  },
+  boundaryCopy: {
+    margin: "7px 0 0",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 14.5,
+    lineHeight: 1.45,
+    color: "rgba(221,184,90,.80)",
+  },
+  inlineMeta: {
+    display: "flex",
+    flexWrap: "wrap" as const,
+    gap: 10,
+    marginTop: 18,
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 13.5,
+    color: "rgba(245,235,210,.48)",
+  },
+  primaryAction: {
+    width: "100%",
+    minHeight: 52,
+    border: 0,
+    background: "#DDB85A",
+    color: "#090805",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 16,
     cursor: "pointer",
   },
-  secondaryButton: {
+  secondaryAction: {
     width: "100%",
     minHeight: 46,
     border: "1px solid rgba(245,235,210,.14)",
@@ -545,24 +587,124 @@ const styles = {
     cursor: "pointer",
   },
   footnote: {
-    marginTop: 40,
-    textAlign: "center" as const,
+    marginTop: 34,
+    paddingTop: 18,
+    borderTop: "1px solid rgba(245,235,210,.08)",
     fontFamily: "'EB Garamond',serif",
     fontSize: 13.5,
     lineHeight: 1.45,
-    color: "rgba(245,235,210,.40)",
+    color: "rgba(245,235,210,.38)",
   },
-  bulletRow: {
+  evidenceSection: {
+    marginTop: 24,
+  },
+  evidenceList: {
     display: "grid",
-    gridTemplateColumns: "20px 1fr",
+    columnGap: 26,
+    rowGap: 10,
+    marginTop: 12,
+  },
+  evidenceRow: {
+    display: "grid",
+    gridTemplateColumns: "22px minmax(0,1fr)",
     gap: 8,
     alignItems: "start",
-    padding: "9px 10px",
-    border: "1px solid rgba(245,235,210,.07)",
   },
-  handoffPanel: {
-    padding: "14px 15px",
-    border: "1px solid rgba(221,180,90,.22)",
-    background: "rgba(221,180,90,.035)",
+  evidenceIcon: {
+    paddingTop: 1,
+    fontFamily: "'DM Mono',monospace",
+    fontSize: 13,
+  },
+  evidenceCopy: {
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 15,
+    lineHeight: 1.42,
+    color: "rgba(245,235,210,.68)",
+  },
+  handoff: {
+    marginTop: 26,
+    paddingTop: 22,
+    borderTop: "1px solid rgba(245,235,210,.09)",
+  },
+  handoffCopy: {
+    maxWidth: 600,
+    margin: "8px 0 0",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 15,
+    lineHeight: 1.5,
+    color: "rgba(245,235,210,.70)",
+  },
+  handoffAction: {
+    width: "100%",
+    minHeight: 48,
+    marginTop: 16,
+    border: "1px solid rgba(185,154,229,.44)",
+    background: "rgba(185,154,229,.025)",
+    color: "#C8A8EE",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 15.5,
+    cursor: "pointer",
+  },
+  frameworkPanel: {
+    padding: "20px 18px",
+    border: "1px solid rgba(245,235,210,.10)",
+    background: "rgba(4,7,12,.76)",
+    transition: "opacity .35s cubic-bezier(.16,1,.3,1)",
+  },
+  frameworkPanelTitle: {
+    paddingBottom: 14,
+    marginBottom: 6,
+    borderBottom: "1px solid rgba(245,235,210,.08)",
+    fontFamily: "'DM Mono',monospace",
+    fontSize: 8,
+    letterSpacing: ".16em",
+    textTransform: "uppercase" as const,
+    color: "rgba(200,180,130,.66)",
+  },
+  stageList: {
+    display: "grid",
+  },
+  stageButton: {
+    display: "grid",
+    gridTemplateColumns: "32px minmax(0,1fr)",
+    columnGap: 10,
+    minHeight: 48,
+    padding: "10px 6px",
+    border: 0,
+    background: "transparent",
+    color: "inherit",
+    textAlign: "left" as const,
+    cursor: "pointer",
+  },
+  stageNumber: {
+    fontFamily: "'DM Mono',monospace",
+    fontSize: 8.5,
+    letterSpacing: ".10em",
+  },
+  stageName: {
+    fontFamily: "'DM Mono',monospace",
+    fontSize: 8.5,
+    letterSpacing: ".10em",
+    textTransform: "uppercase" as const,
+    color: "rgba(245,235,210,.78)",
+  },
+  stageSummary: {
+    gridColumn: "2",
+    overflow: "hidden",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 13.5,
+    lineHeight: 1.38,
+    color: "rgba(245,235,210,.58)",
+    transition:
+      "opacity .22s ease,max-height .22s ease,margin-top .22s ease",
+  },
+  frameworkPanelFooter: {
+    marginTop: 12,
+    paddingTop: 14,
+    borderTop: "1px solid rgba(245,235,210,.08)",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: 13,
+    lineHeight: 1.45,
+    color: "rgba(245,235,210,.38)",
   },
 };
