@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence } from "motion/react";
 import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
-import BehavioralDecisionDesignExperience from "./BehavioralDecisionDesignExperience";
-import MultiUserCoSovereigntyExperience from "./MultiUserCoSovereigntyExperience";
-import ConstraintScopeDesignExperience from "./ConstraintScopeDesignExperience";
+
+import BehavioralDecisionDesignExperience from "./behavioral-decision-design/BehavioralDecisionDesignExperience";
+import MultiUserCoSovereigntyExperience from "./multi-user-co-sovereignty/MultiUserCoSovereigntyExperience";
+import ConstraintScopeDesignExperience from "./constraint-scope-design/ConstraintScopeDesignExperience";
 
 interface ApplicationKitModuleRouterProps {
   moduleId: string | null;
@@ -29,8 +30,6 @@ export default function ApplicationKitModuleRouter({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
 
-      // Capture before the Atlas family-level Escape handler so one press
-      // closes only the module focus experience.
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
@@ -44,14 +43,8 @@ export default function ApplicationKitModuleRouter({
 
   if (typeof document === "undefined") return null;
 
-  const relationalColor = resolveStellarColor(
-    "relational",
-    systemColor,
-  );
-  const strategyColor = resolveStellarColor(
-    "strategy",
-    systemColor,
-  );
+  const relationalColor = resolveStellarColor("relational", systemColor);
+  const strategyColor = resolveStellarColor("strategy", systemColor);
 
   return createPortal(
     <div
