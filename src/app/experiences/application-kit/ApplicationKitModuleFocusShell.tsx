@@ -9,10 +9,11 @@ interface Props {
   color: string;
   onExit: () => void;
   children: ReactNode;
+  inspector?: ReactNode;
 }
 
 export default function ApplicationKitModuleFocusShell({
-  eyebrow, title, summary, question, color, onExit, children,
+  eyebrow, title, summary, question, color, onExit, children, inspector,
 }: Props) {
   const reducedMotion = useReducedMotion();
 
@@ -38,18 +39,14 @@ export default function ApplicationKitModuleFocusShell({
         borderRight: "1px solid rgba(200,180,130,.09)",
         background: "rgba(4,5,11,.78)",
       }}>
-        <button
-          type="button"
-          onClick={onExit}
-          style={{
-            minHeight: 62, padding: "0 22px", border: 0,
-            borderBottom: "1px solid rgba(200,180,130,.09)",
-            background: "transparent", color: "rgba(200,180,130,.68)",
-            textAlign: "left", fontFamily: "'DM Mono',monospace",
-            fontSize: 8.5, letterSpacing: ".17em",
-            textTransform: "uppercase", cursor: "pointer",
-          }}
-        >
+        <button type="button" onClick={onExit} style={{
+          minHeight: 62, padding: "0 22px", border: 0,
+          borderBottom: "1px solid rgba(200,180,130,.09)",
+          background: "transparent", color: "rgba(200,180,130,.68)",
+          textAlign: "left", fontFamily: "'DM Mono',monospace",
+          fontSize: 8.5, letterSpacing: ".17em", textTransform: "uppercase",
+          cursor: "pointer",
+        }}>
           <span style={{ color, marginRight: 10 }}>←</span>
           Behavior &amp; Authority
         </button>
@@ -59,17 +56,14 @@ export default function ApplicationKitModuleFocusShell({
             marginBottom: 12, fontFamily: "'DM Mono',monospace",
             fontSize: 8, letterSpacing: ".22em", textTransform: "uppercase", color,
           }}>{eyebrow}</div>
-
           <h1 style={{
             margin: 0, fontFamily: "'EB Garamond',serif",
             fontSize: 27, lineHeight: 1.04, fontWeight: 500,
             color: "rgba(255,248,230,.97)",
           }}>{title}</h1>
-
           <p style={{
             margin: "17px 0 0", fontFamily: "'EB Garamond',serif",
-            fontSize: 14.5, lineHeight: 1.58,
-            color: "rgba(240,232,215,.64)",
+            fontSize: 14.5, lineHeight: 1.58, color: "rgba(240,232,215,.64)",
           }}>{summary}</p>
         </div>
 
@@ -83,8 +77,7 @@ export default function ApplicationKitModuleFocusShell({
           }}>Question it answers</div>
           <p style={{
             margin: 0, fontFamily: "'EB Garamond',serif",
-            fontSize: 13.5, lineHeight: 1.55,
-            color: "rgba(245,235,210,.72)",
+            fontSize: 13.5, lineHeight: 1.55, color: "rgba(245,235,210,.72)",
           }}>{question}</p>
         </div>
 
@@ -101,45 +94,41 @@ export default function ApplicationKitModuleFocusShell({
         </div>
       </aside>
 
-      <main style={{
-        minWidth: 0, overflowY: "auto", scrollbarWidth: "none",
-        padding: "30px 34px 60px",
-      }}>
+      <main style={{ minWidth: 0, overflowY: "auto", scrollbarWidth: "none", padding: "30px 34px 60px" }}>
         {children}
       </main>
 
       <aside style={{
         minWidth: 0, overflowY: "auto",
         borderLeft: "1px solid rgba(200,180,130,.09)",
-        background: "rgba(4,5,11,.70)",
-        padding: "26px 22px 50px",
+        background: "rgba(4,5,11,.70)", padding: "26px 22px 50px",
       }}>
-        <div style={{
-          marginBottom: 18, fontFamily: "'DM Mono',monospace",
-          fontSize: 8, letterSpacing: ".22em",
-          textTransform: "uppercase", color: "rgba(101,214,154,.70)",
-        }}>Inspector</div>
-
-        <div style={{
-          padding: "14px 15px",
-          border: `1px solid ${color}2B`,
-          background: `${color}0A`,
-        }}>
-          <div style={{
-            marginBottom: 8, fontFamily: "'DM Mono',monospace",
-            fontSize: 8, letterSpacing: ".17em",
-            color, textTransform: "uppercase",
-          }}>Focus mode</div>
-          <div style={{
-            fontFamily: "'EB Garamond',serif",
-            fontSize: 13.5, lineHeight: 1.55,
-            color: "rgba(245,235,210,.62)",
-          }}>
-            Pass 6 establishes a committed focus destination for this module.
-            Its deeper interactive canvas can evolve independently without changing
-            the shared Behavior &amp; Authority constellation.
-          </div>
-        </div>
+        {inspector ?? (
+          <>
+            <div style={{
+              marginBottom: 18, fontFamily: "'DM Mono',monospace",
+              fontSize: 8, letterSpacing: ".22em",
+              textTransform: "uppercase", color: "rgba(101,214,154,.70)",
+            }}>Inspector</div>
+            <div style={{
+              padding: "14px 15px", border: `1px solid ${color}2B`,
+              background: `${color}0A`,
+            }}>
+              <div style={{
+                marginBottom: 8, fontFamily: "'DM Mono',monospace",
+                fontSize: 8, letterSpacing: ".17em", color, textTransform: "uppercase",
+              }}>Focus mode</div>
+              <div style={{
+                fontFamily: "'EB Garamond',serif", fontSize: 13.5,
+                lineHeight: 1.55, color: "rgba(245,235,210,.62)",
+              }}>
+                Pass 6 establishes a committed focus destination for this module.
+                Its deeper interactive canvas can evolve independently without changing
+                the shared Behavior &amp; Authority constellation.
+              </div>
+            </div>
+          </>
+        )}
       </aside>
     </motion.section>
   );
