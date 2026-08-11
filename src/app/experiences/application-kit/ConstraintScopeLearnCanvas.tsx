@@ -255,7 +255,7 @@ export default function ConstraintScopeLearnCanvas({
             pointerEvents="stroke"
             onMouseEnter={() => setOrbitHovered("outer")}
             onMouseLeave={() => setOrbitHovered(null)}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", pointerEvents: "stroke" }}
           />
 
           <circle
@@ -268,7 +268,7 @@ export default function ConstraintScopeLearnCanvas({
             pointerEvents="stroke"
             onMouseEnter={() => setOrbitHovered("inner")}
             onMouseLeave={() => setOrbitHovered(null)}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", pointerEvents: "stroke" }}
           />
         </svg>
 
@@ -479,7 +479,7 @@ const styles = {
     width: "100%",
     height: "100%",
     overflow: "visible",
-    pointerEvents: "none" as const,
+    pointerEvents: "auto" as const,
   },
 
   node: {
