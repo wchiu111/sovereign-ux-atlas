@@ -194,25 +194,25 @@ export default function ConstraintScopeLearnCanvas({
             strokeWidth="2.6"
           />
 
-          <motion.circle
+          <circle
             cx={ORBIT_CENTER.x}
             cy={ORBIT_CENTER.y}
             r={OUTER_RADIUS}
             fill="none"
             stroke="url(#constraint-outer-gradient)"
             strokeWidth={outerActive ? 3.4 : 2.6}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: outerActive ? 0.96 : 0 }}
-            transition={{
-              duration: reducedMotion ? 0.16 : 0.46,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            style={{ opacity: 0 }}
             filter={
               outerActive && !reducedMotion
                 ? "url(#constraint-orbit-glow)"
                 : "none"
             }
+            style={{
+              opacity: outerActive ? 0.96 : 0,
+              transition: reducedMotion
+                ? "opacity .16s linear"
+                : "opacity .46s cubic-bezier(.16,1,.3,1)",
+              pointerEvents: "none",
+            }}
           />
 
           <circle
@@ -224,25 +224,25 @@ export default function ConstraintScopeLearnCanvas({
             strokeWidth="2.6"
           />
 
-          <motion.circle
+          <circle
             cx={ORBIT_CENTER.x}
             cy={ORBIT_CENTER.y}
             r={INNER_RADIUS}
             fill="none"
             stroke="url(#constraint-inner-gradient)"
             strokeWidth={innerActive ? 3.4 : 2.6}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: innerActive ? 0.96 : 0 }}
-            transition={{
-              duration: reducedMotion ? 0.16 : 0.46,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            style={{ opacity: 0 }}
             filter={
               innerActive && !reducedMotion
                 ? "url(#constraint-orbit-glow)"
                 : "none"
             }
+            style={{
+              opacity: innerActive ? 0.96 : 0,
+              transition: reducedMotion
+                ? "opacity .16s linear"
+                : "opacity .46s cubic-bezier(.16,1,.3,1)",
+              pointerEvents: "none",
+            }}
           />
 
           <circle
