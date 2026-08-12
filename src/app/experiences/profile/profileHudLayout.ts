@@ -38,33 +38,39 @@ export function getProfileHudRect(
   const compactHeight = viewportHeight < 760;
 
   if (id === "timeline") {
-    const horizontalMargin = mobile ? 18 : clamp(viewportWidth * 0.055, 30, 92);
-    const topMargin = mobile ? 70 : 82;
-    const bottomMargin = mobile ? 22 : 34;
-    const preferredHeight = compactHeight ? 500 : 580;
+  const horizontalMargin = mobile ? 18 : 42;
+  const topMargin = mobile ? 70 : 76;
+  const bottomMargin = mobile ? 22 : 34;
 
-    const { width, height } = fitToViewport(
-      1500,
-      preferredHeight,
-      viewportWidth,
-      viewportHeight,
-      horizontalMargin,
-      topMargin,
-      bottomMargin,
-    );
+  const { width, height } = fitToViewport(
+    1340,
+    860,
+    viewportWidth,
+    viewportHeight,
+    horizontalMargin,
+    topMargin,
+    bottomMargin,
+  );
 
-    const left = (viewportWidth - width) / 2;
-    const top = viewportHeight - bottomMargin - height;
+  const left = mobile
+    ? horizontalMargin
+    : clamp(
+        viewportWidth * 0.035,
+        horizontalMargin,
+        viewportWidth - width - horizontalMargin,
+      );
 
-    return {
-      left,
-      top,
-      width,
-      height,
-      right: left + width,
-      bottom: top + height,
-    };
-  }
+  const top = topMargin;
+
+  return {
+    left,
+    top,
+    width,
+    height,
+    right: left + width,
+    bottom: top + height,
+  };
+}
 
   if (id === "about") {
     const horizontalMargin = mobile ? 18 : 42;
