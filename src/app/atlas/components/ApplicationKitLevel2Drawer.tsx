@@ -55,11 +55,14 @@ export default function ApplicationKitLevel2Drawer({
   return (
     <>
       <motion.aside
-        initial={false}
-        animate={{
-          x: open ? 0 : PROJECT_DRAWER_WIDTH,
-          opacity: open ? 1 : 0.98,
-        }}
+          initial={{
+            x: PROJECT_DRAWER_WIDTH,
+            opacity: 0.98,
+          }}
+          animate={{
+            x: open ? 0 : PROJECT_DRAWER_WIDTH,
+            opacity: open ? 1 : 0.98,
+          }}
         transition={{
           x: {
             duration: 0.58,
