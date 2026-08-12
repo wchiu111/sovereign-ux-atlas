@@ -9,7 +9,7 @@ import CoSovereigntyApplyCanvas from "./CoSovereigntyApplyCanvas";
 import CoSovereigntyEvaluateCanvas from "./CoSovereigntyEvaluateCanvas";
 import CoSovereigntyLearnCanvas from "./CoSovereigntyLearnCanvas";
 
-import behavioralFrameworkSpaceBg from "./assets/behavioral-framework-space-bg.png";
+import behavioralFrameworkSpaceBg from "../shared/assets/behavioral-framework-space-bg.png";
 
 import {
   CO_SOVEREIGNTY_STAGES,
@@ -106,25 +106,17 @@ export default function MultiUserCoSovereigntyExperience({
           )}
 
           {mode === "apply" && (
-            <ApplyMode
-              reducedMotion={reducedMotion}
-            />
+            <ApplyMode reducedMotion={reducedMotion} />
           )}
 
           {mode === "evaluate" && (
-            <EvaluateMode
-              reducedMotion={reducedMotion}
-            />
+            <EvaluateMode reducedMotion={reducedMotion} />
           )}
         </AnimatePresence>
       </main>
     </motion.section>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* Background                                                                 */
-/* -------------------------------------------------------------------------- */
 
 function Background() {
   return (
@@ -142,17 +134,11 @@ function Background() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Header                                                                     */
-/* -------------------------------------------------------------------------- */
-
 interface ExperienceHeaderProps {
   mode: ExperienceMode;
   color: string;
   onExit: () => void;
-  onModeChange: (
-    mode: ExperienceMode,
-  ) => void;
+  onModeChange: (mode: ExperienceMode) => void;
 }
 
 function ExperienceHeader({
@@ -193,51 +179,41 @@ function ExperienceHeader({
         aria-label="Framework experience modes"
         style={styles.modeNavigation}
       >
-        {EXPERIENCE_MODES.map(
-          ({ id, label }) => {
-            const active = mode === id;
+        {EXPERIENCE_MODES.map(({ id, label }) => {
+          const active = mode === id;
 
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() =>
-                  onModeChange(id)
-                }
-                aria-pressed={active}
-                style={{
-                  ...styles.modeButton,
-                  border: active
-                    ? `1px solid ${color}55`
-                    : "1px solid transparent",
-                  background: active
-                    ? `${color}0B`
-                    : "transparent",
-                  color: active
-                    ? "rgba(245,235,210,.90)"
-                    : "rgba(245,235,210,.50)",
-                }}
-              >
-                {label}
-              </button>
-            );
-          },
-        )}
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onModeChange(id)}
+              aria-pressed={active}
+              style={{
+                ...styles.modeButton,
+                border: active
+                  ? `1px solid ${color}55`
+                  : "1px solid transparent",
+                background: active
+                  ? `${color}0B`
+                  : "transparent",
+                color: active
+                  ? "rgba(245,235,210,.90)"
+                  : "rgba(245,235,210,.50)",
+              }}
+            >
+              {label}
+            </button>
+          );
+        })}
       </nav>
     </header>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Learn                                                                      */
-/* -------------------------------------------------------------------------- */
-
 interface LearnModeProps {
   color: string;
   activeStageId: CoSovereigntyStageId;
-  onCommitStage: (
-    stageId: CoSovereigntyStageId,
-  ) => void;
+  onCommitStage: (stageId: CoSovereigntyStageId) => void;
   onApply: () => void;
 }
 
@@ -255,9 +231,7 @@ function LearnMode({
       exit={{ opacity: 0 }}
       style={styles.learnMode}
     >
-      <section
-        style={styles.learnIntroduction}
-      >
+      <section style={styles.learnIntroduction}>
         <h1 style={styles.learnHeadline}>
           Shared systems become clearer when
           authority is made visible.
@@ -282,10 +256,6 @@ function LearnMode({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Apply                                                                      */
-/* -------------------------------------------------------------------------- */
-
 function ApplyMode({
   reducedMotion,
 }: {
@@ -304,13 +274,9 @@ function ApplyMode({
         y: 0,
       }}
       exit={{ opacity: 0 }}
-      transition={getModeTransition(
-        reducedMotion,
-      )}
+      transition={getModeTransition(reducedMotion)}
     >
-      <section
-        style={styles.modeIntroduction}
-      >
+      <section style={styles.modeIntroduction}>
         <h2 style={styles.modeHeadline}>
           See what changes when shared
           authority is designed.
@@ -327,10 +293,6 @@ function ApplyMode({
     </motion.div>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* Evaluate                                                                   */
-/* -------------------------------------------------------------------------- */
 
 function EvaluateMode({
   reducedMotion,
@@ -350,26 +312,18 @@ function EvaluateMode({
         y: 0,
       }}
       exit={{ opacity: 0 }}
-      transition={getModeTransition(
-        reducedMotion,
-      )}
+      transition={getModeTransition(reducedMotion)}
     >
       <CoSovereigntyEvaluateCanvas />
     </motion.div>
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Motion                                                                     */
-/* -------------------------------------------------------------------------- */
-
 function getModeTransition(
   reducedMotion: boolean | null,
 ) {
   return {
-    duration: reducedMotion
-      ? 0.16
-      : 0.5,
+    duration: reducedMotion ? 0.16 : 0.5,
     ease: [0.16, 1, 0.3, 1] as [
       number,
       number,
@@ -379,23 +333,17 @@ function getModeTransition(
   };
 }
 
-/* -------------------------------------------------------------------------- */
-/* Styles                                                                     */
-/* -------------------------------------------------------------------------- */
-
 const styles = {
   shell: {
     position: "absolute",
     inset: 0,
     zIndex: 64,
     display: "grid",
-    gridTemplateRows:
-      "64px minmax(0,1fr)",
+    gridTemplateRows: "64px minmax(0,1fr)",
     overflow: "hidden",
     color: "#F4EBD0",
     background: "#030409",
   },
-
   backgroundImage: {
     position: "absolute",
     inset: "-7%",
@@ -408,7 +356,6 @@ const styles = {
     filter:
       "saturate(.78) brightness(.62) contrast(1.04)",
   },
-
   backgroundOverlay: {
     position: "absolute",
     inset: 0,
@@ -417,7 +364,6 @@ const styles = {
     background:
       "radial-gradient(circle at 48% 46%, rgba(3,4,9,.04) 0%, rgba(3,4,9,.18) 46%, rgba(3,4,9,.42) 100%), linear-gradient(180deg, rgba(3,4,9,.08), rgba(3,4,9,.30))",
   },
-
   header: {
     position: "relative",
     zIndex: 3,
@@ -431,118 +377,92 @@ const styles = {
     background: "rgba(3,4,9,.20)",
     backdropFilter: "blur(6px)",
   },
-
   backButton: {
     minHeight: 44,
     padding: "0 10px 0 0",
     border: 0,
     background: "transparent",
     color: "rgba(200,180,130,.78)",
-    fontFamily:
-      "'DM Mono',monospace",
+    fontFamily: "'DM Mono',monospace",
     fontSize: 9.5,
     letterSpacing: ".14em",
     textTransform: "uppercase" as const,
     cursor: "pointer",
   },
-
   headerTitle: {
     minWidth: 0,
     textAlign: "center" as const,
   },
-
   frameworkName: {
     marginTop: 0,
-    fontFamily:
-      "'EB Garamond',serif",
+    fontFamily: "'EB Garamond',serif",
     fontSize: 21,
     color: "rgba(255,248,230,.94)",
   },
-
   modeNavigation: {
     display: "flex",
     gap: 6,
   },
-
   modeButton: {
     minHeight: 42,
     padding: "0 12px",
-    fontFamily:
-      "'DM Mono',monospace",
+    fontFamily: "'DM Mono',monospace",
     fontSize: 9,
     letterSpacing: ".115em",
     textTransform: "uppercase" as const,
     cursor: "pointer",
   },
-
   main: {
     position: "relative",
     zIndex: 2,
     minWidth: 0,
-    minHeight:
-      "calc(100dvh - 64px)",
+    minHeight: "calc(100dvh - 64px)",
     scrollbarWidth: "none" as const,
   },
-
   learnMode: {
     position: "relative",
-    minHeight:
-      "calc(100dvh - 86px)",
+    minHeight: "calc(100dvh - 86px)",
     overflow: "visible",
   },
-
   learnIntroduction: {
     maxWidth: 1120,
     margin: "12px auto 0",
     padding: "0 24px",
     textAlign: "center" as const,
   },
-
   learnHeadline: {
     margin: 0,
-    fontFamily:
-      "'EB Garamond',serif",
-    fontSize:
-      "clamp(30px, 2.2vw, 36px)",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: "clamp(30px, 2.2vw, 36px)",
     lineHeight: 1.28,
     fontWeight: 500,
     color: "rgba(255,248,230,.95)",
     textShadow:
       "0 2px 18px rgba(0,0,0,.34)",
   },
-
   learnSubcopy: {
     margin: "12px 0 0",
-    fontFamily:
-      "'EB Garamond',serif",
-    fontSize:
-      "clamp(16.5px, 1.1vw, 18px)",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: "clamp(16.5px, 1.1vw, 18px)",
     lineHeight: 1.55,
     color: "rgba(245,235,210,.64)",
   },
-
   modeIntroduction: {
     maxWidth: 820,
     margin: "12px auto 24px",
     textAlign: "center" as const,
   },
-
   modeHeadline: {
     margin: 0,
-    fontFamily:
-      "'EB Garamond',serif",
-    fontSize:
-      "clamp(27px, 1.8vw, 32px)",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: "clamp(27px, 1.8vw, 32px)",
     fontWeight: 500,
     color: "rgba(255,248,230,.92)",
   },
-
   modeSubcopy: {
     margin: "8px 0 0",
-    fontFamily:
-      "'EB Garamond',serif",
-    fontSize:
-      "clamp(16px, 1vw, 17.5px)",
+    fontFamily: "'EB Garamond',serif",
+    fontSize: "clamp(16px, 1vw, 17.5px)",
     lineHeight: 1.55,
     color: "rgba(245,235,210,.58)",
   },

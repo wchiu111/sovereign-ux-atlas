@@ -1,6 +1,6 @@
 import { useState, type MouseEvent, type KeyboardEvent } from "react";
 import type { AtlasModuleFamily } from "../../content/types";
-import ApplicationKitModuleRouter from "../../experiences/application-kit/ApplicationKitModuleRouter";
+import ApplicationKitModuleRouter from "../../experiences/application-kit/shared/ApplicationKitModuleRouter";
 import { resolveStellarColor } from "../constellation/stellarPalette";
 
 interface ApplicationKitModuleArcProps {

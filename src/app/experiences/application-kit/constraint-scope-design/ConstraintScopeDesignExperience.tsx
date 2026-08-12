@@ -9,7 +9,7 @@ import ConstraintScopeApplyCanvas from "./ConstraintScopeApplyCanvas";
 import ConstraintScopeEvaluateCanvas from "./ConstraintScopeEvaluateCanvas";
 import ConstraintScopeLearnCanvas from "./ConstraintScopeLearnCanvas";
 
-import behavioralFrameworkSpaceBg from "./assets/behavioral-framework-space-bg.png";
+import behavioralFrameworkSpaceBg from "../shared/assets/behavioral-framework-space-bg.png";
 
 import {
   CONSTRAINT_SCOPE_STAGES,
@@ -70,10 +70,7 @@ export default function ConstraintScopeDesignExperience({
         duration: reducedMotion ? 0.18 : 0.56,
         ease: [0.16, 1, 0.3, 1],
       }}
-      style={{
-        ...styles.shell,
-        opacity: 0,
-      }}
+      style={styles.shell}
     >
       <Background />
 
@@ -216,10 +213,7 @@ function LearnMode({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      style={{
-        ...styles.learnMode,
-        opacity: 0,
-      }}
+      style={styles.learnMode}
     >
       <section style={styles.learnIntroduction}>
         <h1 style={styles.learnHeadline}>
@@ -260,7 +254,6 @@ function ApplyMode({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={getModeTransition(reducedMotion)}
-      style={{ opacity: 0 }}
     >
       <section style={styles.modeIntroduction}>
         <h2 style={styles.modeHeadline}>
@@ -294,7 +287,6 @@ function EvaluateMode({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={getModeTransition(reducedMotion)}
-      style={{ opacity: 0 }}
     >
       <ConstraintScopeEvaluateCanvas />
     </motion.div>

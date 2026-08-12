@@ -39,7 +39,7 @@ export default function ConstraintScopeApplyCanvas() {
             duration: reducedMotion ? 0.16 : 0.45,
             ease: [0.16, 1, 0.3, 1],
           }}
-          style={{ ...styles.interfacePanel, opacity: 0 }}
+          style={styles.interfacePanel}
         >
           {variant === "without" ? (
             <WithoutFramework />

@@ -5,13 +5,13 @@ import {
   useReducedMotion,
 } from "motion/react";
 
-import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
+import { resolveStellarColor } from "../../../atlas/constellation/stellarPalette";
 
 import AppliedBehaviorCanvas from "./AppliedBehaviorCanvas";
 import ExploreBehaviorCanvas from "./ExploreBehaviorCanvas";
 import ProgressiveBehaviorCanvas from "./ProgressiveBehaviorCanvas";
 
-import behavioralFrameworkSpaceBg from "./assets/behavioral-framework-space-bg.png";
+import behavioralFrameworkSpaceBg from "../shared/assets/behavioral-framework-space-bg.png";
 
 import {
   BEHAVIORAL_STAGES,
@@ -142,25 +142,17 @@ export default function BehavioralDecisionDesignExperience({
           )}
 
           {mode === "apply" && (
-            <ApplyMode
-              reducedMotion={reducedMotion}
-            />
+            <ApplyMode reducedMotion={reducedMotion} />
           )}
 
           {mode === "evaluate" && (
-            <EvaluateMode
-              reducedMotion={reducedMotion}
-            />
+            <EvaluateMode reducedMotion={reducedMotion} />
           )}
         </AnimatePresence>
       </main>
     </motion.section>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* Background                                                                 */
-/* -------------------------------------------------------------------------- */
 
 function Background() {
   return (
@@ -169,7 +161,6 @@ function Background() {
         aria-hidden="true"
         style={styles.backgroundImage}
       />
-
       <div
         aria-hidden="true"
         style={styles.backgroundOverlay}
@@ -177,10 +168,6 @@ function Background() {
     </>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* Header                                                                     */
-/* -------------------------------------------------------------------------- */
 
 interface ExperienceHeaderProps {
   mode: ExperienceMode;
@@ -210,11 +197,10 @@ function ExperienceHeader({
         >
           ←
         </span>
-
         Behavior &amp; Authority
       </button>
 
-     <div style={styles.headerTitle}>
+      <div style={styles.headerTitle}>
         <div
           id="behavioral-design-title"
           style={styles.frameworkName}
@@ -258,19 +244,13 @@ function ExperienceHeader({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Learn                                                                      */
-/* -------------------------------------------------------------------------- */
-
 interface LearnModeProps {
   revealedCount: number;
   activeStageId: BehavioralStageId;
   resolveColor: (
     role: (typeof BEHAVIORAL_STAGES)[number]["colorRole"],
   ) => string;
-  onCommitStage: (
-    stageId: BehavioralStageId,
-  ) => void;
+  onCommitStage: (stageId: BehavioralStageId) => void;
   onAdvance: () => void;
   onRevealAll: () => void;
   onApply: () => void;
@@ -320,10 +300,6 @@ function LearnMode({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Apply                                                                      */
-/* -------------------------------------------------------------------------- */
-
 function ApplyMode({
   reducedMotion,
 }: {
@@ -337,10 +313,7 @@ function ApplyMode({
           ? { opacity: 0 }
           : { opacity: 0, y: 8 }
       }
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={getModeTransition(reducedMotion)}
     >
@@ -361,10 +334,6 @@ function ApplyMode({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Evaluate                                                                   */
-/* -------------------------------------------------------------------------- */
-
 function EvaluateMode({
   reducedMotion,
 }: {
@@ -378,10 +347,7 @@ function EvaluateMode({
           ? { opacity: 0 }
           : { opacity: 0, y: 8 }
       }
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
+      animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={getModeTransition(reducedMotion)}
     >
@@ -389,10 +355,6 @@ function EvaluateMode({
     </motion.div>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/* Motion                                                                     */
-/* -------------------------------------------------------------------------- */
 
 function getModeTransition(
   reducedMotion: boolean | null,
@@ -408,10 +370,6 @@ function getModeTransition(
   };
 }
 
-/* -------------------------------------------------------------------------- */
-/* Styles                                                                     */
-/* -------------------------------------------------------------------------- */
-
 const styles = {
   shell: {
     position: "absolute",
@@ -423,7 +381,6 @@ const styles = {
     color: "#F4EBD0",
     background: "#030409",
   },
-
   backgroundImage: {
     position: "absolute",
     inset: "-7%",
@@ -436,7 +393,6 @@ const styles = {
     filter:
       "saturate(.78) brightness(.62) contrast(1.04)",
   },
-
   backgroundOverlay: {
     position: "absolute",
     inset: 0,
@@ -445,7 +401,6 @@ const styles = {
     background:
       "radial-gradient(circle at 48% 46%, rgba(3,4,9,.04) 0%, rgba(3,4,9,.18) 46%, rgba(3,4,9,.42) 100%), linear-gradient(180deg, rgba(3,4,9,.08), rgba(3,4,9,.30))",
   },
-
   header: {
     position: "relative",
     zIndex: 3,
@@ -459,7 +414,6 @@ const styles = {
     background: "rgba(3,4,9,.20)",
     backdropFilter: "blur(6px)",
   },
-
   backButton: {
     minHeight: 44,
     padding: "0 10px 0 0",
@@ -472,24 +426,20 @@ const styles = {
     textTransform: "uppercase" as const,
     cursor: "pointer",
   },
-
   headerTitle: {
     minWidth: 0,
     textAlign: "center" as const,
   },
-
   frameworkName: {
     marginTop: 0,
     fontFamily: "'EB Garamond',serif",
     fontSize: 21,
     color: "rgba(255,248,230,.94)",
   },
-
   modeNavigation: {
     display: "flex",
     gap: 6,
   },
-
   modeButton: {
     minHeight: 42,
     padding: "0 12px",
@@ -499,7 +449,6 @@ const styles = {
     textTransform: "uppercase" as const,
     cursor: "pointer",
   },
-
   main: {
     position: "relative",
     zIndex: 2,
@@ -507,20 +456,17 @@ const styles = {
     minHeight: "calc(100dvh - 64px)",
     scrollbarWidth: "none" as const,
   },
-
   learnMode: {
     position: "relative",
     minHeight: "calc(100dvh - 86px)",
     overflow: "visible",
   },
-
   learnIntroduction: {
     maxWidth: 1120,
     margin: "12px auto 0",
     padding: "0 24px",
     textAlign: "center" as const,
   },
-
   learnHeadline: {
     margin: 0,
     fontFamily: "'EB Garamond',serif",
@@ -530,7 +476,6 @@ const styles = {
     color: "rgba(255,248,230,.95)",
     textShadow: "0 2px 18px rgba(0,0,0,.34)",
   },
-
   learnSubcopy: {
     margin: "12px 0 0",
     fontFamily: "'EB Garamond',serif",
@@ -538,13 +483,11 @@ const styles = {
     lineHeight: 1.55,
     color: "rgba(245,235,210,.64)",
   },
-
   modeIntroduction: {
     maxWidth: 800,
     margin: "12px auto 24px",
     textAlign: "center" as const,
   },
-
   modeHeadline: {
     margin: 0,
     fontFamily: "'EB Garamond',serif",
@@ -552,7 +495,6 @@ const styles = {
     fontWeight: 500,
     color: "rgba(255,248,230,.92)",
   },
-
   modeSubcopy: {
     margin: "8px 0 0",
     fontFamily: "'EB Garamond',serif",

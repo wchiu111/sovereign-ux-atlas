@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence } from "motion/react";
-import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
+import { resolveStellarColor } from "../../../atlas/constellation/stellarPalette";
 
-import BehavioralDecisionDesignExperience from "./behavioral-decision-design/BehavioralDecisionDesignExperience";
-import MultiUserCoSovereigntyExperience from "./multi-user-co-sovereignty/MultiUserCoSovereigntyExperience";
-import ConstraintScopeDesignExperience from "./constraint-scope-design/ConstraintScopeDesignExperience";
+import BehavioralDecisionDesignExperience from "../behavioral-decision-design/BehavioralDecisionDesignExperience";
+import MultiUserCoSovereigntyExperience from "../multi-user-co-sovereignty/MultiUserCoSovereigntyExperience";
+import ConstraintScopeDesignExperience from "../constraint-scope-design/ConstraintScopeDesignExperience";
 
 interface ApplicationKitModuleRouterProps {
   moduleId: string | null;
@@ -37,8 +37,10 @@ export default function ApplicationKitModuleRouter({
     };
 
     window.addEventListener("keydown", handleKeyDown, true);
-    return () =>
+
+    return () => {
       window.removeEventListener("keydown", handleKeyDown, true);
+    };
   }, [moduleId, onExit]);
 
   if (typeof document === "undefined") return null;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import applicationKitEntry from "../../content/frameworks/application-kit";
 import { PROJECT_DRAWER_WIDTH } from "../../components/AtlasProjectIntelligenceDrawer";
-import ApplicationKitModuleRouter from "../../experiences/application-kit/ApplicationKitModuleRouter";
+import ApplicationKitModuleRouter from "../../experiences/application-kit/shared/ApplicationKitModuleRouter";
 import { resolveStellarColor } from "../constellation/stellarPalette";
 
 interface ApplicationKitLevel2DrawerProps {
@@ -247,8 +247,7 @@ export default function ApplicationKitLevel2Drawer({
                           color: "rgba(245,235,210,0.66)",
                         }}
                       >
-                        {MODULE_SUMMARIES[module.id] ??
-                          module.purpose}
+                        {MODULE_SUMMARIES[module.id] ?? module.purpose}
                       </span>
                     </span>
 
@@ -269,9 +268,7 @@ export default function ApplicationKitLevel2Drawer({
             </div>
 
             <div style={{ marginTop: 30 }}>
-              <div style={eyebrowStyle}>
-                Connected Frameworks
-              </div>
+              <div style={eyebrowStyle}>Connected Frameworks</div>
 
               <div style={{ display: "grid", gap: 12 }}>
                 {CONNECTED_FRAMEWORKS.map((framework) => (
