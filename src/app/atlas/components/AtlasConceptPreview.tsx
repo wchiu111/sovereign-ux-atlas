@@ -16,6 +16,12 @@ const CARD_GUTTER = 28;
 const ANCHOR_GAP = 82;
 const ESTIMATED_CARD_HEIGHT = 360;
 
+function sentenceCase(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 export default function AtlasConceptPreview({
   system,
   planet,
@@ -97,11 +103,12 @@ export default function AtlasConceptPreview({
         <div
           style={{
             fontFamily: "'EB Garamond', serif",
-            fontSize: 31,
-            lineHeight: 1.02,
-            fontWeight: 500,
-            letterSpacing: "0.01em",
-            color: "rgba(255,248,229,0.97)",
+            fontSize: 27,
+            lineHeight: 1.08,
+            fontWeight: 400,
+            letterSpacing: "0.13em",
+            textTransform: "uppercase",
+            color: content.color,
             marginBottom: 18,
           }}
         >
@@ -111,10 +118,10 @@ export default function AtlasConceptPreview({
         <div
           style={{
             fontFamily: "'EB Garamond', serif",
-            fontSize: 17,
-            lineHeight: 1.55,
-            fontWeight: 500,
-            color: "rgba(245,235,210,0.88)",
+            fontSize: 15,
+            lineHeight: 1.58,
+            fontWeight: 400,
+            color: "rgba(245,235,210,0.84)",
           }}
         >
           {content.description}
@@ -126,18 +133,18 @@ export default function AtlasConceptPreview({
               style={{
                 height: 1,
                 margin: "26px 0 20px",
-                background: `color-mix(in srgb, ${content.color} 22%, rgba(255,255,255,0.08))`,
+                background: "linear-gradient(90deg, rgba(255,255,255,0.12), transparent)",
               }}
             />
 
             <div
               style={{
                 fontFamily: "'DM Mono', monospace",
-                fontSize: 9,
-                letterSpacing: "0.24em",
+                fontSize: 8,
+                letterSpacing: "0.22em",
                 textTransform: "uppercase",
-                color: "rgba(230,238,248,0.78)",
-                marginBottom: 14,
+                color: `color-mix(in srgb, ${content.color} 82%, white 18%)`,
+                marginBottom: 13,
               }}
             >
               {content.metaLabel}
@@ -145,17 +152,15 @@ export default function AtlasConceptPreview({
 
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 11,
+                display: "grid",
+                gap: 12,
               }}
             >
               {content.metaItems.map((item) => (
                 <div
                   key={item}
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "14px minmax(0,1fr)",
+                    display: "flex",
                     alignItems: "center",
                     gap: 10,
                   }}
@@ -163,22 +168,24 @@ export default function AtlasConceptPreview({
                   <span
                     aria-hidden="true"
                     style={{
-                      width: 8,
-                      height: 8,
+                      width: 9,
+                      height: 9,
+                      flex: "0 0 auto",
                       borderRadius: "50%",
                       background: content.color,
-                      boxShadow: `0 0 12px color-mix(in srgb, ${content.color} 70%, transparent)`,
+                      border: "1px solid rgba(255,255,255,0.24)",
+                      boxShadow: `0 0 8px ${content.color}`,
                     }}
                   />
                   <span
                     style={{
                       fontFamily: "'EB Garamond', serif",
-                      fontSize: 16,
-                      lineHeight: 1.35,
-                      color: "rgba(245,235,210,0.88)",
+                      fontSize: 14,
+                      lineHeight: 1.3,
+                      color: "rgba(245,235,210,0.82)",
                     }}
                   >
-                    {item}
+                    {sentenceCase(item)}
                   </span>
                 </div>
               ))}
