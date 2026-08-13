@@ -19,6 +19,11 @@ interface AtlasPlanetProps {
   planetGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
   planetLineRefs: React.MutableRefObject<Map<string, SVGLineElement>>;
   onSelect: (system: StarSystem, planet: Planet) => void;
+  onPreviewChange?: (
+    system: StarSystem | null,
+    planet: Planet | null,
+    anchor?: { x: number; y: number },
+  ) => void;
 }
 
 export default function AtlasPlanet({
@@ -30,6 +35,7 @@ export default function AtlasPlanet({
   planetGroupRefs,
   planetLineRefs,
   onSelect,
+  onPreviewChange,
 }: AtlasPlanetProps) {
   const [hovered, setHovered] = useState(false);
   const active = activePlanetId === planet.id;
@@ -212,17 +218,33 @@ export default function AtlasPlanet({
               onSelect(system, planet);
             }
           }}
-          onFocus={() => {
-            if (enabled) setHovered(true);
+          onFocus={event => {
+            if (!enabled) return;
+            setHovered(true);
+            const rect = event.currentTarget.getBoundingClientRect();
+            onPreviewChange?.(system, planet, {
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+            });
           }}
-          onBlur={() => setHovered(false)}
+          onBlur={() => {
+            setHovered(false);
+            onPreviewChange?.(null, null);
+          }}
           onMouseEnter={event => {
             event.stopPropagation();
-            if (enabled) setHovered(true);
+            if (!enabled) return;
+            setHovered(true);
+            const rect = event.currentTarget.getBoundingClientRect();
+            onPreviewChange?.(system, planet, {
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+            });
           }}
           onMouseLeave={event => {
             event.stopPropagation();
             setHovered(false);
+            onPreviewChange?.(null, null);
           }}
           style={{
             cursor: enabled ? "crosshair" : "default",

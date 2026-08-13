@@ -19,6 +19,11 @@ interface AtlasSystemProps {
   planetLineRefs: React.MutableRefObject<Map<string, SVGLineElement>>;
   onSelectSystem: (system: StarSystem) => void;
   onSelectPlanet: (system: StarSystem, planet: Planet) => void;
+  onPlanetHoverChange?: (
+    system: StarSystem | null,
+    planet: Planet | null,
+    anchor?: { x: number; y: number },
+  ) => void;
   onSystemHoverChange?: (
     system: StarSystem | null,
     anchor?: { x: number; y: number },
@@ -38,6 +43,7 @@ export default function AtlasSystem({
   planetLineRefs,
   onSelectSystem,
   onSelectPlanet,
+  onPlanetHoverChange,
   onSystemHoverChange,
 }: AtlasSystemProps) {
   const [hovered, setHovered] = useState(false);
@@ -294,6 +300,7 @@ export default function AtlasSystem({
           planetGroupRefs={planetGroupRefs}
           planetLineRefs={planetLineRefs}
           onSelect={onSelectPlanet}
+          onPreviewChange={onPlanetHoverChange}
         />
       ))}
     </g>
