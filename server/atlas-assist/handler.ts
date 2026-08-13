@@ -1,12 +1,12 @@
 import {
   AtlasAssistValidationError,
   validateAtlasAssistRequest,
-} from "./contracts";
+} from "./contracts.js";
 import {
   answerWithOpenAI,
   AtlasAssistUpstreamError,
   type OpenAIAtlasAssistConfig,
-} from "./openaiProvider";
+} from "./openaiProvider.js";
 
 interface RateLimitRecord {
   count: number;

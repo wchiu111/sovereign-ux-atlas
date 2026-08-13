@@ -1,14 +1,14 @@
-import type { AtlasAssistAnswer } from "../../src/app/types/atlasAssist";
+import type { AtlasAssistAnswer } from "../../src/app/types/atlasAssist.js";
 import {
   ATLAS_ASSIST_ANSWER_JSON_SCHEMA,
   AtlasAssistMalformedOutputError,
   type AtlasAssistRequest,
   validateAtlasAssistAnswer,
-} from "./contracts";
+} from "./contracts.js";
 import {
   buildSovereignAtlasInput,
   SOVEREIGN_ATLAS_INSTRUCTIONS,
-} from "./instructions";
+} from "./instructions.js";
 
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 

@@ -1,4 +1,4 @@
-import type { AtlasAssistRequest } from "./contracts";
+import type { AtlasAssistRequest } from "./contracts.js";
 
 export const SOVEREIGN_ATLAS_INSTRUCTION_VERSION = "2026-07-31.v1";
 

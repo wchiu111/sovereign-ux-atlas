@@ -5,7 +5,7 @@ import type {
   AtlasAssistScope,
   AtlasAssistSource,
   AtlasAssistSourceType,
-} from "../../src/app/types/atlasAssist";
+} from "../../src/app/types/atlasAssist.js";
 
 const SCOPES = new Set<AtlasAssistScope>(["section", "project", "atlas"]);
 const SOURCE_TYPES = new Set<AtlasAssistSourceType>([

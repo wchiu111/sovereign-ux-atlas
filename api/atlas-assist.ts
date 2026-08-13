@@ -1,4 +1,6 @@
-import { handleAtlasAssistRequest } from "../server/atlas-assist/handler";
+/// <reference types="node" />
+
+import { handleAtlasAssistRequest } from "../server/atlas-assist/handler.js";
 
 interface ServerRequest {
   method?: string;
