@@ -1,5 +1,10 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
 
+import baselineArtifact from "../../../imports/experiments/authority-drift/a-baseline.png";
+import unconstrainedArtifact from "../../../imports/experiments/authority-drift/b-unconstrained-ai.png";
+import constrainedArtifact from "../../../imports/experiments/authority-drift/c-authority-constrained.png";
+import authorityDriftPortal from "../../../imports/experiments/authority-drift/authority-drift-portal.jpg";
+
 const focus = {
   headline: "Authority Drift",
   subheadline:
@@ -26,7 +31,7 @@ Several relationships matter at baseline:
 • the original information hierarchy remains centered on the request
 • operational density stays compact
 • the person retains the final decision
-• the interface distinguishes leaving the workflow from rejecting the request
+• decision language remains direct and explicit
 • AI is not the interpretive center of the experience
 
 These relationships become the reference point for everything that follows.`,
@@ -39,19 +44,17 @@ These relationships become the reference point for everything that follows.`,
       accentStellarType: "purpose",
       subtitle: "A capability change may also change the user's role",
       readingTime: 2,
-      content: `The hypothesis is simple:
-
-Adding AI assistance to an existing interface can change more than functionality.
+      content: `Adding AI assistance to an existing interface can change more than functionality.
 
 Even when nobody asks the system to redistribute decision rights, generation may alter hierarchy, language, interaction patterns, and the position AI occupies in the workflow.
 
-The experiment therefore asks:
+The experiment asks:
 
 Can an existing product gain AI capability without changing the user's original authority?
 
-The concern is not that every AI feature automatically removes human control. The concern is that implementation can introduce small, plausible changes that gradually reposition the system from supporter to interpreter, recommender, or decision-maker.
+The signals to watch are AI hierarchy dominance, recommendation centralization, workflow restructuring around AI analysis, reduced human decision visibility, AI becoming the primary narrative layer, and scope expansion beyond the original interface boundary.
 
-If that happens without an explicit product decision, authority has drifted.`,
+If those relationships move without an explicit product decision, authority has drifted.`,
       insight:
         "A feature request can preserve formal approval while still changing who appears to frame, interpret, or own the decision.",
     },
@@ -59,59 +62,59 @@ If that happens without an explicit product decision, authority has drifted.`,
       id: "ai-intervention",
       label: "AI Intervention",
       accentStellarType: "agentic",
-      subtitle: "Introduce AI assistance without authority-preservation constraints",
-      readingTime: 2,
-      content: `The intervention is intentionally under-constrained.
+      subtitle: "Compare unconstrained AI with authority-constrained AI",
+      readingTime: 3,
+      content: `The experiment introduces AI in two conditions.
 
-Starting from the baseline approval experience, AI is asked to add AI assistance to the workflow.
+B — UNCONSTRAINED AI
 
-The prompt does not explicitly instruct the system to preserve:
+Starting from the baseline, the system receives a simple instruction to add AI assistance. No explicit authority-preservation constraints are supplied.
 
-• the original hierarchy
-• operational density
-• the user's decision role
-• the semantic meaning of existing actions
-• the distinction between assistance and interpretation
+The generated interface adds useful-looking capability: analysis, risk framing, compliance scoring, and a recommendation. But it also expands the modal and reorganizes the reading order around AI.
 
-This matters because the experiment is observing what implementation naturally assumes when those relationships are not protected.
+C — AUTHORITY CONSTRAINED
 
-The generated version adds useful-looking capability: analysis, interpretation, risk framing, and a recommendation.
+The same task is repeated with an Authority Distribution Invariant:
 
-But the interface also begins reorganizing itself around the AI.
+Preserve human workflow primacy. AI insights must remain contextual, lightweight, and subordinate to operational decision-making.
 
-The request remains present, yet it increasingly becomes input to a larger machine-authored narrative rather than the center of review.`,
+The AI contribution contracts into a compact contextual check. The original hierarchy, density, decision controls, and human role remain recognizable.
+
+The comparison isolates the effect of the authority constraint rather than removing AI capability altogether.`,
       insight:
-        "The intervention tests implementation defaults, not whether a carefully constrained prompt can preserve the original system.",
+        "The constrained state demonstrates that useful AI assistance does not require the interface to reorganize itself around AI.",
     },
     {
       id: "drift",
       label: "Drift",
       accentStellarType: "risk",
-      subtitle: "The interface changes what the user is being asked to do",
+      subtitle: "Diagnose what moved between A and B",
       readingTime: 3,
-      content: `Comparing the generated experience with the baseline reveals several forms of drift.
+      content: `Comparing A — Baseline with B — Unconstrained AI reveals six observable signals.
 
-Structural drift appears when the compact approval surface expands into a larger AI analysis experience.
+AI HIERARCHY DOMINANCE
+The AI analysis becomes the largest interpretive surface.
 
-Cognitive drift appears when the original request becomes secondary to machine-generated interpretation.
+RECOMMENDATION CENTRALIZATION
+The system tells the user what it recommends before the user has completed independent review.
 
-Authority drift appears when the system increasingly frames what matters before the person acts.
+WORKFLOW RESTRUCTURING
+The compact approval task expands into a broader AI management surface.
 
-The sharpest change happens at the word level.
+REDUCED HUMAN DECISION VISIBILITY
+The human still presses the final button, but the decision is increasingly framed upstream by AI.
 
-An existing action labeled “Cancel” becomes “Reject.”
+AI NARRATIVE DOMINANCE
+Policy, risk, compliance, and recommendation become the primary story of the request.
 
-Visually, this is tiny.
+SCOPE EXPANSION
+The interface grows beyond the original operational boundary.
 
-Semantically, it is not.
+The sharpest evidence happens at the word level: Reject becomes Cancel.
 
-“Cancel” allows the person to leave or stop the current action.
+That substitution appears small, but it changes the user's relationship to the workflow. The user is no longer simply exercising an independent negative decision; the language now frames the action as leaving the AI-expanded flow.
 
-“Reject” positions the interface as a proposal that the person must respond to. The user's role has shifted from initiating or discontinuing an action to accepting or rejecting a system-framed decision.
-
-That change was not requested.
-
-The interface quietly rewrote the relationship.`,
+This is Semantic Authority Drift.`,
       insight:
         "A one-word substitution can encode an authority inversion even when the surrounding workflow still looks familiar.",
     },
@@ -119,64 +122,272 @@ The interface quietly rewrote the relationship.`,
       id: "evidence",
       label: "Evidence",
       accentStellarType: "relational",
-      subtitle: "Inspect the specific changes rather than treating drift as a feeling",
+      subtitle: "Inspect A, B, and C as a three-state comparison",
       readingTime: 3,
-      content: `The evidence is the before-and-after interface itself.
+      content: `The evidence is the interface itself.
 
-The baseline and generated versions can be compared at several levels:
+A — BASELINE establishes the original authority relationship.
 
-STRUCTURE
-The original compact review surface becomes a substantially larger AI-centered experience.
+B — UNCONSTRAINED AI shows what happens when AI capability is added without explicit authority-preservation constraints.
 
-INTERPRETATION
-Risk, policy, compliance, and recommendation layers appear before the person makes the decision.
+C — AUTHORITY CONSTRAINED shows the same capability added while preserving human workflow primacy.
 
-ATTENTION
-The original request remains available, but the AI's interpretation becomes the dominant reading path.
+The interactive comparison keeps each claim attached to the artifact that supports it. Annotation bubbles identify where hierarchy, interpretation, semantic language, and decision authority move—and where the constrained version preserves the baseline relationship.
 
-FORMAL AUTHORITY
-The person still performs the final approval action.
-
-SEMANTIC AUTHORITY
-The change from “Cancel” to “Reject” reframes the person's role in relation to the system.
-
-This distinction is important.
-
-The evidence does not prove that AI fully took over the final decision. It shows that authority can move in smaller layers: framing, interpretation, hierarchy, and semantics.
-
-That is enough to alter the experience even when the final button press remains human.`,
+The comparison should be read as a design experiment, not as a claim that every AI interface will produce the same result.`,
       insight:
-        "Evidence becomes useful when each observed change is tied to the specific relationship it altered instead of being labeled generically as UI drift.",
+        "The strongest evidence is not that B looks different. It is that specific relationships move in B and remain stable again in C.",
       evidence: [
         {
-          id: "baseline-authority-model",
+          id: "authority-drift-baseline",
+          image: baselineArtifact,
+          alt:
+            "A — Baseline vendor exception approval modal with request details, justification, and Reject and Approve controls.",
+          imageFit: "contain",
           number: "01",
-          title: "Baseline Authority Model",
-          type: "Interface Baseline",
+          title: "A — Baseline",
+          type: "Interactive Example",
           description:
-            "The original approval surface keeps the request and the human decision at the center of the workflow.",
+            "The original compact approval workflow keeps the request and the human decision at the center.",
           caption:
-            "This establishes the authority relationship the AI implementation is expected not to rewrite unintentionally.",
+            "A establishes the hierarchy, density, semantics, and decision relationship against which the AI variants are compared.",
+          canvas: {
+            id: "authority-drift-three-state-comparison",
+            eyebrow: "INTERACTIVE COMPARISON",
+            title: "Where authority moved",
+            description:
+              "Compare the same vendor exception workflow across baseline, unconstrained AI, and authority-constrained implementation.",
+            portalImage: authorityDriftPortal,
+            boardLabel: "A — BASELINE",
+            boardSubtitle: "Human-led approval before AI enters the workflow",
+            boardHeight: 956,
+            transitionLabels: [
+              "ADD AI ASSISTANCE",
+              "APPLY AUTHORITY CONSTRAINTS",
+            ],
+            annotations: [
+              {
+                id: "a-request-primary",
+                number: "01",
+                x: 49,
+                y: 24,
+                category: "human-authority",
+                title: "The request remains primary",
+                observation:
+                  "The vendor, request details, and justification occupy the dominant reading path.",
+                meaning:
+                  "The system supports review without inserting an interpretive layer between the person and the decision.",
+                rightHolder: "Human",
+                footerLabel: "BASELINE SIGNAL",
+                footerValue: "HIERARCHY",
+                cardSide: "right",
+              },
+              {
+                id: "a-operational-density",
+                number: "02",
+                x: 50,
+                y: 52,
+                category: "invariant-preservation",
+                title: "Operational density stays compact",
+                observation:
+                  "Context is presented directly with no recommendation, scoring, or AI-authored analysis surface.",
+                meaning:
+                  "The interface remains proportional to the task instead of expanding around machine interpretation.",
+                rightHolder: "Human",
+                footerLabel: "BASELINE SIGNAL",
+                footerValue: "STRUCTURE",
+                cardSide: "right",
+              },
+              {
+                id: "a-decision-parity",
+                number: "03",
+                x: 73,
+                y: 91,
+                category: "human-authority",
+                title: "The user owns the decision",
+                observation:
+                  "Reject and Approve remain direct decision actions at the end of the review flow.",
+                meaning:
+                  "The person acts on the request rather than responding to a machine-authored recommendation.",
+                rightHolder: "Human",
+                footerLabel: "BASELINE SIGNAL",
+                footerValue: "AUTHORITY",
+                cardSide: "left",
+              },
+            ],
+          },
         },
         {
-          id: "unconstrained-ai-generation",
+          id: "authority-drift-unconstrained",
+          image: unconstrainedArtifact,
+          alt:
+            "B — Unconstrained AI vendor exception modal with AI-powered analysis, risk, compliance score, recommendation, and Cancel and Approve Request actions.",
+          imageFit: "contain",
           number: "02",
-          title: "Unconstrained AI Assistance",
-          type: "Generated Variant",
+          title: "B — Unconstrained AI",
+          type: "Interactive Example",
           description:
-            "Adding AI assistance expands the interface around machine interpretation, risk framing, and recommendation.",
+            "A simple request to add AI assistance expands the workflow and makes AI interpretation the dominant narrative layer.",
           caption:
-            "The generated version adds capability while also changing hierarchy, density, and the sequence through which the person reaches a decision.",
+            "B adds useful capability while also changing hierarchy, density, reading order, and decision semantics.",
+          canvas: {
+            id: "authority-drift-three-state-comparison",
+            eyebrow: "INTERACTIVE COMPARISON",
+            title: "Where authority moved",
+            description:
+              "Compare the same vendor exception workflow across baseline, unconstrained AI, and authority-constrained implementation.",
+            boardLabel: "B — UNCONSTRAINED AI",
+            boardSubtitle: "AI reshapes the workflow and leads the narrative",
+            boardHeight: 1320,
+            transitionLabels: [
+              "ADD AI ASSISTANCE",
+              "APPLY AUTHORITY CONSTRAINTS",
+            ],
+            annotations: [
+              {
+                id: "b-ai-hierarchy",
+                number: "01",
+                x: 49,
+                y: 34,
+                category: "structural-drift",
+                title: "AI becomes the dominant hierarchy",
+                observation:
+                  "A large AI-powered analysis surface now sits above the original request details.",
+                meaning:
+                  "The workflow is reorganized around the system's interpretation before the person reaches the underlying request.",
+                rightHolder: "AI",
+                footerLabel: "DRIFT SIGNAL",
+                footerValue: "HIERARCHY",
+                cardSide: "right",
+              },
+              {
+                id: "b-recommendation-centralized",
+                number: "02",
+                x: 50,
+                y: 58,
+                category: "authority-drift",
+                title: "Recommendation becomes central",
+                observation:
+                  "Risk framing, compliance scoring, and a recommended course of action arrive before the user's independent decision.",
+                meaning:
+                  "AI moves from contextual support toward primary narrator and recommender.",
+                rightHolder: "AI",
+                footerLabel: "DRIFT SIGNAL",
+                footerValue: "AUTHORITY",
+                cardSide: "right",
+              },
+              {
+                id: "b-request-secondary",
+                number: "03",
+                x: 35,
+                y: 76,
+                category: "cognitive-drift",
+                title: "The original request becomes secondary",
+                observation:
+                  "Request details remain available, but they now sit downstream of machine interpretation.",
+                meaning:
+                  "The user's attention is routed through AI framing before returning to the source material.",
+                rightHolder: "Shared",
+                footerLabel: "DRIFT SIGNAL",
+                footerValue: "ATTENTION",
+                cardSide: "right",
+              },
+              {
+                id: "b-semantic-authority",
+                number: "04",
+                x: 64,
+                y: 94,
+                category: "semantic-drift",
+                title: "Reject becomes Cancel",
+                observation:
+                  "The negative decision action is reframed as leaving the AI-expanded workflow.",
+                meaning:
+                  "A one-word change repositions the user from independent decision-maker toward respondent.",
+                rightHolder: "AI",
+                footerLabel: "AUTHORITY EFFECT",
+                footerValue: "SEMANTIC DRIFT",
+                cardSide: "left",
+              },
+            ],
+          },
         },
         {
-          id: "cancel-to-reject",
+          id: "authority-drift-constrained",
+          image: constrainedArtifact,
+          alt:
+            "C — Authority Constrained vendor exception modal preserving the original request hierarchy with a compact AI Check and Reject and Approve controls.",
+          imageFit: "contain",
           number: "03",
-          title: "Cancel → Reject",
-          type: "Semantic Authority Drift",
+          title: "C — Authority Constrained",
+          type: "Interactive Example",
           description:
-            "A one-word action change shifts the user from someone who can stop the workflow to someone responding to a system-framed proposal.",
+            "AI remains present but subordinate, preserving the original workflow primacy and decision structure.",
           caption:
-            "The smallest visible change becomes the clearest evidence that semantic language can redistribute perceived authority.",
+            "C shows that authority constraints can preserve the human-led workflow without removing AI capability.",
+          canvas: {
+            id: "authority-drift-three-state-comparison",
+            eyebrow: "INTERACTIVE COMPARISON",
+            title: "Where authority moved",
+            description:
+              "Compare the same vendor exception workflow across baseline, unconstrained AI, and authority-constrained implementation.",
+            boardLabel: "C — AUTHORITY CONSTRAINED",
+            boardSubtitle: "AI assists without reorganizing the workflow",
+            boardHeight: 1305,
+            transitionLabels: [
+              "ADD AI ASSISTANCE",
+              "APPLY AUTHORITY CONSTRAINTS",
+            ],
+            annotations: [
+              {
+                id: "c-hierarchy-preserved",
+                number: "01",
+                x: 49,
+                y: 30,
+                category: "invariant-preservation",
+                title: "The original hierarchy is preserved",
+                observation:
+                  "The request remains the dominant object and keeps essentially the same reading order as A.",
+                meaning:
+                  "Adding AI does not require reorganizing the experience around AI.",
+                rightHolder: "Human",
+                footerLabel: "PRESERVED SIGNAL",
+                footerValue: "HIERARCHY",
+                cardSide: "right",
+              },
+              {
+                id: "c-ai-contextual",
+                number: "02",
+                x: 50,
+                y: 82,
+                category: "invariant-preservation",
+                title: "AI stays contextual",
+                observation:
+                  "AI appears as one compact check beneath the user's source material.",
+                meaning:
+                  "The system supports interpretation without becoming the dominant hierarchy or recommendation layer.",
+                rightHolder: "Shared",
+                footerLabel: "PRESERVED SIGNAL",
+                footerValue: "AI ROLE",
+                cardSide: "right",
+              },
+              {
+                id: "c-decision-controls",
+                number: "03",
+                x: 73,
+                y: 95,
+                category: "integrity-verification",
+                title: "Decision controls remain intact",
+                observation:
+                  "Reject and Approve are preserved from the baseline.",
+                meaning:
+                  "The constrained variant demonstrates that AI capability can be added without rewriting the user's decision role.",
+                rightHolder: "Human",
+                footerLabel: "VERIFIED SIGNAL",
+                footerValue: "AUTHORITY",
+                cardSide: "left",
+              },
+            ],
+          },
         },
       ],
     },
@@ -184,7 +395,7 @@ That is enough to alter the experience even when the final button press remains 
       id: "finding",
       label: "Finding",
       accentStellarType: "judgment",
-      subtitle: "Authority can drift without an explicit decision to move it",
+      subtitle: "Human involvement is not the same as preserved human authority",
       readingTime: 2,
       content: `The experiment does not show that AI assistance is inherently incompatible with human authority.
 
@@ -192,25 +403,19 @@ It shows something more specific:
 
 Implementation can redistribute authority without explicitly announcing that authority has changed.
 
-The system may preserve the final approval action while shifting other forms of power toward AI:
+The system may preserve the final approval action while shifting other forms of power toward AI: attention, framing, interpretation, narrative priority, and decision language.
 
-• what receives attention
-• how information is framed
-• which interpretation arrives first
-• what language defines the user's available response
-• which actor appears to understand the situation
+C also reveals an important limitation.
 
-This creates a design problem that cannot be solved by checking whether a human remains “in the loop.”
+The authority constraint worked because preservation was explicitly specified. That is prompt discipline—not yet preservation architecture.
 
-Human involvement is not the same as preserved human authority.
+The open question is what happens after implementation:
 
-The next question is therefore not simply how to prevent AI from acting autonomously.
+Can a system recognize that authority has drifted and repair only what changed without requiring designers to restate the invariant every time?
 
-It is how to let intelligent systems evolve while preserving the relationships that should remain true.
-
-That question leads directly into regenerative systems, invariant preservation, and repair.`,
+That question leads into regenerative systems, invariant preservation, and repair.`,
       insight:
-        "Small interface changes can encode large authority shifts. Preserving the final click is not enough if the system has already rewritten the terms of the decision.",
+        "Small interface changes can encode large authority shifts. The next challenge is moving from explicit prompt constraints to systems that can preserve and repair integrity.",
     },
   ],
 };
@@ -230,7 +435,14 @@ export default defineAtlasEntry({
     researchFocus:
       "Whether an existing product can gain AI capabilities without altering the user's original agency, decision role, or semantic authority.",
     keyDiscovery:
-      "Small interface changes can encode large authority shifts. The clearest evidence was a one-word change from Cancel to Reject.",
+      "Small interface changes can encode large authority shifts. A constrained AI state can preserve the original decision model without removing AI capability.",
+  },
+  presentation: {
+    mode: "example-led",
+    sequenceLabel: "EXPERIMENT",
+    railLabel: "EVIDENCE",
+    artifactLabel: "ARTIFACT",
+    emptyRailMessage: "Evidence appears as the experiment develops.",
   },
   orbit: {
     angle: 15,
