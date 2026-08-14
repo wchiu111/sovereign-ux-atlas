@@ -96,7 +96,27 @@ export default function AtlasPlanet({
   const navigationLabel = planet.label.toLocaleUpperCase("en-US");
 
   return (
-    <g>
+    <>
+      <style>{`
+        .atlas-concept-planet {
+          transition:
+            opacity 260ms ${ATLAS_MOTION_EASE},
+            filter 260ms ${ATLAS_MOTION_EASE};
+        }
+
+        svg:has(.atlas-concept-hit:hover)
+          .atlas-concept-planet[data-atlas-level="1"]:not(:has(.atlas-concept-hit:hover)),
+        svg:has(.atlas-concept-hit:focus)
+          .atlas-concept-planet[data-atlas-level="1"]:not(:has(.atlas-concept-hit:focus)) {
+          opacity: 0.48 !important;
+          filter: saturate(0.72) brightness(0.78);
+        }
+      `}</style>
+
+      <g
+        className="atlas-concept-planet"
+        data-atlas-level={level}
+      >
       <line
         ref={element => {
           if (element) planetLineRefs.current.set(planet.id, element);
@@ -200,6 +220,7 @@ export default function AtlasPlanet({
         />
 
         <circle
+          className="atlas-concept-hit"
           cx={0}
           cy={0}
           r={PLANET_VISUAL.interactionTarget}
@@ -355,6 +376,7 @@ export default function AtlasPlanet({
           </g>
         )}
       </g>
-    </g>
+      </g>
+    </>
   );
 }

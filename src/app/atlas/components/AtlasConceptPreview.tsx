@@ -1,4 +1,5 @@
-import { motion } from "motion/react";
+import { useLayoutEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import type { Planet, StarSystem } from "../../types/atlas";
 import { buildAtlasConceptPreview } from "./AtlasConceptPreviewContent";
 
@@ -15,6 +16,12 @@ const CARD_WIDTH = 430;
 const CARD_GUTTER = 28;
 const ANCHOR_GAP = 82;
 const ESTIMATED_CARD_HEIGHT = 360;
+const SAFE_TOP = 84;
+const SAFE_BOTTOM = 72;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
 
 function sentenceCase(value: string) {
   return value
@@ -32,33 +39,80 @@ export default function AtlasConceptPreview({
 }: AtlasConceptPreviewProps) {
   const content = buildAtlasConceptPreview(system, planet);
   const compact = viewportWidth < 760;
+  const reduceMotion = useReducedMotion();
+  const cardRef = useRef<HTMLElement>(null);
+  const [cardHeight, setCardHeight] = useState(ESTIMATED_CARD_HEIGHT);
 
-  const placeLeft = x + ANCHOR_GAP + CARD_WIDTH > viewportWidth - CARD_GUTTER;
+  useLayoutEffect(() => {
+    const nextHeight = cardRef.current?.getBoundingClientRect().height;
+    if (nextHeight && Math.abs(nextHeight - cardHeight) > 1) {
+      setCardHeight(nextHeight);
+    }
+  }, [content.id, content.metaItems.length, viewportWidth, cardHeight]);
+
+  const renderedWidth = compact
+    ? Math.min(CARD_WIDTH, viewportWidth - CARD_GUTTER * 2)
+    : CARD_WIDTH;
+
+  const rightCandidate = x + ANCHOR_GAP;
+  const leftCandidate = x - renderedWidth - ANCHOR_GAP;
+  const canPlaceRight =
+    rightCandidate + renderedWidth <= viewportWidth - CARD_GUTTER;
+  const canPlaceLeft = leftCandidate >= CARD_GUTTER;
+
   const left = compact
-    ? Math.max(CARD_GUTTER, (viewportWidth - Math.min(CARD_WIDTH, viewportWidth - CARD_GUTTER * 2)) / 2)
-    : placeLeft
-      ? Math.max(CARD_GUTTER, x - CARD_WIDTH - ANCHOR_GAP)
-      : x + ANCHOR_GAP;
+    ? Math.max(CARD_GUTTER, (viewportWidth - renderedWidth) / 2)
+    : canPlaceRight
+      ? rightCandidate
+      : canPlaceLeft
+        ? leftCandidate
+        : clamp(
+            x < viewportWidth / 2 ? rightCandidate : leftCandidate,
+            CARD_GUTTER,
+            viewportWidth - renderedWidth - CARD_GUTTER,
+          );
+
+  const maxTop = Math.max(
+    SAFE_TOP,
+    viewportHeight - cardHeight - SAFE_BOTTOM,
+  );
 
   const top = compact
-    ? Math.max(CARD_GUTTER, viewportHeight - ESTIMATED_CARD_HEIGHT - 72)
-    : Math.min(
-        Math.max(y - ESTIMATED_CARD_HEIGHT * 0.46, CARD_GUTTER),
-        Math.max(CARD_GUTTER, viewportHeight - ESTIMATED_CARD_HEIGHT - 64),
+    ? clamp(
+        viewportHeight - cardHeight - SAFE_BOTTOM,
+        SAFE_TOP,
+        maxTop,
+      )
+    : clamp(
+        y - cardHeight * 0.46,
+        SAFE_TOP,
+        maxTop,
       );
 
   return (
     <motion.aside
+      ref={cardRef}
       key={content.id}
-      initial={{ opacity: 0, y: 10, scale: 0.985 }}
+      initial={
+        reduceMotion
+          ? { opacity: 0 }
+          : { opacity: 0, y: 8, scale: 0.985 }
+      }
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 6, scale: 0.99 }}
-      transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+      exit={
+        reduceMotion
+          ? { opacity: 0 }
+          : { opacity: 0, y: 5, scale: 0.99 }
+      }
+      transition={{
+        duration: reduceMotion ? 0.12 : 0.26,
+        ease: [0.16, 1, 0.3, 1],
+      }}
       className="fixed z-30 pointer-events-none"
       style={{
         left,
         top,
-        width: compact ? `calc(100vw - ${CARD_GUTTER * 2}px)` : CARD_WIDTH,
+        width: renderedWidth,
         maxWidth: CARD_WIDTH,
         padding: "30px 34px 32px",
         background: "rgba(6,7,12,0.955)",
@@ -69,6 +123,7 @@ export default function AtlasConceptPreview({
           `0 28px 96px rgba(0,0,0,0.54), 0 0 54px color-mix(in srgb, ${content.color} 9%, transparent), inset 0 1px 0 rgba(255,255,255,0.025)`,
         color: "#F4EBD0",
         overflow: "hidden",
+        maxHeight: `calc(100vh - ${SAFE_TOP + SAFE_BOTTOM}px)`,
       }}
     >
       <div
