@@ -8,6 +8,7 @@ import FocusPullTransition, {
   REDUCED_FOCUS_TRANSITION_DURATION,
 } from "./components/FocusPullTransition";
 import FocusedOverview from "./components/FocusedOverview";
+import AtlasConceptPreview from "./components/AtlasConceptPreview";
 import AtlasSystemPreview from "./components/AtlasSystemPreview";
 import type { AtlasPreviewId } from "./components/AtlasPreviewContent";
 import { SYSTEMS, SYSTEM_MAP } from "../data/atlasSystems";
@@ -78,6 +79,12 @@ export default function AtlasExplorer({
   const [reduceFocusMotion, setReduceFocusMotion] = useState(false);
   const [hoveredSystemPreview, setHoveredSystemPreview] = useState<{
     id: AtlasPreviewId;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [hoveredConceptPreview, setHoveredConceptPreview] = useState<{
+    system: StarSystem;
+    planet: Planet;
     x: number;
     y: number;
   } | null>(null);
@@ -257,6 +264,7 @@ useEffect(() => {
     const sp = sysOrbitPos(sys, elapsedRef.current, nexX, nexY);
     const focusScale = SYSTEM_FOCUS_SCALE[sys.id] ?? 1.35;
 
+    setHoveredConceptPreview(null);
     actions.enterSystem(sys.id);
     zoomWithTransition(focusScale, sp.x, sp.y);
   }, [actions, zoomWithTransition]);
@@ -266,6 +274,7 @@ useEffect(() => {
   isFollowingRef.current = false;
   if (followTimerRef.current) clearTimeout(followTimerRef.current);
 
+  setHoveredConceptPreview(null);
   actions.openPlanet(sys.id, planet.id);
 
   requestAnimationFrame(() => {
@@ -328,6 +337,7 @@ useEffect(() => {
   const goToAtlas = useCallback(() => {
     isFollowingRef.current = false;
     if (followTimerRef.current) clearTimeout(followTimerRef.current);
+    setHoveredConceptPreview(null);
     actions.returnToAtlas();
     const el = zoomableRef.current;
     if (el) {
@@ -487,6 +497,19 @@ useEffect(() => {
         onBackgroundClick={handleBgClick}
         onSelectSystem={goToSystem}
         onSelectPlanet={goToPlanet}
+        onPlanetHoverChange={(system, planet, anchor) => {
+          if (level !== 1 || !system || !planet || !anchor) {
+            setHoveredConceptPreview(null);
+            return;
+          }
+
+          setHoveredConceptPreview({
+            system,
+            planet,
+            x: anchor.x,
+            y: anchor.y,
+          });
+        }}
         onSystemHoverChange={(system, anchor) => {
           if (!system || !anchor) {
             setHoveredSystemPreview(null);
@@ -515,6 +538,17 @@ useEffect(() => {
             previewId={hoveredSystemPreview.id}
             x={hoveredSystemPreview.x}
             y={hoveredSystemPreview.y}
+            viewportWidth={w}
+            viewportHeight={h}
+          />
+        )}
+        {level === 1 && hoveredConceptPreview && (
+          <AtlasConceptPreview
+            key={hoveredConceptPreview.planet.id}
+            system={hoveredConceptPreview.system}
+            planet={hoveredConceptPreview.planet}
+            x={hoveredConceptPreview.x}
+            y={hoveredConceptPreview.y}
             viewportWidth={w}
             viewportHeight={h}
           />

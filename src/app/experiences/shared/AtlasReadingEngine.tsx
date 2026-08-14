@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, type RefObject } from "react";
+import { createPortal } from "react-dom";
 import { Share2, X, ZoomIn, Minimize2 } from "lucide-react";
 import type { ReadingDocument as CaseStudy, ReadingEvidenceItem as EvidenceItem, ReadingSection as Section } from "./types";
 import { EvidenceThumbnail, EvidenceLargeView } from "../../case-study/components/EvidenceArtwork";
@@ -777,17 +778,32 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
+  useEffect(() => {
+    if (!fullscreen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [fullscreen]);
+
   const handleShare = async () => {
     onShare();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  return (
-    <div style={{
-      position:"absolute", inset:0, zIndex:50,
+  const viewer = (
+    <div role="dialog" aria-modal={fullscreen ? true : undefined} style={{
+      position: fullscreen ? "fixed" : "absolute",
+      inset:0,
+      zIndex: fullscreen ? 2000 : 50,
+      width: fullscreen ? "100vw" : undefined,
+      height: fullscreen ? "100dvh" : undefined,
       background:"rgba(4,5,10,0.96)",
       display:"flex", flexDirection:"column",
+      overscrollBehavior:"contain",
       animation:"fadeIn 0.25s ease-out",
     }}>
       <style>{`@keyframes fadeIn{from{opacity:0;transform:scale(0.99)}to{opacity:1;transform:scale(1)}}`}</style>
@@ -840,7 +856,12 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
       {/* Main viewer body */}
       <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
         {/* Large image area */}
-        <div style={{ flex:1, overflow:"hidden", padding:"24px" }}>
+        <div style={{
+          flex:1,
+          overflow:"hidden",
+          padding: fullscreen ? "12px" : "24px",
+          transition:"padding 220ms ease",
+        }}>
           <div style={{
             width:"100%", height:"100%",
             background:"rgba(8,10,18,0.80)",
@@ -913,6 +934,10 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
       </div>
     </div>
   );
+
+  return fullscreen && typeof document !== "undefined"
+    ? createPortal(viewer, document.body)
+    : viewer;
 }
 
 // ─── AtlasReadingEngine ───────────────────────────────────────────────────

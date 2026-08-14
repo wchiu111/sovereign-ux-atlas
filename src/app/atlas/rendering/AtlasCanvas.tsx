@@ -23,6 +23,11 @@ interface AtlasCanvasProps {
   onBackgroundClick: () => void;
   onSelectSystem: (system: StarSystem) => void;
   onSelectPlanet: (system: StarSystem, planet: Planet) => void;
+  onPlanetHoverChange?: (
+    system: StarSystem | null,
+    planet: Planet | null,
+    anchor?: { x: number; y: number },
+  ) => void;
   onSystemHoverChange?: (
     system: StarSystem | null,
     anchor?: { x: number; y: number },
@@ -47,6 +52,7 @@ export default function AtlasCanvas({
   onBackgroundClick,
   onSelectSystem,
   onSelectPlanet,
+  onPlanetHoverChange,
   onSystemHoverChange,
   revealStage = 6,
 }: AtlasCanvasProps) {
@@ -260,6 +266,7 @@ export default function AtlasCanvas({
                 planetLineRefs={planetLineRefs}
                 onSelectSystem={onSelectSystem}
                 onSelectPlanet={onSelectPlanet}
+                onPlanetHoverChange={onPlanetHoverChange}
                 onSystemHoverChange={onSystemHoverChange}
               />
             </g>

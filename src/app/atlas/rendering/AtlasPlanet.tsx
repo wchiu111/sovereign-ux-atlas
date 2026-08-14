@@ -19,6 +19,11 @@ interface AtlasPlanetProps {
   planetGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
   planetLineRefs: React.MutableRefObject<Map<string, SVGLineElement>>;
   onSelect: (system: StarSystem, planet: Planet) => void;
+  onPreviewChange?: (
+    system: StarSystem | null,
+    planet: Planet | null,
+    anchor?: { x: number; y: number },
+  ) => void;
 }
 
 export default function AtlasPlanet({
@@ -30,6 +35,7 @@ export default function AtlasPlanet({
   planetGroupRefs,
   planetLineRefs,
   onSelect,
+  onPreviewChange,
 }: AtlasPlanetProps) {
   const [hovered, setHovered] = useState(false);
   const active = activePlanetId === planet.id;
@@ -90,7 +96,27 @@ export default function AtlasPlanet({
   const navigationLabel = planet.label.toLocaleUpperCase("en-US");
 
   return (
-    <g>
+    <>
+      <style>{`
+        .atlas-concept-planet {
+          transition:
+            opacity 260ms ${ATLAS_MOTION_EASE},
+            filter 260ms ${ATLAS_MOTION_EASE};
+        }
+
+        svg:has(.atlas-concept-hit:hover)
+          .atlas-concept-planet[data-atlas-level="1"]:not(:has(.atlas-concept-hit:hover)),
+        svg:has(.atlas-concept-hit:focus)
+          .atlas-concept-planet[data-atlas-level="1"]:not(:has(.atlas-concept-hit:focus)) {
+          opacity: 0.48 !important;
+          filter: saturate(0.72) brightness(0.78);
+        }
+      `}</style>
+
+      <g
+        className="atlas-concept-planet"
+        data-atlas-level={level}
+      >
       <line
         ref={element => {
           if (element) planetLineRefs.current.set(planet.id, element);
@@ -131,6 +157,7 @@ export default function AtlasPlanet({
         }}
       >
         <circle
+          className="atlas-concept-hit"
           cx={0}
           cy={0}
           r={outerRadius}
@@ -212,17 +239,33 @@ export default function AtlasPlanet({
               onSelect(system, planet);
             }
           }}
-          onFocus={() => {
-            if (enabled) setHovered(true);
+          onFocus={event => {
+            if (!enabled) return;
+            setHovered(true);
+            const rect = event.currentTarget.getBoundingClientRect();
+            onPreviewChange?.(system, planet, {
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+            });
           }}
-          onBlur={() => setHovered(false)}
+          onBlur={() => {
+            setHovered(false);
+            onPreviewChange?.(null, null);
+          }}
           onMouseEnter={event => {
             event.stopPropagation();
-            if (enabled) setHovered(true);
+            if (!enabled) return;
+            setHovered(true);
+            const rect = event.currentTarget.getBoundingClientRect();
+            onPreviewChange?.(system, planet, {
+              x: rect.left + rect.width / 2,
+              y: rect.top + rect.height / 2,
+            });
           }}
           onMouseLeave={event => {
             event.stopPropagation();
             setHovered(false);
+            onPreviewChange?.(null, null);
           }}
           style={{
             cursor: enabled ? "crosshair" : "default",
@@ -333,6 +376,7 @@ export default function AtlasPlanet({
           </g>
         )}
       </g>
-    </g>
+      </g>
+    </>
   );
 }
