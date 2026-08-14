@@ -1,0 +1,159 @@
+:root{
+  --bg:#030409;
+  --ivory:#F4EBD0;
+  --line:rgba(210,198,163,.18);
+  --serif:"EB Garamond",Georgia,serif;
+  --mono:"DM Mono",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ivory)}
+.sf-page{
+  min-height:100vh;
+  padding:56px;
+  background:radial-gradient(circle at 50% 0,rgba(120,94,48,.05),transparent 38%),#030409;
+}
+.intro{
+  max-width:1400px;margin:0 auto 52px;
+  display:grid;grid-template-columns:1fr 520px;gap:48px;align-items:end;
+}
+.intro h1,.study h2{font-family:var(--serif);font-weight:400;margin:8px 0}
+.intro h1{font-size:72px;line-height:.98}
+.intro p,.study p{
+  font-family:var(--serif);color:rgba(244,235,208,.5);
+  font-size:18px;line-height:1.55;margin:0;
+}
+.eyebrow,.study em,.node b{
+  font-family:var(--mono);letter-spacing:.24em;text-transform:uppercase;
+}
+.eyebrow{font-size:11px;color:#9abfd7}
+.study{max-width:1400px;margin:auto;border-top:1px solid var(--line);padding-top:26px}
+.study header{
+  display:grid;grid-template-columns:1fr auto;gap:24px;
+  align-items:end;margin-bottom:18px;
+}
+.study h2{font-size:36px}
+.study em{font-size:10px;color:rgba(244,235,208,.44);font-style:normal}
+.stage{
+  position:relative;aspect-ratio:16/9;overflow:hidden;
+  border:1px solid rgba(201,190,158,.16);
+  background:#020307;isolation:isolate;
+}
+.space,.sf-star-layer,.sf-nebula-field,.sf-grain,.mask,.sf-nodes{
+  position:absolute;inset:0;
+}
+.space{
+  background:
+    radial-gradient(ellipse at 49% 48%,rgba(21,25,34,.42),transparent 40%),
+    linear-gradient(#020307,#030409);
+}
+.sf-star{position:absolute;display:block;border-radius:50%;transform:translate(-50%,-50%);animation:twinkle ease-in-out infinite}
+.sf-mid .sf-star{box-shadow:0 0 5px rgba(240,235,220,.1)}
+.sf-near .sf-star{box-shadow:0 0 9px rgba(236,231,219,.16)}
+@keyframes twinkle{
+  0%,31%,52%,100%{transform:translate(-50%,-50%) scale(1);filter:brightness(1)}
+  37%{transform:translate(-50%,-50%) scale(.72);filter:brightness(.72)}
+  42%{transform:translate(-50%,-50%) scale(1.12);filter:brightness(1.18)}
+}
+
+.sf-nebula-field{z-index:2;mix-blend-mode:screen;opacity:.86}
+.sf-haze,.sf-cloud,.sf-dust,.sf-occ{position:absolute;transform:translate(-50%,-50%)}
+
+.sf-haze{border-radius:50%;filter:blur(105px)}
+.sf-haze-frameworks{
+  left:18%;top:43%;width:50%;height:42%;
+  background:radial-gradient(ellipse,rgba(38,82,66,.32) 0,rgba(29,57,52,.16) 42%,transparent 74%);
+}
+.sf-haze-cases{
+  left:82%;top:41%;width:48%;height:40%;
+  background:radial-gradient(ellipse,rgba(42,77,105,.31) 0,rgba(38,57,79,.15) 44%,transparent 75%);
+}
+.sf-haze-experiments{
+  left:52%;top:77%;width:52%;height:38%;
+  background:radial-gradient(ellipse,rgba(78,48,111,.34) 0,rgba(55,38,78,.17) 44%,transparent 75%);
+}
+.sf-haze-sovereign{
+  left:50%;top:48%;width:38%;height:34%;
+  background:radial-gradient(ellipse,rgba(129,101,38,.19),rgba(86,68,32,.08) 42%,transparent 74%);
+}
+
+/* Broken, overlapping cloud masses: deliberately asymmetric. */
+.sf-cloud{border-radius:50%;filter:blur(58px);opacity:.58}
+.cloud-a{
+  left:28%;top:29%;width:49%;height:14%;
+  transform:translate(-50%,-50%) rotate(-17deg);
+  background:linear-gradient(90deg,transparent 0,rgba(80,72,104,.08) 13%,rgba(52,87,91,.24) 42%,rgba(44,70,66,.13) 69%,transparent 100%);
+}
+.cloud-b{
+  left:66%;top:31%;width:45%;height:11%;
+  transform:translate(-50%,-50%) rotate(11deg);
+  background:linear-gradient(90deg,transparent,rgba(49,75,99,.07) 18%,rgba(65,82,107,.22) 48%,rgba(89,74,96,.12) 73%,transparent);
+}
+.cloud-c{
+  left:38%;top:61%;width:59%;height:13%;
+  transform:translate(-50%,-50%) rotate(8deg);
+  background:linear-gradient(90deg,transparent,rgba(43,71,62,.08) 15%,rgba(75,62,91,.21) 47%,rgba(72,54,96,.15) 68%,transparent);
+}
+.cloud-d{
+  left:74%;top:68%;width:42%;height:12%;
+  transform:translate(-50%,-50%) rotate(-15deg);
+  background:linear-gradient(90deg,transparent,rgba(68,57,92,.06),rgba(81,58,111,.22),rgba(55,70,88,.1),transparent);
+}
+.cloud-e{
+  left:52%;top:45%;width:63%;height:8%;
+  transform:translate(-50%,-50%) rotate(-4deg);
+  background:linear-gradient(90deg,transparent,rgba(100,83,55,.05) 20%,rgba(83,76,73,.12) 51%,rgba(54,70,83,.07) 75%,transparent);
+}
+
+/* Dust is darker than the original study so the clouds have visible internal structure. */
+.sf-dust{
+  height:3.2%;border-radius:999px;filter:blur(18px);
+  mix-blend-mode:multiply;
+  background:linear-gradient(90deg,transparent,rgba(0,0,0,.76) 28%,rgba(0,0,0,.92) 51%,rgba(0,0,0,.58) 72%,transparent);
+}
+.dust-a{left:33%;top:35%;width:58%;transform:translate(-50%,-50%) rotate(-20deg);opacity:.58}
+.dust-b{left:70%;top:59%;width:55%;transform:translate(-50%,-50%) rotate(13deg);opacity:.48}
+.dust-c{left:47%;top:70%;width:48%;transform:translate(-50%,-50%) rotate(-8deg);opacity:.46}
+.dust-d{left:55%;top:49%;width:76%;height:2%;transform:translate(-50%,-50%) rotate(3deg);opacity:.32}
+
+.sf-occ{
+  border-radius:50%;filter:blur(76px);mix-blend-mode:multiply;background:rgba(0,0,0,.82);
+}
+.occ-a{left:42%;top:37%;width:29%;height:17%}
+.occ-b{left:73%;top:73%;width:28%;height:21%}
+.occ-c{left:19%;top:68%;width:31%;height:24%}
+
+/* Very subtle texture prevents the large blurred forms from reading as clean UI gradients. */
+.sf-grain{
+  z-index:3;opacity:.12;mix-blend-mode:soft-light;pointer-events:none;
+  background-image:
+    radial-gradient(circle at 12% 18%,rgba(255,255,255,.18) 0 .4px,transparent .6px),
+    radial-gradient(circle at 68% 43%,rgba(255,255,255,.13) 0 .35px,transparent .55px),
+    radial-gradient(circle at 42% 79%,rgba(255,255,255,.12) 0 .3px,transparent .5px);
+  background-size:17px 19px,23px 29px,31px 27px;
+}
+
+.mask{
+  z-index:4;
+  background:
+    radial-gradient(circle at 50% 48%,transparent 0 20%,rgba(3,3,7,.025) 39%,rgba(3,3,7,.12) 68%,rgba(3,3,7,.38) 100%),
+    linear-gradient(90deg,rgba(3,4,9,.1),transparent 18% 82%,rgba(3,4,9,.12));
+}
+
+.sf-deep{z-index:1}
+.sf-mid{z-index:5}
+.sf-near{z-index:6}
+.sf-nodes{z-index:10}
+.node{position:absolute;transform:translate(-50%,-50%);display:grid;place-items:center}
+.center{left:50%;top:47%}.left{left:21%;top:47%}.right{left:79%;top:45%}.bottom{left:51%;top:75%}
+.core{width:14px;height:14px;border-radius:50%;display:block}
+.gold{background:#dfbb59;box-shadow:0 0 14px rgba(223,187,89,.55),0 0 38px rgba(223,187,89,.14)}
+.green{background:#6ebd8d;box-shadow:0 0 12px rgba(110,189,141,.42),0 0 34px rgba(110,189,141,.12)}
+.blue{background:#8eb7d1;box-shadow:0 0 12px rgba(142,183,209,.42),0 0 34px rgba(142,183,209,.12)}
+.violet{background:#9b82d1;box-shadow:0 0 12px rgba(155,130,209,.42),0 0 34px rgba(155,130,209,.12)}
+.node b{margin-top:18px;font-size:11px;font-weight:400;color:rgba(214,224,232,.62)}
+
+@media(prefers-reduced-motion:reduce){.sf-star{animation:none}}
+@media(max-width:900px){
+  .sf-page{padding:28px}
+  .intro,.study header{grid-template-columns:1fr}
+}

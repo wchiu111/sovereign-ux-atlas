@@ -1,4 +1,4 @@
-import { NEBULAE } from "../../utils/atlasParticles";
+import AtlasNebulaField from "./AtlasNebulaField";
 
 interface AtlasBackgroundProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
@@ -8,28 +8,15 @@ export default function AtlasBackground({ canvasRef }: AtlasBackgroundProps) {
   return (
     <>
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {NEBULAE.map((nebula, index) => (
-          <div
-            key={index}
-            className="absolute"
-            style={{
-              left: `${nebula.cx}%`,
-              top: `${nebula.cy}%`,
-              width: `${nebula.w}%`,
-              height: `${nebula.h}%`,
-              transform: "translate(-50%,-50%)",
-              background: `radial-gradient(ellipse at center,${nebula.color} 0%,transparent 72%)`,
-              filter: `blur(${nebula.blur}px)`,
-            }}
-          />
-        ))}
+        <AtlasNebulaField />
 
+        {/* Preserve a quiet center so Sovereign Design remains the dominant focal point. */}
         <div
           aria-hidden="true"
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(circle at 50% 48%, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.08) 44%, rgba(0,0,0,0.24) 100%)",
+              "radial-gradient(circle at 50% 48%, rgba(0,0,0,0.015) 0%, rgba(0,0,0,0.06) 44%, rgba(0,0,0,0.23) 100%)",
           }}
         />
 
@@ -45,11 +32,12 @@ export default function AtlasBackground({ canvasRef }: AtlasBackgroundProps) {
             minHeight: 420,
             transform: "translate(-50%,-50%)",
             background:
-              "radial-gradient(circle, rgba(3,3,7,0.3) 0%, rgba(3,3,7,0.16) 42%, transparent 72%)",
+              "radial-gradient(circle, rgba(3,3,7,0.24) 0%, rgba(3,3,7,0.13) 44%, transparent 74%)",
           }}
         />
       </div>
 
+      {/* Existing Atlas starfield remains structurally untouched and renders above atmosphere. */}
       <canvas ref={canvasRef} className="absolute inset-0" />
     </>
   );
