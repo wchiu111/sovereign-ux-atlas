@@ -423,6 +423,7 @@ There is no final version—only the current state of understanding.`,
 
 export default defineAtlasEntry({
   id: "sovereign-atlas-cs",
+  routeSlug: "sovereign-atlas",
   category: "case-study",
   signatureStellarType: "purpose",
   title: "SOVEREIGN ATLAS",

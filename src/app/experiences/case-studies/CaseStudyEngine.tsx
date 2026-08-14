@@ -26,6 +26,7 @@ export default function CaseStudyEngine({ planetId, ...props }: Props) {
     <AtlasReadingEngine
       document={document}
       routeSegment="case-study"
+      routeBasePath={entry.routeSlug ? `/case-studies/${entry.routeSlug}` : undefined}
       {...props}
     />
   );

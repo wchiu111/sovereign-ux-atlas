@@ -1,7 +1,8 @@
 import type { FocusTransition } from "../types/atlas";
-import type { AtlasSearchMode } from "./atlasState";
+import type { AtlasSearchMode, AtlasState } from "./atlasState";
 
 export type AtlasAction =
+  | { type: "RESTORE_NAVIGATION"; state: AtlasState }
   | { type: "ENTER_SYSTEM"; systemId: string }
   | { type: "OPEN_PLANET"; systemId: string; planetId: string }
   | { type: "OPEN_PROJECT_DRAWER" }

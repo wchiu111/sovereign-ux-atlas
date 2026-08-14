@@ -3,6 +3,9 @@ import type { AtlasState } from "./atlasState";
 
 export function atlasReducer(state: AtlasState, action: AtlasAction): AtlasState {
   switch (action.type) {
+    case "RESTORE_NAVIGATION":
+      return action.state;
+
     case "ENTER_SYSTEM":
       return {
         ...state,

@@ -1,5 +1,6 @@
 import {
   createContext,
+  useEffect,
   useContext,
   useMemo,
   useReducer,
@@ -9,6 +10,11 @@ import {
 import type { AtlasAction } from "./atlasActions";
 import { atlasReducer } from "./atlasReducer";
 import { initialAtlasState, type AtlasState } from "./atlasState";
+import {
+  currentBrowserPath,
+  parseAtlasRoute,
+  replaceAtlasPath,
+} from "../routing/atlasRoutes";
 
 interface AtlasStateContextValue {
   state: AtlasState;
@@ -18,8 +24,31 @@ interface AtlasStateContextValue {
 const AtlasStateContext = createContext<AtlasStateContextValue | null>(null);
 
 export function AtlasStateProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(atlasReducer, initialAtlasState);
+  const [state, dispatch] = useReducer(
+    atlasReducer,
+    initialAtlasState,
+    (fallbackState) => {
+      if (typeof window === "undefined") return fallbackState;
+      const route = parseAtlasRoute(window.location);
+      if (!route) return fallbackState;
+      if (route.canonicalPath !== currentBrowserPath()) {
+        replaceAtlasPath(route.canonicalPath);
+      }
+      return route.atlasState;
+    },
+  );
   const value = useMemo(() => ({ state, dispatch }), [state]);
+
+  useEffect(() => {
+    const restoreFromLocation = () => {
+      const route = parseAtlasRoute(window.location);
+      if (!route) return;
+      dispatch({ type: "RESTORE_NAVIGATION", state: route.atlasState });
+    };
+
+    window.addEventListener("popstate", restoreFromLocation);
+    return () => window.removeEventListener("popstate", restoreFromLocation);
+  }, []);
 
   return (
     <AtlasStateContext.Provider value={value}>

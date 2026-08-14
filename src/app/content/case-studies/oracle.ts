@@ -336,6 +336,7 @@ People do not need every detail at once. They need the right detail at the momen
 
 export default defineAtlasEntry({
   id: "oracle",
+  routeSlug: "oracle",
   category: "case-study",
   signatureStellarType: "relational",
   title: "ORACLE",

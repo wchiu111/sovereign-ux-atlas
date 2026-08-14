@@ -950,6 +950,7 @@ interface AtlasReadingEngineProps {
   onSystem?: () => void;
   initialSectionIndex?: number;
   routeSegment?: string;
+  routeBasePath?: string;
   onOpenAssistSource?: (source: AtlasAssistSource) => void;
 }
 
@@ -961,10 +962,48 @@ export default function AtlasReadingEngine({
   onSystem,
   initialSectionIndex = 0,
   routeSegment = "entry",
+  routeBasePath,
   onOpenAssistSource,
 }: AtlasReadingEngineProps) {
   const caseStudy = document;
   const color = system.color;
+
+  const readingLocation = useCallback(() => {
+    const path = window.location.pathname;
+    if (routeBasePath && (path === routeBasePath || path.startsWith(`${routeBasePath}/`))) {
+      const remainder = path.slice(routeBasePath.length).replace(/^\//, "");
+      const segments = remainder ? remainder.split("/").map(decodeURIComponent) : [];
+      return {
+        sectionSlug: segments[0],
+        evidenceId:
+          segments[1] === "evidence" && segments[2]
+            ? segments[2]
+            : undefined,
+      };
+    }
+
+    const match = path.match(new RegExp(`/${routeSegment}/[^/]+/([^/#?]+)`));
+    return {
+      sectionSlug: match?.[1],
+      evidenceId: window.location.hash.slice(1) || undefined,
+    };
+  }, [routeBasePath, routeSegment]);
+
+  const sectionPath = useCallback(
+    (section: Section) =>
+      routeBasePath
+        ? `${routeBasePath}/${section.slug}`
+        : `/${routeSegment}/${caseStudy.id}/${section.slug}`,
+    [caseStudy.id, routeBasePath, routeSegment],
+  );
+
+  const evidencePath = useCallback(
+    (section: Section, evidence: EvidenceItem) =>
+      routeBasePath
+        ? `${sectionPath(section)}/evidence/${encodeURIComponent(evidence.id)}`
+        : `${sectionPath(section)}#${evidence.id}`,
+    [routeBasePath, sectionPath],
+  );
 
   // Restore section from URL on mount
   const getInitialSection = (): Section => {
@@ -973,10 +1012,9 @@ export default function AtlasReadingEngine({
   }
 
   try {
-    const path = window.location.pathname;
-    const match = path.match(new RegExp(`/${routeSegment}/[^/]+/([^/#?]+)`));
-    if (match) {
-      const found = caseStudy.sections.find(s => s.slug === match[1]);
+    const { sectionSlug } = readingLocation();
+    if (sectionSlug) {
+      const found = caseStudy.sections.find(s => s.slug === sectionSlug);
       if (found) return found;
     }
   } catch {}
@@ -1009,54 +1047,54 @@ export default function AtlasReadingEngine({
   // Browser back/forward support
   useEffect(() => {
     const handler = () => {
-      const path = window.location.pathname;
-      const match = path.match(new RegExp(`/${routeSegment}/[^/]+/([^/#?]+)`));
-      if (match) {
-        const found = caseStudy.sections.find(s => s.slug === match[1]);
+      const { sectionSlug, evidenceId } = readingLocation();
+      if (sectionSlug) {
+        const found = caseStudy.sections.find(s => s.slug === sectionSlug);
         if (found) {
           setActiveSection(found);
-          if (!window.location.hash) setActiveEvidence(null);
+          const evidence = evidenceId
+            ? found.evidence.find((item) => item.id === evidenceId) ?? null
+            : null;
+          setActiveEvidence(evidence);
         }
       }
     };
     window.addEventListener("popstate", handler);
     return () => window.removeEventListener("popstate", handler);
-  }, [caseStudy, routeSegment]);
+  }, [caseStudy, readingLocation]);
 
   // Deep-link to evidence on mount via URL hash
   useEffect(() => {
     try {
-      const hash = window.location.hash.slice(1);
-      if (hash) {
+      const { evidenceId } = readingLocation();
+      if (evidenceId) {
         const allEvidence = caseStudy.sections.flatMap(s => s.evidence);
-        const item = allEvidence.find(e => e.id === hash);
+        const item = allEvidence.find(e => e.id === evidenceId);
         if (item) {
-          const sec = caseStudy.sections.find(s => s.evidence.some(e => e.id === hash));
+          const sec = caseStudy.sections.find(s => s.evidence.some(e => e.id === evidenceId));
           if (sec) setActiveSection(sec);
           setActiveEvidence(item);
         }
       }
     } catch {}
-  }, [caseStudy, routeSegment]);
+  }, [caseStudy, readingLocation]);
 
   const handleSection = useCallback((section: Section) => {
     setActiveSection(section);
     setActiveEvidence(null);
     setAssistOpen(false);
     try {
-      const url = `/${routeSegment}/${caseStudy.id}/${section.slug}`;
-      history.pushState({}, "", url);
+      history.pushState({}, "", sectionPath(section));
     } catch {}
-  }, [caseStudy.id, routeSegment]);
+  }, [sectionPath]);
 
   const handleOpenEvidence = useCallback((item: EvidenceItem) => {
     setActiveEvidence(item);
     setAssistOpen(false);
     try {
-      const url = `/${routeSegment}/${caseStudy.id}/${activeSection.slug}#${item.id}`;
-      history.pushState({}, "", url);
+      history.pushState({}, "", evidencePath(activeSection, item));
     } catch {}
-  }, [caseStudy.id, activeSection.slug, routeSegment]);
+  }, [activeSection, evidencePath]);
 
   const handleOpenAssistSource = useCallback((source: AtlasAssistSource) => {
     if (source.destinationId && source.destinationId !== caseStudy.id) {
@@ -1082,22 +1120,22 @@ export default function AtlasReadingEngine({
     setAssistOpen(true);
 
     try {
-      const hash = sourceEvidence ? `#${sourceEvidence.id}` : "";
       history.pushState(
         {},
         "",
-        `/${routeSegment}/${caseStudy.id}/${sourceSection.slug}${hash}`,
+        sourceEvidence
+          ? evidencePath(sourceSection, sourceEvidence)
+          : sectionPath(sourceSection),
       );
     } catch {}
-  }, [caseStudy, onExit, onOpenAssistSource, routeSegment]);
+  }, [caseStudy, evidencePath, onExit, onOpenAssistSource, sectionPath]);
 
   const handleCloseEvidence = useCallback(() => {
     setActiveEvidence(null);
     try {
-      const url = `/${routeSegment}/${caseStudy.id}/${activeSection.slug}`;
-      history.pushState({}, "", url);
+      history.pushState({}, "", sectionPath(activeSection));
     } catch {}
-  }, [caseStudy.id, activeSection.slug, routeSegment]);
+  }, [activeSection, sectionPath]);
 
   const handleShare = useCallback(async () => {
     try {

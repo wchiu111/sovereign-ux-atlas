@@ -26,6 +26,13 @@ import { resolveStellarColor } from "./constellation/stellarPalette";
 import { getAtlasEntry } from "../content";
 import type { AtlasAssistSource } from "../types/atlasAssist";
 import type { AtlasSearchDestination } from "../types/atlasSearch";
+import {
+  CASE_STUDIES_PATH,
+  caseStudyBasePath,
+  caseStudyEvidencePath,
+  caseStudySectionPath,
+  pushAtlasPath,
+} from "../routing/atlasRoutes";
 
 interface AtlasExplorerProps {
   active?: boolean;
@@ -265,6 +272,7 @@ useEffect(() => {
     const focusScale = SYSTEM_FOCUS_SCALE[sys.id] ?? 1.35;
 
     setHoveredConceptPreview(null);
+    if (sys.id === "case-studies") pushAtlasPath(CASE_STUDIES_PATH);
     actions.enterSystem(sys.id);
     zoomWithTransition(focusScale, sp.x, sp.y);
   }, [actions, zoomWithTransition]);
@@ -275,12 +283,38 @@ useEffect(() => {
   if (followTimerRef.current) clearTimeout(followTimerRef.current);
 
   setHoveredConceptPreview(null);
+  if (getAtlasEntry(planet.id)?.category === "case-study") {
+    pushAtlasPath(caseStudyBasePath(planet.id));
+  }
   actions.openPlanet(sys.id, planet.id);
 
   requestAnimationFrame(() => {
     actions.openProjectDrawer();
   });
 }, [actions]);
+
+  // Route restoration bypasses click handlers, so reconcile the camera with
+  // the restored semantic destination without changing the Atlas state model.
+  useEffect(() => {
+    if (!active) return;
+    if (level === 0) {
+      const element = zoomableRef.current;
+      if (element) {
+        element.style.transition = "transform 0.85s cubic-bezier(0.22,1,0.36,1)";
+        element.style.transform = "translate(0px,0px) scale(1)";
+        cameraRef.current = { scale: 1, tx: 0, ty: 0 };
+      }
+      return;
+    }
+    if (level !== 1 || !activeSystem) return;
+    const { w, h } = dimsRef.current;
+    const position = sysOrbitPos(activeSystem, elapsedRef.current, w * 0.5, h * 0.48);
+    zoomWithTransition(
+      SYSTEM_FOCUS_SCALE[activeSystem.id] ?? 1.35,
+      position.x,
+      position.y,
+    );
+  }, [active, activeSystem, elapsedRef, level, zoomWithTransition]);
 
   const navigateFromSearch = useCallback((destination: AtlasSearchDestination) => {
     actions.setSearchMode(null);
@@ -295,6 +329,7 @@ useEffect(() => {
     if (destination.type === "system") {
       const system = SYSTEMS.find((candidate) => candidate.id === destination.targetId);
       if (!system) return;
+      if (system.id === "case-studies") pushAtlasPath(CASE_STUDIES_PATH);
       const { w, h } = dimsRef.current;
       const position = sysOrbitPos(system, elapsedRef.current, w * 0.5, h * 0.48);
       const scale = SYSTEM_FOCUS_SCALE[system.id] ?? 1.35;
@@ -314,6 +349,9 @@ useEffect(() => {
     const planet = system?.planets.find((item) => item.id === destination.targetId);
     if (!system || !planet) return;
 
+    if (getAtlasEntry(planet.id)?.category === "case-study") {
+      pushAtlasPath(caseStudyBasePath(planet.id));
+    }
     actions.openPlanet(system.id, planet.id);
     requestAnimationFrame(() => actions.openProjectDrawer());
   }, [actions, elapsedRef, onEnterObservatory]);
@@ -338,6 +376,7 @@ useEffect(() => {
     isFollowingRef.current = false;
     if (followTimerRef.current) clearTimeout(followTimerRef.current);
     setHoveredConceptPreview(null);
+    pushAtlasPath("/");
     actions.returnToAtlas();
     const el = zoomableRef.current;
     if (el) {
@@ -356,16 +395,20 @@ useEffect(() => {
     const sp = sysOrbitPos(activeSystem, elapsedRef.current, nexX, nexY);
     const focusScale = SYSTEM_FOCUS_SCALE[activeSystem.id] ?? 1.35;
 
+    if (activeSystem.id === "case-studies") pushAtlasPath(CASE_STUDIES_PATH);
     actions.returnToSystem();
     zoomWithTransition(focusScale, sp.x, sp.y);
   }, [actions, activeSystem, zoomWithTransition]);
 
   const exitFocus  = useCallback(() => {
+    if (activePlanetId && getAtlasEntry(activePlanetId)?.category === "case-study") {
+      pushAtlasPath(caseStudyBasePath(activePlanetId));
+    }
     actions.exitFocusMode();
     requestAnimationFrame(() => {
       actions.openProjectDrawer();
     });
-  }, []);
+  }, [actions, activePlanetId]);
 
   const openAssistSource = useCallback((source: AtlasAssistSource) => {
     const destinationId = source.destinationId ?? activePlanetId;
@@ -381,21 +424,32 @@ useEffect(() => {
       : -1;
 
     if (sectionIndex < 0) {
+      if (destination.category === "case-study") {
+        pushAtlasPath(caseStudyBasePath(destination.id));
+      }
       actions.openPlanet(destinationSystem.id, destination.id);
       requestAnimationFrame(() => actions.openProjectDrawer());
       return;
     }
 
-    const routeSegment = destination.category === "case-study"
-      ? "case-study"
-      : destination.category;
     try {
-      const hash = source.evidenceId ? `#${source.evidenceId}` : "";
-      history.pushState(
-        {},
-        "",
-        `/${routeSegment}/${destination.id}/${source.sectionId}${hash}`,
-      );
+      if (destination.category === "case-study" && source.sectionId) {
+        pushAtlasPath(
+          source.evidenceId
+            ? caseStudyEvidencePath(destination.id, source.sectionId, source.evidenceId)
+            : caseStudySectionPath(destination.id, source.sectionId),
+        );
+      } else {
+        const routeSegment = destination.category === "case-study"
+          ? "case-study"
+          : destination.category;
+        const hash = source.evidenceId ? `#${source.evidenceId}` : "";
+        history.pushState(
+          {},
+          "",
+          `/${routeSegment}/${destination.id}/${source.sectionId}${hash}`,
+        );
+      }
     } catch {}
 
     actions.openPlanet(destinationSystem.id, destination.id);
@@ -577,6 +631,13 @@ useEffect(() => {
             });
 
             window.setTimeout(() => {
+              const activeEntry = getAtlasEntry(activePlanet.id);
+              if (activeEntry?.category === "case-study") {
+                const sectionId = activeEntry.sections?.[index]?.id;
+                if (sectionId) {
+                  pushAtlasPath(caseStudySectionPath(activeEntry.id, sectionId));
+                }
+              }
               actions.enterFocusMode(index);
             }, reduceFocusMotion
               ? REDUCED_FOCUS_TRANSITION_DURATION

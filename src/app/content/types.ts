@@ -190,6 +190,8 @@ export interface AtlasEntryOrbit {
 
 export interface AtlasEntry {
   id: string;
+  /** Public URL segment. Internal IDs remain stable for Atlas state and relations. */
+  routeSlug?: string;
   aliases?: string[];
   semantics?: AtlasConceptSemantics;
   category: AtlasCategory;

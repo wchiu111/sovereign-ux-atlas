@@ -504,6 +504,7 @@ That thinking later became part of how I approached presence, context, and spati
 
 export default defineAtlasEntry({
   id: "globality",
+  routeSlug: "globality",
   category: "case-study",
   signatureStellarType: "strategy",
   title: "GLOBALITY",

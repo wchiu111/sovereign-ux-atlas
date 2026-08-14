@@ -395,6 +395,7 @@ That limitation became part of the project’s value. It taught me to distinguis
 
 export default defineAtlasEntry({
   id: "agentic-insurance",
+  routeSlug: "agentic-insurance",
   category: "case-study",
   signatureStellarType: "judgment",
   title: "Agentic Insurance",
