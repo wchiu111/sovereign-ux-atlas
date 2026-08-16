@@ -3,7 +3,7 @@ import atlasPrototypes from "./atlas-prototypes";
 import authorityDrift from "./authority-drift";
 import emotionalHeatmapping from "./emotional-heatmapping";
 import futureConcepts from "./future-concepts";
-import mirrorTest from "./mirror-test";
+import gestaltPrinciples from "./gestalt-principles";
 import postFilterShopping from "./post-filter-shopping";
 
 export const entries = [
@@ -12,6 +12,6 @@ export const entries = [
   authorityDrift,
   emotionalHeatmapping,
   futureConcepts,
-  mirrorTest,
+  gestaltPrinciples,
   postFilterShopping,
 ] as const;
