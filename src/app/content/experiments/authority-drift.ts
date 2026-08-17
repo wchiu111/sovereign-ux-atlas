@@ -20,13 +20,7 @@ const focus = {
 
 The important part is not the visual treatment. It is the authority relationship already encoded in the interface. The person is the decision-maker. The system presents information and supports the workflow, but it does not interpret the request on the person's behalf or reposition itself as the author of the decision.
 
-Several relationships matter at baseline:
-
-• the original information hierarchy remains centered on the request
-• operational density stays compact
-• the person retains the final decision
-• decision language remains direct and explicit
-• AI is not the interpretive center of the experience
+Several relationships matter at baseline. The original information hierarchy remains centered on the request. Operational density stays compact. The person retains the final decision. Decision language remains direct and explicit. AI is not the interpretive center of the experience.
 
 These relationships become the reference point for everything that follows.`,
       insight:
@@ -62,17 +56,13 @@ If those relationships move without an explicit product decision, authority has 
 
 B — UNCONSTRAINED AI
 
-Starting from the baseline, the system receives a simple instruction to add AI assistance. No explicit authority-preservation constraints are supplied.
-
-The generated interface adds useful-looking capability: analysis, risk framing, compliance scoring, and a recommendation. But it also expands the modal and reorganizes the reading order around AI.
+Starting from the baseline, the system receives a simple instruction to add AI assistance. No explicit authority-preservation constraints are supplied. The generated interface adds useful-looking capability: analysis, risk framing, compliance scoring, and a recommendation. But it also expands the modal and reorganizes the reading order around AI.
 
 C — AUTHORITY CONSTRAINED
 
 The same task is repeated with an Authority Distribution Invariant:
 
-Preserve human workflow primacy. AI insights must remain contextual, lightweight, and subordinate to operational decision-making.
-
-The AI contribution contracts into a compact contextual check. The original hierarchy, density, decision controls, and human role remain recognizable.
+Preserve human workflow primacy. AI insights must remain contextual, lightweight, and subordinate to operational decision-making. The AI contribution contracts into a compact contextual check. The original hierarchy, density, decision controls, and human role remain recognizable.
 
 The comparison isolates the effect of the authority constraint rather than removing AI capability altogether.`,
       insight:
@@ -86,23 +76,17 @@ The comparison isolates the effect of the authority constraint rather than remov
       readingTime: 3,
       content: `Comparing A — Baseline with B — Unconstrained AI reveals six observable signals.
 
-AI HIERARCHY DOMINANCE
-The AI analysis becomes the largest interpretive surface.
+AI HIERARCHY DOMINANCE — The AI analysis becomes the largest interpretive surface.
 
-RECOMMENDATION CENTRALIZATION
-The system tells the user what it recommends before the user has completed independent review.
+RECOMMENDATION CENTRALIZATION — The system tells the user what it recommends before the user has completed independent review.
 
-WORKFLOW RESTRUCTURING
-The compact approval task expands into a broader AI management surface.
+WORKFLOW RESTRUCTURING — The compact approval task expands into a broader AI management surface.
 
-REDUCED HUMAN DECISION VISIBILITY
-The human still presses the final button, but the decision is increasingly framed upstream by AI.
+REDUCED HUMAN DECISION VISIBILITY — The human still presses the final button, but the decision is increasingly framed upstream by AI.
 
-AI NARRATIVE DOMINANCE
-Policy, risk, compliance, and recommendation become the primary story of the request.
+AI NARRATIVE DOMINANCE — Policy, risk, compliance, and recommendation become the primary story of the request.
 
-SCOPE EXPANSION
-The interface grows beyond the original operational boundary.
+SCOPE EXPANSION — The interface grows beyond the original operational boundary.
 
 The sharpest evidence happens at the word level: Reject becomes Cancel.
 
@@ -395,19 +379,13 @@ The comparison should be read as a design experiment, not as a claim that every 
 
 It shows something more specific:
 
-Implementation can redistribute authority without explicitly announcing that authority has changed.
+Implementation can redistribute authority without explicitly announcing that authority has changed. The system may preserve the final approval action while shifting other forms of power toward AI: attention, framing, interpretation, narrative priority, and decision language.
 
-The system may preserve the final approval action while shifting other forms of power toward AI: attention, framing, interpretation, narrative priority, and decision language.
-
-C also reveals an important limitation.
-
-The authority constraint worked because preservation was explicitly specified. That is prompt discipline—not yet preservation architecture.
+C also reveals an important limitation. The authority constraint worked because preservation was explicitly specified. That is prompt discipline—not yet preservation architecture.
 
 The open question is what happens after implementation:
 
-Can a system recognize that authority has drifted and repair only what changed without requiring designers to restate the invariant every time?
-
-That question leads into regenerative systems, invariant preservation, and repair.`,
+Can a system recognize that authority has drifted and repair only what changed without requiring designers to restate the invariant every time? That question leads into regenerative systems, invariant preservation, and repair.`,
       insight:
         "Small interface changes can encode large authority shifts. The next challenge is moving from explicit prompt constraints to systems that can preserve and repair integrity.",
     },
