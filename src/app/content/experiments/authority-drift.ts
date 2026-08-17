@@ -16,15 +16,9 @@ const focus = {
       accentStellarType: "relational",
       subtitle: "Establish the authority model before AI enters the workflow",
       readingTime: 2,
-      content: `The experiment begins with an existing approval experience before AI assistance is introduced.
+      content: `The experiment begins with an existing approval experience before AI assistance is introduced. The baseline is deliberately ordinary: a compact review surface where the person can inspect the request, understand the relevant context, and make the final decision.
 
-The baseline is deliberately ordinary: a compact review surface where the person can inspect the request, understand the relevant context, and make the final decision.
-
-The important part is not the visual treatment. It is the authority relationship already encoded in the interface.
-
-The person is the decision-maker.
-
-The system presents information and supports the workflow, but it does not interpret the request on the person's behalf or reposition itself as the author of the decision.
+The important part is not the visual treatment. It is the authority relationship already encoded in the interface. The person is the decision-maker. The system presents information and supports the workflow, but it does not interpret the request on the person's behalf or reposition itself as the author of the decision.
 
 Several relationships matter at baseline:
 

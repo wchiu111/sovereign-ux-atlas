@@ -108,7 +108,11 @@ export type AtlasEvidenceAnnotationCategory =
   | "authority-drift"
   | "semantic-drift"
   | "invariant-preservation"
-  | "integrity-verification";
+  | "integrity-verification"
+  | "aspiration-focus"
+  | "encoded-cognition"
+  | "behavioral-sequencing"
+  | "expectation-clarity";
 
 export type AtlasDecisionRightHolder = "Human" | "AI" | "Shared";
 
@@ -135,13 +139,24 @@ export interface AtlasEvidenceCanvas {
   portalImage?: string;
   boardLabel: string;
   boardSubtitle: string;
+  /** Optional authored board width. Falls back to the established 1050px framework width. */
+  boardWidth?: number;
   /** Optional authored artboard height in canvas world pixels. */
   boardHeight?: number;
   transitionFrom?: string;
   transitionTo?: string;
-  /** Labels rendered between boards when a comparison has three states. */
+  /** Labels rendered between boards when a comparison has three or more states. */
   transitionLabels?: string[];
   annotations: AtlasEvidenceAnnotation[];
+  groups?: Array<{
+    id: string;
+    label: string;
+    question: string;
+    color: string;
+    startIndex: number;
+    endIndex: number;
+  }>;
+  groupDividerLabel?: string;
 }
 
 export interface AtlasEntryEvidence {

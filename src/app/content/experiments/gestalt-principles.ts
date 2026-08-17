@@ -7,6 +7,21 @@ import output04 from "../../../imports/experiments/gestalt-principles/output-04.
 import output05 from "../../../imports/experiments/gestalt-principles/output-05.png";
 import gestaltPortal from "../../../imports/experiments/gestalt-principles/gestalt-principles-portal.jpg";
 
+const sharedCanvas = {
+  id: "gestalt-five-output-comparison",
+  boardWidth: 620,
+  eyebrow: "INTERACTIVE COMPARISON",
+  title: "How each model organizes perception",
+  description:
+    "Compare five anonymous responses to the same habit-tracking prompt through Proximity, Similarity, Continuity, and Closure.",
+  transitionLabels: [
+    "SAME PROMPT",
+    "SAME PROMPT",
+    "SAME PROMPT",
+    "SAME PROMPT",
+  ],
+};
+
 const focus = {
   headline: "Gestalt Principles",
   subheadline: "Can AI understand why an interface works?",
@@ -43,14 +58,7 @@ The goal is not to rank aesthetics. It is to test whether perceptual structure e
 
 “Design a mobile habit tracking dashboard.”
 
-No style direction.
-No component requirements.
-No design system.
-No Gestalt instructions.
-
-The outputs were then evaluated through the same four lenses: Proximity, Similarity, Continuity, and Closure.
-
-Keeping the prompt deliberately minimal makes the differences in visual organization easier to compare.`,
+No style direction. No component requirements. No design system. No Gestalt instructions. The outputs were then evaluated through the same four lenses: Proximity, Similarity, Continuity, and Closure. Keeping the prompt deliberately minimal makes the differences in visual organization easier to compare.`,
       insight:
         "The experiment tests what perceptual organization emerges naturally from each model—not whether a model can follow explicit Gestalt instructions.",
     },
@@ -60,11 +68,7 @@ Keeping the prompt deliberately minimal makes the differences in visual organiza
       accentStellarType: "judgment",
       subtitle: "Five anonymous interpretations of the same prompt",
       readingTime: 2,
-      content: `The five outputs are presented anonymously before the model names are revealed.
-
-This removes model reputation from the first evaluation pass.
-
-Instead of asking which tool produced each interface, inspect the relationships inside the interface:
+      content: `The five outputs are shown together with their model attribution so the comparison can be read directly in context. Rather than treating model identity as a separate reveal, inspect the relationships inside each interface:
 
 What feels grouped?
 What looks related?
@@ -86,48 +90,60 @@ Open the canvas to compare all five outputs side by side.`,
           description:
             "An anonymous habit-tracking dashboard generated from the shared prompt.",
           caption:
-            "Inspect grouping, repeated visual language, reading flow, and implied structure before revealing the model.",
+            "A competent modern interface with clear repetition, but much of its grouping is carried by explicit containers.",
           canvas: {
-            id: "gestalt-five-output-comparison",
-            eyebrow: "INTERACTIVE COMPARISON",
-            title: "How each model organizes perception",
-            description:
-              "Compare five anonymous responses to the same habit-tracking prompt through Proximity, Similarity, Continuity, and Closure.",
+            ...sharedCanvas,
             portalImage: gestaltPortal,
             boardLabel: "OUTPUT 01",
-            boardSubtitle: "Anonymous model output — evaluate the interface before the reveal",
-            boardHeight: 1080,
+            boardSubtitle: "Figma Make · Generated output",
+            boardHeight: 1220,
             annotations: [
               {
-                id: "o1-proximity",
+                id: "o1-similarity",
                 number: "01",
-                x: 34,
-                y: 35,
+                x: 46,
+                y: 59,
                 category: "visible-reasoning",
-                title: "Proximity",
+                title: "Similarity works",
                 observation:
-                  "Progress metrics are grouped into a single dominant region before the habit list begins.",
+                  "Habit rows repeat the same anatomy, progress treatment, typography, and interaction pattern.",
                 meaning:
-                  "Spatial grouping creates a clear relationship between summary information and daily activity.",
+                  "The repetition makes separate habits immediately recognizable as members of the same system.",
                 rightHolder: "Shared",
                 footerLabel: "GESTALT LENS",
-                footerValue: "PROXIMITY",
+                footerValue: "SIMILARITY · WORKING",
                 cardSide: "right",
               },
               {
-                id: "o1-similarity",
+                id: "o1-proximity",
                 number: "02",
-                x: 34,
-                y: 64,
-                category: "visible-reasoning",
-                title: "Similarity",
+                x: 49,
+                y: 31,
+                category: "capability-focus",
+                title: "Proximity is doing less work",
                 observation:
-                  "Habit rows repeat a consistent structure while color differentiates individual habits.",
+                  "Progress, metrics, and habit groups are understandable, but nearly every relationship is reinforced by a card or container.",
                 meaning:
-                  "Repeated visual treatment makes the items read as members of the same system.",
+                  "The interface is coherent, but the composition relies more on explicit enclosure than on spacing alone to establish relationships.",
                 rightHolder: "Shared",
                 footerLabel: "GESTALT LENS",
-                footerValue: "SIMILARITY",
+                footerValue: "PROXIMITY · MIXED",
+                cardSide: "right",
+              },
+              {
+                id: "o1-closure",
+                number: "03",
+                x: 46,
+                y: 78,
+                category: "capability-focus",
+                title: "Closure is underused",
+                observation:
+                  "Most groups are fully bounded rather than allowing the eye to complete implied structures.",
+                meaning:
+                  "The design stays legible, but it gives perception less work to do because containment is explicit almost everywhere.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "CLOSURE · LIMITED",
                 cardSide: "right",
               },
             ],
@@ -144,17 +160,46 @@ Open the canvas to compare all five outputs side by side.`,
           description:
             "A second anonymous interpretation of the identical habit-tracking prompt.",
           caption:
-            "Compare how much hierarchy is carried by spacing, containers, repetition, and alignment.",
+            "The strongest balance of grouping, consistency, and top-to-bottom reading flow in the set.",
           canvas: {
-            id: "gestalt-five-output-comparison",
-            eyebrow: "INTERACTIVE COMPARISON",
-            title: "How each model organizes perception",
-            description:
-              "Compare five anonymous responses to the same habit-tracking prompt through Proximity, Similarity, Continuity, and Closure.",
+            ...sharedCanvas,
             boardLabel: "OUTPUT 02",
-            boardSubtitle: "Anonymous model output — evaluate the interface before the reveal",
-            boardHeight: 1080,
-            annotations: [],
+            boardSubtitle: "ChatGPT · Generated output",
+            boardHeight: 1220,
+            annotations: [
+              {
+                id: "o2-proximity",
+                number: "01",
+                x: 47,
+                y: 35,
+                category: "visible-reasoning",
+                title: "Proximity is strong",
+                observation:
+                  "Date, progress, and habit information form distinct groups without losing the relationship between them.",
+                meaning:
+                  "Spacing and grouping make the screen scannable before the user reads individual labels.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "PROXIMITY · WORKING",
+                cardSide: "right",
+              },
+              {
+                id: "o2-continuity",
+                number: "02",
+                x: 48,
+                y: 58,
+                category: "visible-reasoning",
+                title: "Continuity guides the eye",
+                observation:
+                  "The composition establishes a predictable vertical path from date to progress to today's habits.",
+                meaning:
+                  "The user can move through the dashboard in a natural sequence with very little visual backtracking.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "CONTINUITY · WORKING",
+                cardSide: "right",
+              },
+            ],
           },
         },
         {
@@ -168,17 +213,46 @@ Open the canvas to compare all five outputs side by side.`,
           description:
             "A third anonymous interpretation of the identical habit-tracking prompt.",
           caption:
-            "Look for whether the composition behaves like a mobile product interface or primarily an information architecture exercise.",
+            "Clear and orderly, but the composition reads more like an information architecture exercise than a finished mobile interface.",
           canvas: {
-            id: "gestalt-five-output-comparison",
-            eyebrow: "INTERACTIVE COMPARISON",
-            title: "How each model organizes perception",
-            description:
-              "Compare five anonymous responses to the same habit-tracking prompt through Proximity, Similarity, Continuity, and Closure.",
+            ...sharedCanvas,
             boardLabel: "OUTPUT 03",
-            boardSubtitle: "Anonymous model output — evaluate the interface before the reveal",
-            boardHeight: 1080,
-            annotations: [],
+            boardSubtitle: "Claude · Generated output",
+            boardHeight: 1220,
+            annotations: [
+              {
+                id: "o3-similarity",
+                number: "01",
+                x: 42,
+                y: 64,
+                category: "visible-reasoning",
+                title: "Similarity is clear",
+                observation:
+                  "Every habit row follows the same simple pattern and completion states are immediately distinguishable.",
+                meaning:
+                  "The interface establishes a reliable component grammar with very little ambiguity.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "SIMILARITY · WORKING",
+                cardSide: "right",
+              },
+              {
+                id: "o3-continuity",
+                number: "02",
+                x: 50,
+                y: 42,
+                category: "capability-focus",
+                title: "Continuity feels flattened",
+                observation:
+                  "Summary metrics, weekly progress, and the habit list are stacked clearly, but the visual transitions between them carry little momentum.",
+                meaning:
+                  "The information is organized, yet the screen feels assembled as sections rather than choreographed as a mobile flow.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "CONTINUITY · MIXED",
+                cardSide: "right",
+              },
+            ],
           },
         },
         {
@@ -192,17 +266,46 @@ Open the canvas to compare all five outputs side by side.`,
           description:
             "A fourth anonymous interpretation of the identical habit-tracking prompt.",
           caption:
-            "Inspect the visual language and how strongly it relies on familiar interface conventions.",
+            "Familiar and highly explicit, but dense status signals compete with the core habit hierarchy.",
           canvas: {
-            id: "gestalt-five-output-comparison",
-            eyebrow: "INTERACTIVE COMPARISON",
-            title: "How each model organizes perception",
-            description:
-              "Compare five anonymous responses to the same habit-tracking prompt through Proximity, Similarity, Continuity, and Closure.",
+            ...sharedCanvas,
             boardLabel: "OUTPUT 04",
-            boardSubtitle: "Anonymous model output — evaluate the interface before the reveal",
-            boardHeight: 1080,
-            annotations: [],
+            boardSubtitle: "Gemini · Generated output",
+            boardHeight: 1220,
+            annotations: [
+              {
+                id: "o4-similarity",
+                number: "01",
+                x: 51,
+                y: 64,
+                category: "visible-reasoning",
+                title: "Similarity creates recognition",
+                observation:
+                  "Habit rows use a highly consistent rounded-row pattern, icon placement, status language, and progress treatment.",
+                meaning:
+                  "The repeated anatomy makes each item easy to identify as part of the same habit system.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "SIMILARITY · WORKING",
+                cardSide: "right",
+              },
+              {
+                id: "o4-proximity",
+                number: "02",
+                x: 57,
+                y: 58,
+                category: "capability-focus",
+                title: "Proximity becomes crowded",
+                observation:
+                  "Progress bars, streak counts, completion timestamps, emojis, and actions cluster tightly within each row.",
+                meaning:
+                  "Related information is close together, but too many signals compete inside the same perceptual group.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "PROXIMITY · OVERLOADED",
+                cardSide: "left",
+              },
+            ],
           },
         },
         {
@@ -216,17 +319,46 @@ Open the canvas to compare all five outputs side by side.`,
           description:
             "A fifth anonymous interpretation of the identical habit-tracking prompt.",
           caption:
-            "Use the same four perceptual lenses before comparing the model identities.",
+            "Strong perceptual hierarchy with relationships carried by spacing, repetition, and restrained containers.",
           canvas: {
-            id: "gestalt-five-output-comparison",
-            eyebrow: "INTERACTIVE COMPARISON",
-            title: "How each model organizes perception",
-            description:
-              "Compare five anonymous responses to the same habit-tracking prompt through Proximity, Similarity, Continuity, and Closure.",
+            ...sharedCanvas,
             boardLabel: "OUTPUT 05",
-            boardSubtitle: "Anonymous model output — evaluate the interface before the reveal",
-            boardHeight: 1080,
-            annotations: [],
+            boardSubtitle: "Sovereign UX · Generated output",
+            boardHeight: 1220,
+            annotations: [
+              {
+                id: "o5-proximity",
+                number: "01",
+                x: 48,
+                y: 37,
+                category: "visible-reasoning",
+                title: "Proximity establishes hierarchy",
+                observation:
+                  "Progress, supporting metrics, habits, and the closing motivation block form clearly separated perceptual groups.",
+                meaning:
+                  "Spacing does meaningful organizational work instead of asking borders to define every relationship.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "PROXIMITY · WORKING",
+                cardSide: "right",
+              },
+              {
+                id: "o5-continuity",
+                number: "02",
+                x: 50,
+                y: 64,
+                category: "visible-reasoning",
+                title: "Continuity is coherent",
+                observation:
+                  "The eye moves from orientation to progress to action and finally to supporting motivation in a predictable sequence.",
+                meaning:
+                  "The composition creates a clear narrative path through the dashboard rather than treating every module as equally important.",
+                rightHolder: "Shared",
+                footerLabel: "GESTALT LENS",
+                footerValue: "CONTINUITY · WORKING",
+                cardSide: "right",
+              },
+            ],
           },
         },
       ],
@@ -241,17 +373,6 @@ Open the canvas to compare all five outputs side by side.`,
 
 Which AI model best understands human perception?
 
-REVEAL
-
-01 — Figma
-
-02 — ChatGPT
-
-03 — Claude
-
-04 — Gemini
-
-05 — Sovereign UX
 
 If AI is going to become a genuine design partner, perceptual reasoning matters as much as speed or visual novelty.`,
       insight:

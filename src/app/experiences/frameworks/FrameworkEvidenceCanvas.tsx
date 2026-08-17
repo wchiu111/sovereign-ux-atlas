@@ -14,21 +14,13 @@ import type {
 } from "../../content/types";
 import type { ReadingEvidenceItem } from "../shared/types";
 
-const BOARD_WIDTH = 1050;
+const DEFAULT_BOARD_WIDTH = 1050;
 const BOARD_X = 140;
 const BOARD_Y = 260;
 const BOARD_GAP = 320;
-const DEFAULT_BOARD_HEIGHT = Math.round((BOARD_WIDTH * 2023) / 1374);
 const OPENING_SCALE = 0.73;
 const MIN_SCALE = 0.12;
 const MAX_SCALE = 2;
-
-function getBoardPosition(index: number) {
-  return {
-    x: BOARD_X + index * (BOARD_WIDTH + BOARD_GAP),
-    y: BOARD_Y,
-  };
-}
 
 const CATEGORY_STYLE: Record<
   AtlasEvidenceAnnotationCategory,
@@ -41,36 +33,18 @@ const CATEGORY_STYLE: Record<
   "capability-focus": { label: "CAPABILITY FOCUS", color: "#D47B68" },
   governance: { label: "GOVERNANCE", color: "#A78BDB" },
   constraints: { label: "CONSTRAINTS", color: "#76C79A" },
-  "behavioral-integrity": {
-    label: "BEHAVIORAL INTEGRITY",
-    color: "#7CB4D5",
-  },
-  "regenerative-capacity": {
-    label: "REGENERATIVE CAPACITY",
-    color: "#D99A6C",
-  },
+  "behavioral-integrity": { label: "BEHAVIORAL INTEGRITY", color: "#7CB4D5" },
+  "regenerative-capacity": { label: "REGENERATIVE CAPACITY", color: "#D99A6C" },
   "structural-drift": { label: "STRUCTURAL DRIFT", color: "#D47B68" },
   "cognitive-drift": { label: "COGNITIVE DRIFT", color: "#E1C35C" },
   "authority-drift": { label: "AUTHORITY DRIFT", color: "#D99A6C" },
   "semantic-drift": { label: "SEMANTIC DRIFT", color: "#A78BDB" },
-  "invariant-preservation": {
-    label: "INVARIANT PRESERVATION",
-    color: "#76C79A",
-  },
-  "integrity-verification": {
-    label: "INTEGRITY VERIFICATION",
-    color: "#7CB4D5",
-  },
+  "invariant-preservation": { label: "INVARIANT PRESERVATION", color: "#76C79A" },
+  "integrity-verification": { label: "INTEGRITY VERIFICATION", color: "#7CB4D5" },
   "aspiration-focus": { label: "ASPIRATION FOCUS", color: "#E1C35C" },
   "encoded-cognition": { label: "ENCODED COGNITION", color: "#A78BDB" },
-  "behavioral-sequencing": {
-    label: "BEHAVIORAL SEQUENCING",
-    color: "#7CB4D5",
-  },
-  "expectation-clarity": {
-    label: "EXPECTATION CLARITY",
-    color: "#76C79A",
-  },
+  "behavioral-sequencing": { label: "BEHAVIORAL SEQUENCING", color: "#7CB4D5" },
+  "expectation-clarity": { label: "EXPECTATION CLARITY", color: "#76C79A" },
 };
 
 interface ActiveAnnotation {
@@ -91,17 +65,21 @@ interface Props {
   frameworkTitle: string;
   sectionTitle: string;
   onClose: () => void;
+  backLabel?: string;
 }
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function AnnotationCard({
-  annotation,
-}: {
-  annotation: AtlasEvidenceAnnotation;
-}) {
+function getBoardPosition(index: number, boardWidth: number) {
+  return {
+    x: BOARD_X + index * (boardWidth + BOARD_GAP),
+    y: BOARD_Y,
+  };
+}
+
+function AnnotationCard({ annotation }: { annotation: AtlasEvidenceAnnotation }) {
   const style = CATEGORY_STYLE[annotation.category];
 
   return (
@@ -120,69 +98,59 @@ function AnnotationCard({
         pointerEvents: "auto",
       }}
     >
-      <div
-        style={{
-          fontFamily: "'DM Mono', monospace",
-          fontSize: 13,
-          letterSpacing: "0.19em",
-          color: style.color,
-          marginBottom: 18,
-        }}
-      >
+      <div style={{
+        fontFamily: "'DM Mono', monospace",
+        fontSize: 13,
+        letterSpacing: "0.19em",
+        color: style.color,
+        marginBottom: 18,
+      }}>
         {annotation.number} · {style.label}
       </div>
 
-      <div
-        style={{
-          fontFamily: "'EB Garamond', serif",
-          fontSize: 27,
-          lineHeight: 1.12,
-          fontWeight: 500,
-          marginBottom: 16,
-        }}
-      >
+      <div style={{
+        fontFamily: "'EB Garamond', serif",
+        fontSize: 27,
+        lineHeight: 1.12,
+        fontWeight: 500,
+        marginBottom: 16,
+      }}>
         {annotation.title}
       </div>
 
-      <div
-        style={{
-          fontFamily: "'EB Garamond', serif",
-          fontSize: 18,
-          lineHeight: 1.55,
-          color: "rgba(240,232,215,0.76)",
-          marginBottom: 16,
-        }}
-      >
+      <div style={{
+        fontFamily: "'EB Garamond', serif",
+        fontSize: 18,
+        lineHeight: 1.55,
+        color: "rgba(240,232,215,0.76)",
+        marginBottom: 16,
+      }}>
         {annotation.observation}
       </div>
 
-      <div
-        style={{
-          paddingTop: 16,
-          borderTop: "1px solid rgba(220,205,170,0.12)",
-          fontFamily: "'EB Garamond', serif",
-          fontSize: 16,
-          lineHeight: 1.5,
-          color: "rgba(220,205,175,0.62)",
-        }}
-      >
+      <div style={{
+        paddingTop: 16,
+        borderTop: "1px solid rgba(220,205,170,0.12)",
+        fontFamily: "'EB Garamond', serif",
+        fontSize: 16,
+        lineHeight: 1.5,
+        color: "rgba(220,205,175,0.62)",
+      }}>
         {annotation.meaning}
       </div>
 
-      <div
-        style={{
-          marginTop: 20,
-          paddingTop: 15,
-          borderTop: "1px solid rgba(220,205,170,0.12)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 16,
-          fontFamily: "'DM Mono', monospace",
-          fontSize: 11,
-          letterSpacing: "0.16em",
-        }}
-      >
+      <div style={{
+        marginTop: 20,
+        paddingTop: 15,
+        borderTop: "1px solid rgba(220,205,170,0.12)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 16,
+        fontFamily: "'DM Mono', monospace",
+        fontSize: 11,
+        letterSpacing: "0.16em",
+      }}>
         <span style={{ color: "rgba(200,180,130,0.48)" }}>
           {annotation.footerLabel ?? "DECISION RIGHT"}
         </span>
@@ -198,6 +166,7 @@ function EvidenceBoard({
   item,
   position,
   boardIndex,
+  boardWidth,
   boardHeight,
   viewScale,
   active,
@@ -209,6 +178,7 @@ function EvidenceBoard({
   item: ReadingEvidenceItem;
   position: { x: number; y: number };
   boardIndex: number;
+  boardWidth: number;
   boardHeight: number;
   viewScale: number;
   active: ActiveAnnotation | null;
@@ -222,9 +192,7 @@ function EvidenceBoard({
 
   const activeAnnotation =
     active?.boardId === item.id
-      ? canvas.annotations.find(
-          (annotation) => annotation.id === active.annotationId,
-        )
+      ? canvas.annotations.find((annotation) => annotation.id === active.annotationId)
       : undefined;
   const anotherBoardIsActive = Boolean(active && active.boardId !== item.id);
 
@@ -235,75 +203,63 @@ function EvidenceBoard({
         position: "absolute",
         left: position.x,
         top: position.y,
-        width: BOARD_WIDTH,
+        width: boardWidth,
         zIndex: active?.boardId === item.id ? 10 : 1,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 18,
-          margin: "0 0 20px 20px",
-          fontFamily: "'DM Mono', monospace",
-        }}
-      >
-        <span
-          style={{
-            color: "rgba(225,195,92,0.86)",
-            fontSize: 16,
-            letterSpacing: "0.18em",
-          }}
-        >
+      <div style={{
+        display: "flex",
+        alignItems: "baseline",
+        gap: 18,
+        margin: "0 0 20px 20px",
+        fontFamily: "'DM Mono', monospace",
+      }}>
+        <span style={{
+          color: "rgba(225,195,92,0.86)",
+          fontSize: 16,
+          letterSpacing: "0.18em",
+        }}>
           {String(boardIndex + 1).padStart(2, "0")}
         </span>
         <div>
-          <div
-            style={{
-              color: "rgba(255,248,230,0.84)",
-              fontSize: 16,
-              letterSpacing: "0.15em",
-            }}
-          >
+          <div style={{
+            color: "rgba(255,248,230,0.84)",
+            fontSize: 16,
+            letterSpacing: "0.15em",
+          }}>
             {canvas.boardLabel}
           </div>
-          <div
-            style={{
-              marginTop: 7,
-              color: "rgba(220,205,175,0.52)",
-              fontSize: 14,
-              letterSpacing: "0.04em",
-            }}
-          >
+          <div style={{
+            marginTop: 7,
+            color: "rgba(220,205,175,0.52)",
+            fontSize: 14,
+            letterSpacing: "0.04em",
+          }}>
             {canvas.boardSubtitle}
           </div>
         </div>
       </div>
 
-      <div
-        style={{
-          position: "relative",
-          width: BOARD_WIDTH,
-          height: boardHeight,
-          transition: "opacity 240ms ease, filter 240ms ease",
-          opacity: anotherBoardIsActive ? 0.42 : 1,
-          filter: activeAnnotation ? "brightness(0.84)" : "none",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            overflow: "hidden",
-            border: activeAnnotation
-              ? "1px solid rgba(225,195,92,0.28)"
-              : "1px solid rgba(220,205,175,0.18)",
-            background: "#E8E8E8",
-            boxShadow: activeAnnotation
-              ? "0 32px 100px rgba(0,0,0,0.46), 0 0 52px rgba(225,195,92,0.07)"
-              : "0 28px 80px rgba(0,0,0,0.38)",
-          }}
-        >
+      <div style={{
+        position: "relative",
+        width: boardWidth,
+        height: boardHeight,
+        transition: "opacity 240ms ease, filter 240ms ease",
+        opacity: anotherBoardIsActive ? 0.42 : 1,
+        filter: activeAnnotation ? "brightness(0.84)" : "none",
+      }}>
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          border: activeAnnotation
+            ? "1px solid rgba(225,195,92,0.28)"
+            : "1px solid rgba(220,205,175,0.18)",
+          background: "#E8E8E8",
+          boxShadow: activeAnnotation
+            ? "0 32px 100px rgba(0,0,0,0.46), 0 0 52px rgba(225,195,92,0.07)"
+            : "0 28px 80px rgba(0,0,0,0.38)",
+        }}>
           <img
             src={item.image}
             alt={item.alt ?? item.title}
@@ -321,8 +277,7 @@ function EvidenceBoard({
 
         {canvas.annotations.map((annotation) => {
           const annotationActive =
-            active?.boardId === item.id &&
-            active.annotationId === annotation.id;
+            active?.boardId === item.id && active.annotationId === annotation.id;
           const markerStyle = CATEGORY_STYLE[annotation.category];
 
           return (
@@ -339,38 +294,30 @@ function EvidenceBoard({
             >
               {annotationActive && (
                 <>
-                  <span
-                    aria-hidden
-                    style={{
-                      position: "absolute",
-                      left: "50%",
-                      top: "50%",
-                      width: 116,
-                      height: 116,
-                      borderRadius: "50%",
-                      border: `1px solid ${markerStyle.color}55`,
-                      background: `${markerStyle.color}12`,
-                      transform: "translate(-50%, -50%)",
-                      boxShadow: `0 0 42px ${markerStyle.color}2E`,
-                      pointerEvents: "none",
-                    }}
-                  />
-                  <span
-                    aria-hidden
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      width: 82,
-                      height: 1,
-                      background: `linear-gradient(${
-                        annotation.cardSide === "left" ? "270deg" : "90deg"
-                      }, ${markerStyle.color}90, transparent)`,
-                      ...(annotation.cardSide === "left"
-                        ? { right: 34 }
-                        : { left: 34 }),
-                      pointerEvents: "none",
-                    }}
-                  />
+                  <span aria-hidden style={{
+                    position: "absolute",
+                    left: "50%",
+                    top: "50%",
+                    width: 116,
+                    height: 116,
+                    borderRadius: "50%",
+                    border: `1px solid ${markerStyle.color}55`,
+                    background: `${markerStyle.color}12`,
+                    transform: "translate(-50%, -50%)",
+                    boxShadow: `0 0 42px ${markerStyle.color}2E`,
+                    pointerEvents: "none",
+                  }} />
+                  <span aria-hidden style={{
+                    position: "absolute",
+                    top: "50%",
+                    width: 82,
+                    height: 1,
+                    background: `linear-gradient(${
+                      annotation.cardSide === "left" ? "270deg" : "90deg"
+                    }, ${markerStyle.color}90, transparent)`,
+                    ...(annotation.cardSide === "left" ? { right: 34 } : { left: 34 }),
+                    pointerEvents: "none",
+                  }} />
                 </>
               )}
 
@@ -380,27 +327,16 @@ function EvidenceBoard({
                 aria-label={`${annotation.number}. ${annotation.title}`}
                 aria-expanded={annotationActive}
                 onMouseEnter={() =>
-                  !locked &&
-                  onPreview({
-                    boardId: item.id,
-                    annotationId: annotation.id,
-                  })
+                  !locked && onPreview({ boardId: item.id, annotationId: annotation.id })
                 }
                 onMouseLeave={() => !locked && onLeave()}
                 onFocus={() =>
-                  !locked &&
-                  onPreview({
-                    boardId: item.id,
-                    annotationId: annotation.id,
-                  })
+                  !locked && onPreview({ boardId: item.id, annotationId: annotation.id })
                 }
                 onBlur={() => !locked && onLeave()}
                 onClick={(event) => {
                   event.stopPropagation();
-                  onSelect({
-                    boardId: item.id,
-                    annotationId: annotation.id,
-                  });
+                  onSelect({ boardId: item.id, annotationId: annotation.id });
                 }}
                 style={{
                   position: "relative",
@@ -410,9 +346,7 @@ function EvidenceBoard({
                   display: "grid",
                   placeItems: "center",
                   border: `2px solid ${
-                    annotationActive
-                      ? markerStyle.color
-                      : markerStyle.color + "A8"
+                    annotationActive ? markerStyle.color : markerStyle.color + "A8"
                   }`,
                   background: annotationActive
                     ? "rgba(8,11,18,0.98)"
@@ -432,16 +366,12 @@ function EvidenceBoard({
               </button>
 
               {annotationActive && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    ...(annotation.cardSide === "left"
-                      ? { right: 98 }
-                      : { left: 98 }),
-                    transform: "translateY(-50%)",
-                  }}
-                >
+                <div style={{
+                  position: "absolute",
+                  top: "50%",
+                  ...(annotation.cardSide === "left" ? { right: 98 } : { left: 98 }),
+                  transform: "translateY(-50%)",
+                }}>
                   <AnnotationCard annotation={annotation} />
                 </div>
               )}
@@ -458,6 +388,7 @@ export default function FrameworkEvidenceCanvas({
   frameworkTitle,
   sectionTitle,
   onClose,
+  backLabel,
 }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const hasInteractedRef = useRef(false);
@@ -470,6 +401,15 @@ export default function FrameworkEvidenceCanvas({
     originX: number;
     originY: number;
   } | null>(null);
+
+  const canvasItems = useMemo(
+    () => items.filter((item) => item.canvas && item.image).slice(0, 8),
+    [items],
+  );
+  const canvasMeta = canvasItems[0]?.canvas;
+  const boardWidth = canvasMeta?.boardWidth ?? DEFAULT_BOARD_WIDTH;
+  const defaultBoardHeight = Math.round((boardWidth * 2023) / 1374);
+
   const [view, setView] = useState<ViewState>({
     x: 32 - BOARD_X * OPENING_SCALE,
     y: 198 - BOARD_Y * OPENING_SCALE,
@@ -481,11 +421,6 @@ export default function FrameworkEvidenceCanvas({
   const [transitionPhase, setTransitionPhase] =
     useState<TransitionPhase>("entering");
 
-  const canvasItems = useMemo(
-    () => items.filter((item) => item.canvas && item.image).slice(0, 8),
-    [items],
-  );
-  const canvasMeta = canvasItems[0]?.canvas;
   const canvasGroups = useMemo(
     () =>
       (canvasMeta?.groups ?? []).filter(
@@ -496,28 +431,31 @@ export default function FrameworkEvidenceCanvas({
       ),
     [canvasItems.length, canvasMeta?.groups],
   );
+
   const boardPositions = useMemo(
-    () => canvasItems.map((_, index) => getBoardPosition(index)),
-    [canvasItems],
+    () => canvasItems.map((_, index) => getBoardPosition(index, boardWidth)),
+    [boardWidth, canvasItems],
   );
+
   const boardHeights = useMemo(
     () =>
       canvasItems.map(
-        (item) => item.canvas?.boardHeight ?? DEFAULT_BOARD_HEIGHT,
+        (item) => item.canvas?.boardHeight ?? defaultBoardHeight,
       ),
-    [canvasItems],
+    [canvasItems, defaultBoardHeight],
   );
+
   const worldWidth = useMemo(() => {
-    const lastPosition = boardPositions.at(-1) ?? getBoardPosition(0);
-    return Math.max(2700, lastPosition.x + BOARD_WIDTH + BOARD_X);
-  }, [boardPositions]);
+    const lastPosition =
+      boardPositions.at(-1) ?? getBoardPosition(0, boardWidth);
+    return Math.max(2700, lastPosition.x + boardWidth + BOARD_X);
+  }, [boardPositions, boardWidth]);
+
   const maxBoardHeight = useMemo(
-    () =>
-      boardHeights.length > 0
-        ? Math.max(...boardHeights)
-        : DEFAULT_BOARD_HEIGHT,
-    [boardHeights],
+    () => boardHeights.length > 0 ? Math.max(...boardHeights) : defaultBoardHeight,
+    [boardHeights, defaultBoardHeight],
   );
+
   const worldHeight = BOARD_Y + maxBoardHeight + 220;
 
   const setOpeningView = useCallback(() => {
@@ -576,14 +514,9 @@ export default function FrameworkEvidenceCanvas({
       () => setTransitionPhase("open"),
       reducedMotion ? 240 : 1260,
     );
-
     return () => {
-      if (resolveTimerRef.current !== null) {
-        window.clearTimeout(resolveTimerRef.current);
-      }
-      if (closeTimerRef.current !== null) {
-        window.clearTimeout(closeTimerRef.current);
-      }
+      if (resolveTimerRef.current !== null) window.clearTimeout(resolveTimerRef.current);
+      if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
     };
   }, []);
 
@@ -592,7 +525,6 @@ export default function FrameworkEvidenceCanvas({
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-
     setActive(null);
     setLocked(false);
     setTransitionPhase("exiting");
@@ -613,12 +545,10 @@ export default function FrameworkEvidenceCanvas({
         }
         return;
       }
-
       if (event.key === "0") {
         event.preventDefault();
         fitAll();
       }
-
       if (event.key === "+" || event.key === "=") {
         event.preventDefault();
         hasInteractedRef.current = true;
@@ -627,7 +557,6 @@ export default function FrameworkEvidenceCanvas({
           scale: clamp(current.scale * 1.18, MIN_SCALE, MAX_SCALE),
         }));
       }
-
       if (event.key === "-") {
         event.preventDefault();
         hasInteractedRef.current = true;
@@ -637,31 +566,33 @@ export default function FrameworkEvidenceCanvas({
         }));
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [active, fitAll, requestClose]);
 
-  const zoomAt = useCallback((nextScale: number, clientX?: number, clientY?: number) => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    const rect = viewport.getBoundingClientRect();
-    hasInteractedRef.current = true;
-    setView((current) => {
-      const scale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
-      const anchorX =
-        typeof clientX === "number" ? clientX - rect.left : rect.width / 2;
-      const anchorY =
-        typeof clientY === "number" ? clientY - rect.top : rect.height / 2;
-      const worldX = (anchorX - current.x) / current.scale;
-      const worldY = (anchorY - current.y) / current.scale;
-      return {
-        scale,
-        x: anchorX - worldX * scale,
-        y: anchorY - worldY * scale,
-      };
-    });
-  }, []);
+  const zoomAt = useCallback(
+    (nextScale: number, clientX?: number, clientY?: number) => {
+      const viewport = viewportRef.current;
+      if (!viewport) return;
+      const rect = viewport.getBoundingClientRect();
+      hasInteractedRef.current = true;
+      setView((current) => {
+        const scale = clamp(nextScale, MIN_SCALE, MAX_SCALE);
+        const anchorX =
+          typeof clientX === "number" ? clientX - rect.left : rect.width / 2;
+        const anchorY =
+          typeof clientY === "number" ? clientY - rect.top : rect.height / 2;
+        const worldX = (anchorX - current.x) / current.scale;
+        const worldY = (anchorY - current.y) / current.scale;
+        return {
+          scale,
+          x: anchorX - worldX * scale,
+          y: anchorY - worldY * scale,
+        };
+      });
+    },
+    [],
+  );
 
   const handleWheel = (event: ReactWheelEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -718,6 +649,12 @@ export default function FrameworkEvidenceCanvas({
 
   if (!canvasMeta || canvasItems.length === 0) return null;
 
+  const resolvedBackLabel =
+    backLabel ??
+    (frameworkTitle.toUpperCase().includes("GESTALT")
+      ? "BACK TO EXPERIMENTS"
+      : "BACK TO FRAMEWORK");
+
   return (
     <div
       data-framework-canvas-root
@@ -732,71 +669,41 @@ export default function FrameworkEvidenceCanvas({
       }}
     >
       <style>{`
-        @keyframes portalThresholdEnter {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
+        @keyframes portalThresholdEnter { from { opacity: 0; } to { opacity: 1; } }
         @keyframes portalCanvasReveal {
-          0%, 18% {
-            opacity: 0;
-            transform: scale(.972);
-            filter: blur(9px) brightness(.34);
-          }
-          62% {
-            opacity: .72;
-            filter: blur(2px) brightness(.72);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-            filter: blur(0) brightness(1);
-          }
+          0%,18% { opacity:0; transform:scale(.972); filter:blur(9px) brightness(.34); }
+          62% { opacity:.72; filter:blur(2px) brightness(.72); }
+          100% { opacity:1; transform:scale(1); filter:blur(0) brightness(1); }
         }
         @keyframes portalCanvasRecede {
-          from {
-            opacity: 1;
-            transform: scale(1);
-            filter: blur(0) brightness(1);
-          }
-          to {
-            opacity: 0;
-            transform: scale(.974);
-            filter: blur(8px) brightness(.32);
-          }
+          from { opacity:1; transform:scale(1); filter:blur(0) brightness(1); }
+          to { opacity:0; transform:scale(.974); filter:blur(8px) brightness(.32); }
         }
-        @keyframes portalThresholdExit {
-          from { opacity: 1; }
-          to { opacity: 0; }
-        }
+        @keyframes portalThresholdExit { from { opacity:1; } to { opacity:0; } }
         [data-framework-canvas-root][data-transition-phase="entering"] {
           animation: portalThresholdEnter 320ms ease-out both;
         }
-        [data-framework-canvas-root][data-transition-phase="entering"]
-          [data-portal-content] {
-          animation:
-            portalCanvasReveal 900ms 320ms cubic-bezier(.16,1,.3,1) both;
+        [data-framework-canvas-root][data-transition-phase="entering"] [data-portal-content] {
+          animation: portalCanvasReveal 900ms 320ms cubic-bezier(.16,1,.3,1) both;
         }
         [data-framework-canvas-root][data-transition-phase="exiting"] {
           animation: portalThresholdExit 300ms 590ms ease-in both;
-          pointer-events: none;
+          pointer-events:none;
         }
-        [data-framework-canvas-root][data-transition-phase="exiting"]
-          [data-portal-content] {
-          animation:
-            portalCanvasRecede 560ms cubic-bezier(.4,0,.7,.2) both;
+        [data-framework-canvas-root][data-transition-phase="exiting"] [data-portal-content] {
+          animation: portalCanvasRecede 560ms cubic-bezier(.4,0,.7,.2) both;
         }
         @media (prefers-reduced-motion: reduce) {
-          [data-framework-canvas-root],
-          [data-portal-content] {
-            animation-duration: 220ms !important;
-            animation-delay: 0ms !important;
-            filter: none !important;
-            transform: none !important;
+          [data-framework-canvas-root],[data-portal-content] {
+            animation-duration:220ms!important;
+            animation-delay:0ms!important;
+            filter:none!important;
+            transform:none!important;
           }
         }
         [data-framework-canvas] button:focus-visible {
-          outline: 2px solid rgba(255,248,230,0.92);
-          outline-offset: 4px;
+          outline:2px solid rgba(255,248,230,.92);
+          outline-offset:4px;
         }
       `}</style>
 
@@ -812,98 +719,93 @@ export default function FrameworkEvidenceCanvas({
           willChange: "opacity, transform, filter",
         }}
       >
-      <header
-        data-canvas-control
-        style={{
-          position: "absolute",
-          inset: "0 0 auto 0",
-          zIndex: 20,
-          minHeight: 96,
-          padding: "18px 28px 20px",
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          gap: 32,
-          background:
-            "linear-gradient(180deg, rgba(4,6,11,0.98), rgba(4,6,11,0.82), transparent)",
-          pointerEvents: "none",
-        }}
-      >
-        <div>
-          <div
-            style={{
+        <header
+          data-canvas-control
+          style={{
+            position: "absolute",
+            inset: "0 0 auto 0",
+            zIndex: 20,
+            minHeight: 96,
+            padding: "18px 28px 20px",
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: 32,
+            background:
+              "linear-gradient(180deg, rgba(4,6,11,0.98), rgba(4,6,11,0.82), transparent)",
+            pointerEvents: "none",
+          }}
+        >
+          <div>
+            <div style={{
               fontFamily: "'DM Mono', monospace",
               fontSize: 10,
               letterSpacing: "0.22em",
               color: "rgba(225,195,92,0.82)",
               marginBottom: 7,
-            }}
-          >
-            {canvasMeta.eyebrow}
-          </div>
-          <div
-            style={{
+            }}>
+              {canvasMeta.eyebrow}
+            </div>
+            <div style={{
               fontFamily: "'EB Garamond', serif",
               fontSize: 25,
               lineHeight: 1.12,
               color: "rgba(255,248,230,0.92)",
+            }}>
+              {canvasMeta.title}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            data-canvas-control
+            onClick={requestClose}
+            style={{
+              pointerEvents: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              minHeight: 40,
+              padding: "0 14px",
+              color: "rgba(220,205,175,0.76)",
+              border: "1px solid rgba(200,180,130,0.42)",
+              background: "rgba(7,9,15,0.72)",
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 9,
+              letterSpacing: "0.18em",
+              cursor: "pointer",
             }}
           >
-            {canvasMeta.title}
-          </div>
-        </div>
+            <span style={{ lineHeight: 1, transform: "translateY(1px)" }}>
+              {resolvedBackLabel}
+            </span>
+            <X size={13} />
+          </button>
+        </header>
 
-        <button
-          type="button"
-          data-canvas-control
-          onClick={requestClose}
+        <div
+          ref={viewportRef}
+          data-framework-canvas
+          role="application"
+          aria-label={`${frameworkTitle}, ${sectionTitle}, interactive evidence canvas`}
+          onWheel={handleWheel}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerEnd}
+          onPointerCancel={handlePointerEnd}
           style={{
-            pointerEvents: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            minHeight: 40,
-            padding: "0 14px",
-            color: "rgba(220,205,175,0.76)",
-            border: "1px solid rgba(200,180,130,0.42)",
-            background: "rgba(7,9,15,0.72)",
-            fontFamily: "'DM Mono', monospace",
-            fontSize: 9,
-            letterSpacing: "0.18em",
-            cursor: "pointer",
+            position: "absolute",
+            inset: 0,
+            overflow: "hidden",
+            cursor: dragging ? "grabbing" : "grab",
+            touchAction: "none",
+            backgroundImage:
+              "linear-gradient(rgba(130,160,155,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(130,160,155,0.035) 1px, transparent 1px), radial-gradient(circle, rgba(255,248,230,0.28) 0 1px, transparent 1.5px)",
+            backgroundSize: "160px 160px, 160px 160px, 137px 137px",
+            backgroundPosition: "center",
           }}
         >
-          <span style={{ lineHeight: 1, transform: "translateY(1px)" }}>
-            BACK TO FRAMEWORK
-          </span>
-          <X size={13} />
-        </button>
-      </header>
-
-      <div
-        ref={viewportRef}
-        data-framework-canvas
-        role="application"
-        aria-label={`${frameworkTitle}, ${sectionTitle}, interactive evidence canvas`}
-        onWheel={handleWheel}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerEnd}
-        onPointerCancel={handlePointerEnd}
-        style={{
-          position: "absolute",
-          inset: 0,
-          overflow: "hidden",
-          cursor: dragging ? "grabbing" : "grab",
-          touchAction: "none",
-          backgroundImage:
-            "linear-gradient(rgba(130,160,155,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(130,160,155,0.035) 1px, transparent 1px), radial-gradient(circle, rgba(255,248,230,0.28) 0 1px, transparent 1.5px)",
-          backgroundSize: "160px 160px, 160px 160px, 137px 137px",
-          backgroundPosition: "center",
-        }}
-      >
-        <div
-          style={{
+          <div style={{
             position: "absolute",
             left: 0,
             top: 0,
@@ -912,254 +814,119 @@ export default function FrameworkEvidenceCanvas({
             transformOrigin: "0 0",
             transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.scale})`,
             willChange: "transform",
-          }}
-        >
-          {canvasGroups.map((group) => {
-            const startIndex = Math.min(
-              group.startIndex,
-              boardPositions.length - 1,
-            );
-            const endIndex = Math.min(
-              group.endIndex,
-              boardPositions.length - 1,
-            );
-            const start = boardPositions[startIndex];
-            const end = boardPositions[endIndex];
-            if (!start || !end) return null;
+          }}>
+            {canvasGroups.map((group) => {
+              const startIndex = Math.min(group.startIndex, boardPositions.length - 1);
+              const endIndex = Math.min(group.endIndex, boardPositions.length - 1);
+              const start = boardPositions[startIndex];
+              const end = boardPositions[endIndex];
+              if (!start || !end) return null;
+              const width = end.x + boardWidth - start.x;
 
-            const width = end.x + BOARD_WIDTH - start.x;
-
-            return (
-              <section
-                key={group.id}
-                aria-label={`${group.label}. ${group.question}`}
-                style={{
-                  position: "absolute",
-                  left: start.x,
-                  top: 132,
-                  width,
-                  height: worldHeight - 214,
-                  pointerEvents: "none",
-                }}
-              >
-                <div
+              return (
+                <section
+                  key={group.id}
+                  aria-label={`${group.label}. ${group.question}`}
                   style={{
+                    position: "absolute",
+                    left: start.x,
+                    top: 132,
+                    width,
+                    height: worldHeight - 214,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <div style={{
                     height: 1,
                     background: `linear-gradient(90deg, ${group.color}88, ${group.color}18 48%, transparent)`,
-                  }}
-                />
-                <div
-                  style={{
+                  }} />
+                  <div style={{
                     marginTop: 16,
                     paddingLeft: 18,
                     fontFamily: "'DM Mono', monospace",
                     fontSize: 12,
                     letterSpacing: "0.2em",
                     color: group.color,
-                  }}
-                >
-                  {group.label}
-                </div>
-                <div
-                  style={{
+                  }}>
+                    {group.label}
+                  </div>
+                  <div style={{
                     marginTop: 8,
                     paddingLeft: 18,
                     fontFamily: "'EB Garamond', serif",
                     fontSize: 19,
                     lineHeight: 1.2,
                     color: "rgba(240,232,215,0.72)",
-                  }}
-                >
-                  {group.question}
-                </div>
-              </section>
-            );
-          })}
-
-          {canvasGroups.slice(0, -1).map((group, index) => {
-            const nextGroup = canvasGroups[index + 1];
-            if (!nextGroup) return null;
-            const leftBoard = boardPositions[
-              Math.min(group.endIndex, boardPositions.length - 1)
-            ];
-            const rightBoard = boardPositions[
-              Math.min(nextGroup.startIndex, boardPositions.length - 1)
-            ];
-            if (!leftBoard || !rightBoard) return null;
-
-            const dividerX =
-              leftBoard.x +
-              BOARD_WIDTH +
-              (rightBoard.x - leftBoard.x - BOARD_WIDTH) / 2;
-
-            return (
-              <div
-                key={`${group.id}-${nextGroup.id}-threshold`}
-                aria-label={canvasMeta.groupDividerLabel}
-                style={{
-                  position: "absolute",
-                  left: dividerX,
-                  top: 126,
-                  width: 1,
-                  height: worldHeight - 196,
-                  background:
-                    "linear-gradient(180deg, transparent, rgba(225,195,92,0.7) 7%, rgba(124,180,213,0.52) 42%, rgba(124,180,213,0.08) 88%, transparent)",
-                  pointerEvents: "none",
-                  zIndex: 3,
-                }}
-              >
-                <div
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    left: "50%",
-                    top: 68,
-                    width: 10,
-                    height: 10,
-                    transform: "translate(-50%, -50%) rotate(45deg)",
-                    border: "1px solid rgba(225,195,92,0.88)",
-                    background: "#070A11",
-                    boxShadow:
-                      "0 0 24px rgba(225,195,92,0.22), 0 0 34px rgba(124,180,213,0.14)",
-                  }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    left: "50%",
-                    top: 88,
-                    width: 210,
-                    transform: "translateX(-50%)",
-                    padding: "10px 12px",
-                    border: "1px solid rgba(225,195,92,0.2)",
-                    background: "rgba(4,6,11,0.94)",
-                    color: "rgba(220,205,175,0.74)",
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: 9,
-                    lineHeight: 1.55,
-                    letterSpacing: "0.16em",
-                    textAlign: "center",
-                    whiteSpace: "normal",
-                  }}
-                >
-                  {canvasMeta.groupDividerLabel ??
-                    "SAME SOURCE · DIFFERENT DIRECTION"}
-                </div>
-              </div>
-            );
-          })}
-
-          {canvasItems.length <= 2 ? (
-            <div
-              style={{
-                position: "absolute",
-                left: boardPositions[0].x + BOARD_WIDTH - 120,
-                top: BOARD_Y + maxBoardHeight + 68,
-                width: 840,
-                display: "flex",
-                alignItems: "center",
-                gap: 24,
-                color: "rgba(225,195,92,0.66)",
-                fontFamily: "'DM Mono', monospace",
-                fontSize: 13,
-                letterSpacing: "0.18em",
-                pointerEvents: "none",
-              }}
-            >
-              <span>{canvasMeta.transitionFrom ?? "RAW OPTIONS"}</span>
-              <span
-                style={{
-                  flex: 1,
-                  height: 1,
-                  background:
-                    "linear-gradient(90deg, rgba(225,195,92,0.18), rgba(225,195,92,0.72))",
-                }}
-              />
-              <span style={{ fontSize: 24 }}>→</span>
-              <span>
-                {canvasMeta.transitionTo ?? "SYNTHESIZED RECOMMENDATION"}
-              </span>
-            </div>
-          ) : (
-            canvasItems.slice(0, -1).map((item, index) => {
-              const current = boardPositions[index];
-              const next = boardPositions[index + 1];
-              const currentGroup = canvasGroups.find(
-                (group) => index >= group.startIndex && index <= group.endIndex,
+                  }}>
+                    {group.question}
+                  </div>
+                </section>
               );
-              const nextGroup = canvasGroups.find(
-                (group) =>
-                  index + 1 >= group.startIndex &&
-                  index + 1 <= group.endIndex,
-              );
-              if (
-                currentGroup &&
-                nextGroup &&
-                currentGroup.id !== nextGroup.id
-              ) {
-                return null;
-              }
-              const label =
-                canvasMeta.transitionLabels?.[index] ??
-                (index === 0 ? "DRIFT EMERGES" : "PRESERVATION CONSTRAINS");
-              return (
-                <div
-                  key={`transition-${item.id}`}
-                  style={{
-                    position: "absolute",
-                    left: current.x + BOARD_WIDTH + 22,
-                    top:
-                      BOARD_Y +
-                      Math.max(boardHeights[index], boardHeights[index + 1]) +
-                      68,
-                    width: next.x - current.x - BOARD_WIDTH - 44,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    color: "rgba(225,195,92,0.66)",
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: 10,
-                    letterSpacing: "0.14em",
-                    whiteSpace: "nowrap",
-                    pointerEvents: "none",
-                  }}
-                >
-                  <span>{label}</span>
-                  <span
+            })}
+
+            {canvasItems.length > 2 &&
+              canvasItems.slice(0, -1).map((item, index) => {
+                const current = boardPositions[index];
+                const next = boardPositions[index + 1];
+                if (!current || !next) return null;
+                const label =
+                  canvasMeta.transitionLabels?.[index] ??
+                  (index === 0 ? "DRIFT EMERGES" : "PRESERVATION CONSTRAINS");
+
+                return (
+                  <div
+                    key={`transition-${item.id}`}
                     style={{
+                      position: "absolute",
+                      left: current.x + boardWidth + 22,
+                      top:
+                        BOARD_Y +
+                        Math.max(boardHeights[index], boardHeights[index + 1]) +
+                        68,
+                      width: next.x - current.x - boardWidth - 44,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      color: "rgba(225,195,92,0.66)",
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: 10,
+                      letterSpacing: "0.14em",
+                      whiteSpace: "nowrap",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <span>{label}</span>
+                    <span style={{
                       flex: 1,
                       height: 1,
                       background:
                         "linear-gradient(90deg, rgba(225,195,92,0.18), rgba(225,195,92,0.72))",
-                    }}
-                  />
-                  <span style={{ fontSize: 18 }}>→</span>
-                </div>
-              );
-            })
-          )}
+                    }} />
+                    <span style={{ fontSize: 18 }}>→</span>
+                  </div>
+                );
+              })}
 
-          {canvasItems.map((item, index) => (
-            <EvidenceBoard
-              key={item.id}
-              item={item}
-              position={boardPositions[index] ?? getBoardPosition(0)}
-              boardIndex={index}
-              boardHeight={boardHeights[index] ?? DEFAULT_BOARD_HEIGHT}
-              viewScale={view.scale}
-              active={active}
-              locked={locked}
-              onPreview={setActive}
-              onLeave={() => setActive(null)}
-              onSelect={handleSelect}
-            />
-          ))}
+            {canvasItems.map((item, index) => (
+              <EvidenceBoard
+                key={item.id}
+                item={item}
+                position={boardPositions[index] ?? getBoardPosition(0, boardWidth)}
+                boardIndex={index}
+                boardWidth={boardWidth}
+                boardHeight={boardHeights[index] ?? defaultBoardHeight}
+                viewScale={view.scale}
+                active={active}
+                locked={locked}
+                onPreview={setActive}
+                onLeave={() => setActive(null)}
+                onSelect={handleSelect}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div
-        data-canvas-control
-        style={{
+        <div data-canvas-control style={{
           position: "absolute",
           left: 26,
           bottom: 22,
@@ -1172,16 +939,12 @@ export default function FrameworkEvidenceCanvas({
           fontSize: 9,
           letterSpacing: "0.16em",
           pointerEvents: "none",
-        }}
-      >
-        <span style={{ fontSize: 15 }}>☝</span>
-        DRAG TO EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;SCROLL TO ZOOM
-      </div>
+        }}>
+          <span style={{ fontSize: 15 }}>☝</span>
+          DRAG TO EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;SCROLL TO ZOOM
+        </div>
 
-      <div
-        data-canvas-control
-        aria-label="Canvas zoom controls"
-        style={{
+        <div data-canvas-control aria-label="Canvas zoom controls" style={{
           position: "absolute",
           left: "50%",
           bottom: 18,
@@ -1194,55 +957,52 @@ export default function FrameworkEvidenceCanvas({
           border: "1px solid rgba(200,180,130,0.20)",
           background: "rgba(8,10,17,0.90)",
           boxShadow: "0 12px 36px rgba(0,0,0,0.34)",
-        }}
-      >
-        <button
-          type="button"
-          data-canvas-control
-          aria-label="Zoom out"
-          onClick={() => zoomAt(view.scale / 1.18)}
-          style={controlButtonStyle}
-        >
-          <Minus size={14} />
-        </button>
-        <div
-          style={{
+        }}>
+          <button
+            type="button"
+            data-canvas-control
+            aria-label="Zoom out"
+            onClick={() => zoomAt(view.scale / 1.18)}
+            style={controlButtonStyle}
+          >
+            <Minus size={14} />
+          </button>
+          <div style={{
             minWidth: 54,
             textAlign: "center",
             color: "rgba(255,248,230,0.76)",
             fontFamily: "'DM Mono', monospace",
             fontSize: 10,
-          }}
-        >
-          {Math.round(view.scale * 100)}%
+          }}>
+            {Math.round(view.scale * 100)}%
+          </div>
+          <button
+            type="button"
+            data-canvas-control
+            aria-label="Zoom in"
+            onClick={() => zoomAt(view.scale * 1.18)}
+            style={controlButtonStyle}
+          >
+            <Plus size={14} />
+          </button>
+          <button
+            type="button"
+            data-canvas-control
+            onClick={fitAll}
+            style={{ ...controlButtonStyle, width: "auto", padding: "0 13px" }}
+          >
+            <Scan size={13} />
+            FIT ALL
+          </button>
+          <button
+            type="button"
+            data-canvas-control
+            onClick={() => zoomAt(1)}
+            style={{ ...controlButtonStyle, width: "auto", padding: "0 13px" }}
+          >
+            1:1
+          </button>
         </div>
-        <button
-          type="button"
-          data-canvas-control
-          aria-label="Zoom in"
-          onClick={() => zoomAt(view.scale * 1.18)}
-          style={controlButtonStyle}
-        >
-          <Plus size={14} />
-        </button>
-        <button
-          type="button"
-          data-canvas-control
-          onClick={fitAll}
-          style={{ ...controlButtonStyle, width: "auto", padding: "0 13px" }}
-        >
-          <Scan size={13} />
-          FIT ALL
-        </button>
-        <button
-          type="button"
-          data-canvas-control
-          onClick={() => zoomAt(1)}
-          style={{ ...controlButtonStyle, width: "auto", padding: "0 13px" }}
-        >
-          1:1
-        </button>
-      </div>
       </div>
     </div>
   );
