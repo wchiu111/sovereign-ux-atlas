@@ -101,7 +101,7 @@ The difference is not a feature. It is an authority relationship expressed throu
             portalImage: designPhilosophyPortal,
             boardLabel: "A — CHATGPT",
             boardSubtitle: "AI recommendation leads · Human approves",
-            boardHeight: 930,
+            boardHeight: 700,
             annotations: [
               {
                 id: "chatgpt-recommendation-hierarchy",
@@ -155,7 +155,7 @@ The difference is not a feature. It is an authority relationship expressed throu
             ...sharedCanvas,
             boardLabel: "B — SOVEREIGN UX AGENT",
             boardSubtitle: "Human evaluation leads · AI contributes",
-            boardHeight: 930,
+            boardHeight: 700,
             annotations: [
               {
                 id: "sovereign-evidence-central",
