@@ -31,6 +31,7 @@ export default defineAtlasEntry({
   title: "BEHAVIORAL ARCHITECTURE",
   subtitle:
     "A framework for designing the governance, constraints, integrity signals, and recovery capacity that shape how an AI system behaves over time.",
+  tags: ["GOVERNANCE", "CONSTRAINTS", "RECOVERY"],
   overview: {
     what:
       "A framework for designing the structures around an AI model that give its behavior a stable, trustworthy shape.",

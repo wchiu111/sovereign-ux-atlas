@@ -7,6 +7,7 @@ export default defineAtlasEntry({
   title: "APPLICATION KIT",
   subtitle:
     "Fourteen optional modules for scaling Sovereign UX without turning clarity, consent, or presence into performance.",
+  tags: ["ADOPTION", "SCALING", "GOVERNANCE"],
   overview: {
     what:
       "A collection of optional scaffolds for applying Sovereign UX across teams, products, organizations, and higher-risk contexts.",

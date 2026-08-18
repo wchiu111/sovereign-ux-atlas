@@ -18,6 +18,10 @@ try {
   const guidedPrompts = await server.ssrLoadModule(
     "/src/app/data/atlasGuidedPrompts.ts",
   );
+  const atlasSystems = await server.ssrLoadModule("/src/app/data/atlasSystems.ts");
+  const conceptPreview = await server.ssrLoadModule(
+    "/src/app/atlas/components/AtlasConceptPreviewContent.ts",
+  );
 
   const runSearch = (query, limit = 4) => search.searchAtlas({
     query,
@@ -141,6 +145,25 @@ try {
     assert.equal(authorityDrift.label, "Explore Authority Drift");
     assert.equal(authorityDrift.query, "Authority Drift");
     assert.equal(authorityDrift.destinationId, "authority-drift");
+  });
+
+  await test("framework preview cards use authored signals", () => {
+    const frameworks = atlasSystems.SYSTEMS.find(
+      (system) => system.id === "frameworks",
+    );
+
+    const expectedSignals = {
+      "behavioral-architecture": ["GOVERNANCE", "CONSTRAINTS", "RECOVERY"],
+      "application-kit": ["ADOPTION", "SCALING", "GOVERNANCE"],
+      "relational-ai-literacy": ["RECURSION", "CALIBRATION", "CO-CREATION"],
+    };
+
+    Object.entries(expectedSignals).forEach(([entryId, signals]) => {
+      const planet = frameworks.planets.find((candidate) => candidate.id === entryId);
+      const preview = conceptPreview.buildAtlasConceptPreview(frameworks, planet);
+      assert.equal(preview.metaLabel, "Framework signals");
+      assert.deepEqual(preview.metaItems, signals);
+    });
   });
 
   await test("acceptance queries return sensible paths", () => {
