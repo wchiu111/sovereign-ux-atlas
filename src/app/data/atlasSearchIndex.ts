@@ -83,34 +83,24 @@ const SEARCH_OVERRIDES: Record<string, SearchEntryOverride> = {
     priority: 12,
   },
   "authority-drift": {
-    topics: ["human authority", "AI behavior", "governance", "delegation", "decision making"],
+    topics: ["human authority", "AI behavior", "governance", "authority constraints", "semantic drift"],
     priority: 11,
   },
-  "mirror-test": {
-    topics: ["AI trust", "evaluation", "alignment", "AI behavior", "agreement"],
+  "design-philosophy": {
+    topics: ["AI design", "authority", "model behavior", "design reasoning", "hiring"],
     priority: 10,
-    availability: "preview",
-    releaseVersion: "V1.1",
+  },
+  "gestalt-principles": {
+    topics: ["Gestalt", "human perception", "AI design", "proximity", "similarity", "continuity", "closure"],
+    priority: 9,
+  },
+  "think-like-a-designer": {
+    topics: ["AI design", "reflection", "assumptions", "user context", "medication"],
+    priority: 10,
   },
   "ai-evaluation": {
     topics: ["AI evaluation", "benchmarking", "relational quality"],
     priority: 4,
-  },
-  "atlas-prototypes": {
-    topics: ["prototyping", "spatial navigation", "information architecture"],
-    priority: 3,
-  },
-  "emotional-heatmapping": {
-    topics: ["emotion", "biometrics", "interfaces"],
-    priority: 2,
-  },
-  "future-concepts": {
-    topics: ["future interfaces", "interaction patterns", "calibrated deference"],
-    priority: 2,
-  },
-  "post-filter-shopping": {
-    topics: ["shopping", "recommendations", "filter bubbles", "decision quality"],
-    priority: 2,
   },
   "about-wilson": {
     topics: ["about Wilson", "background", "experience", "career", "journey", "philosophy"],
@@ -127,6 +117,9 @@ const AVAILABLE_ENTRY_IDS = new Set([
   "behavioral-architecture",
   "application-kit",
   "authority-drift",
+  "design-philosophy",
+  "gestalt-principles",
+  "think-like-a-designer",
 ]);
 
 const KIND_BY_CATEGORY: Record<AtlasEntry["category"], AtlasSearchKind> = {

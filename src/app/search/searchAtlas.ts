@@ -15,7 +15,7 @@ const INTENT_ENTRY_BOOSTS: Record<string, Record<string, number>> = {
   trust: {
     "behavioral-architecture": 76,
     "sovereign-ux": 70,
-    "mirror-test": 58,
+    "design-philosophy": 58,
     "agentic-insurance": 52,
     "authority-gradient": 48,
   },
@@ -34,7 +34,7 @@ const INTENT_ENTRY_BOOSTS: Record<string, Record<string, number>> = {
   },
   "ai-behavior": {
     "behavioral-architecture": 86,
-    "mirror-test": 64,
+    "design-philosophy": 64,
     "authority-drift": 60,
     "sovereign-ux": 48,
   },

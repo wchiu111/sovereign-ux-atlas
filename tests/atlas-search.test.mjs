@@ -60,7 +60,7 @@ try {
     const trustIds = runSearch("trust").map((match) => match.entry.id);
     assert.ok(trustIds.includes("behavioral-architecture"));
     assert.ok(trustIds.includes("sovereign-ux"));
-    assert.ok(trustIds.some((id) => id === "mirror-test" || id === "agentic-insurance"));
+    assert.ok(trustIds.some((id) => id === "design-philosophy" || id === "agentic-insurance"));
   });
 
   await test("uses stable alphabetical tie-breaking", () => {
@@ -140,7 +140,9 @@ try {
       "decision rights",
       "authority gradient",
       "authority drift",
-      "mirror test",
+      "design philosophy",
+      "gestalt principles",
+      "think like a designer",
       "about Wilson",
       "background",
       "higher education",
