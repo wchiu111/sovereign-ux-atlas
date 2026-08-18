@@ -1,8 +1,31 @@
 import { getAtlasEntry, getEntriesByCategory } from "../content/registry";
-import type { AtlasEntry } from "../content/types";
+import type { AtlasCategory, AtlasEntry } from "../content/types";
 import { initialAtlasState, type AtlasState } from "../state/atlasState";
 
 export const CASE_STUDIES_PATH = "/case-studies";
+export const EXPERIMENTS_PATH = "/experiments";
+
+interface RoutableAtlasCategory {
+  category: Extract<AtlasCategory, "case-study" | "experiment">;
+  systemId: "case-studies" | "experiments";
+  systemPath: string;
+  legacyPrefix: string;
+}
+
+const ROUTABLE_CATEGORIES: RoutableAtlasCategory[] = [
+  {
+    category: "case-study",
+    systemId: "case-studies",
+    systemPath: CASE_STUDIES_PATH,
+    legacyPrefix: "/case-study/",
+  },
+  {
+    category: "experiment",
+    systemId: "experiments",
+    systemPath: EXPERIMENTS_PATH,
+    legacyPrefix: "/experiment/",
+  },
+];
 
 export interface AtlasRoute {
   atlasState: AtlasState;
@@ -32,8 +55,11 @@ function publicSlug(entry: AtlasEntry): string {
   return entry.routeSlug ?? entry.id;
 }
 
-function findCaseStudy(routeId: string): AtlasEntry | undefined {
-  return getEntriesByCategory("case-study").find(
+function findEntry(
+  category: AtlasCategory,
+  routeId: string,
+): AtlasEntry | undefined {
+  return getEntriesByCategory(category).find(
     (entry) =>
       publicSlug(entry) === routeId ||
       entry.id === routeId ||
@@ -41,9 +67,64 @@ function findCaseStudy(routeId: string): AtlasEntry | undefined {
   );
 }
 
-export function caseStudyBasePath(entryId: string): string {
+function routeConfigForEntry(entry: AtlasEntry): RoutableAtlasCategory | undefined {
+  return ROUTABLE_CATEGORIES.find((config) => config.category === entry.category);
+}
+
+export function atlasSystemPath(systemId: string): string | null {
+  return ROUTABLE_CATEGORIES.find((config) => config.systemId === systemId)
+    ?.systemPath ?? null;
+}
+
+export function atlasEntryBasePath(entryId: string): string | null {
   const entry = getAtlasEntry(entryId);
-  return `${CASE_STUDIES_PATH}/${entry ? publicSlug(entry) : entryId}`;
+  if (!entry) return null;
+  const config = routeConfigForEntry(entry);
+  return config ? `${config.systemPath}/${publicSlug(entry)}` : null;
+}
+
+export function atlasEntrySectionPath(
+  entryId: string,
+  sectionId: string,
+): string | null {
+  const basePath = atlasEntryBasePath(entryId);
+  return basePath ? `${basePath}/${encodeURIComponent(sectionId)}` : null;
+}
+
+export function atlasEntryEvidencePath(
+  entryId: string,
+  sectionId: string,
+  evidenceId: string,
+): string | null {
+  const sectionPath = atlasEntrySectionPath(entryId, sectionId);
+  return sectionPath
+    ? `${sectionPath}/evidence/${encodeURIComponent(evidenceId)}`
+    : null;
+}
+
+export function caseStudyBasePath(entryId: string): string {
+  return atlasEntryBasePath(entryId) ?? `${CASE_STUDIES_PATH}/${entryId}`;
+}
+
+export function experimentBasePath(entryId: string): string {
+  return atlasEntryBasePath(entryId) ?? `${EXPERIMENTS_PATH}/${entryId}`;
+}
+
+export function experimentSectionPath(
+  entryId: string,
+  sectionId: string,
+): string {
+  return atlasEntrySectionPath(entryId, sectionId)
+    ?? `${experimentBasePath(entryId)}/${encodeURIComponent(sectionId)}`;
+}
+
+export function experimentEvidencePath(
+  entryId: string,
+  sectionId: string,
+  evidenceId: string,
+): string {
+  return atlasEntryEvidencePath(entryId, sectionId, evidenceId)
+    ?? `${experimentSectionPath(entryId, sectionId)}/evidence/${encodeURIComponent(evidenceId)}`;
 }
 
 export function caseStudySectionPath(
@@ -69,36 +150,40 @@ export function parseAtlasRoute(
     return { atlasState: navigationState({ level: 0 }), canonicalPath: "/" };
   }
 
-  if (pathname === CASE_STUDIES_PATH) {
+  const systemRoute = ROUTABLE_CATEGORIES.find(
+    (config) => pathname === config.systemPath,
+  );
+  if (systemRoute) {
     return {
       atlasState: navigationState({
         level: 1,
-        activeSystemId: "case-studies",
+        activeSystemId: systemRoute.systemId,
       }),
-      canonicalPath: CASE_STUDIES_PATH,
+      canonicalPath: systemRoute.systemPath,
     };
   }
 
-  const canonicalPrefix = `${CASE_STUDIES_PATH}/`;
-  const legacyPrefix = "/case-study/";
+  const routeConfig = ROUTABLE_CATEGORIES.find((config) =>
+    pathname.startsWith(`${config.systemPath}/`)
+    || pathname.startsWith(config.legacyPrefix),
+  );
+  if (!routeConfig) return null;
+  const canonicalPrefix = `${routeConfig.systemPath}/`;
   const prefix = pathname.startsWith(canonicalPrefix)
     ? canonicalPrefix
-    : pathname.startsWith(legacyPrefix)
-      ? legacyPrefix
-      : null;
-  if (!prefix) return null;
+    : routeConfig.legacyPrefix;
 
   const routeSegments = pathname.slice(prefix.length).split("/").map(safeDecode);
-  const entry = findCaseStudy(routeSegments[0]);
+  const entry = findEntry(routeConfig.category, routeSegments[0]);
   if (!entry) return null;
-  const canonicalBase = caseStudyBasePath(entry.id);
+  const canonicalBase = atlasEntryBasePath(entry.id)!;
   const segments = routeSegments.slice(1);
 
   if (segments.length === 0) {
     return {
       atlasState: navigationState({
         level: 2,
-        activeSystemId: "case-studies",
+        activeSystemId: routeConfig.systemId,
         activePlanetId: entry.id,
         drawerOpen: true,
       }),
@@ -124,13 +209,13 @@ export function parseAtlasRoute(
   return {
     atlasState: navigationState({
       level: 3,
-      activeSystemId: "case-studies",
+      activeSystemId: routeConfig.systemId,
       activePlanetId: entry.id,
       focusSection: sectionIndex,
     }),
     canonicalPath: evidenceId
-      ? caseStudyEvidencePath(entry.id, section.id, evidenceId)
-      : caseStudySectionPath(entry.id, section.id),
+      ? atlasEntryEvidencePath(entry.id, section.id, evidenceId)!
+      : atlasEntrySectionPath(entry.id, section.id)!,
     sectionId: section.id,
     evidenceId,
   };

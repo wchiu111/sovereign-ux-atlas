@@ -2,6 +2,7 @@ import { getAtlasEntry } from "../../content/registry";
 import { atlasEntryToReadingDocument } from "../shared/adapters";
 import AtlasReadingEngine from "../shared/AtlasReadingEngine";
 import type { AtlasAssistSource } from "../../types/atlasAssist";
+import { experimentBasePath } from "../../routing/atlasRoutes";
 
 interface Props {
   planetId: string;
@@ -20,6 +21,7 @@ export default function ExperimentEngine({ planetId, ...props }: Props) {
     <AtlasReadingEngine
       document={atlasEntryToReadingDocument(entry)}
       routeSegment="experiment"
+      routeBasePath={experimentBasePath(entry.id)}
       {...props}
     />
   );

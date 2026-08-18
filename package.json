@@ -8,6 +8,7 @@
     "dev": "vite",
     "typecheck": "tsc -p tsconfig.server.json",
     "test:search": "node tests/atlas-search.test.mjs",
+    "test:routes": "node tests/atlas-routes.test.mjs",
     "test:assist": "node tests/atlas-assist-provider.test.mjs"
   },
   "dependencies": {

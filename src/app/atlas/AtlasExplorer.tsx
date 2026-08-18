@@ -27,10 +27,10 @@ import { getAtlasEntry } from "../content";
 import type { AtlasAssistSource } from "../types/atlasAssist";
 import type { AtlasSearchDestination } from "../types/atlasSearch";
 import {
-  CASE_STUDIES_PATH,
-  caseStudyBasePath,
-  caseStudyEvidencePath,
-  caseStudySectionPath,
+  atlasEntryBasePath,
+  atlasEntryEvidencePath,
+  atlasEntrySectionPath,
+  atlasSystemPath,
   pushAtlasPath,
 } from "../routing/atlasRoutes";
 
@@ -272,7 +272,8 @@ useEffect(() => {
     const focusScale = SYSTEM_FOCUS_SCALE[sys.id] ?? 1.35;
 
     setHoveredConceptPreview(null);
-    if (sys.id === "case-studies") pushAtlasPath(CASE_STUDIES_PATH);
+    const systemPath = atlasSystemPath(sys.id);
+    if (systemPath) pushAtlasPath(systemPath);
     actions.enterSystem(sys.id);
     zoomWithTransition(focusScale, sp.x, sp.y);
   }, [actions, zoomWithTransition]);
@@ -283,9 +284,8 @@ useEffect(() => {
   if (followTimerRef.current) clearTimeout(followTimerRef.current);
 
   setHoveredConceptPreview(null);
-  if (getAtlasEntry(planet.id)?.category === "case-study") {
-    pushAtlasPath(caseStudyBasePath(planet.id));
-  }
+  const entryPath = atlasEntryBasePath(planet.id);
+  if (entryPath) pushAtlasPath(entryPath);
   actions.openPlanet(sys.id, planet.id);
 
   requestAnimationFrame(() => {
@@ -329,7 +329,8 @@ useEffect(() => {
     if (destination.type === "system") {
       const system = SYSTEMS.find((candidate) => candidate.id === destination.targetId);
       if (!system) return;
-      if (system.id === "case-studies") pushAtlasPath(CASE_STUDIES_PATH);
+      const systemPath = atlasSystemPath(system.id);
+      if (systemPath) pushAtlasPath(systemPath);
       const { w, h } = dimsRef.current;
       const position = sysOrbitPos(system, elapsedRef.current, w * 0.5, h * 0.48);
       const scale = SYSTEM_FOCUS_SCALE[system.id] ?? 1.35;
@@ -349,9 +350,8 @@ useEffect(() => {
     const planet = system?.planets.find((item) => item.id === destination.targetId);
     if (!system || !planet) return;
 
-    if (getAtlasEntry(planet.id)?.category === "case-study") {
-      pushAtlasPath(caseStudyBasePath(planet.id));
-    }
+    const entryPath = atlasEntryBasePath(planet.id);
+    if (entryPath) pushAtlasPath(entryPath);
     actions.openPlanet(system.id, planet.id);
     requestAnimationFrame(() => actions.openProjectDrawer());
   }, [actions, elapsedRef, onEnterObservatory]);
@@ -395,15 +395,17 @@ useEffect(() => {
     const sp = sysOrbitPos(activeSystem, elapsedRef.current, nexX, nexY);
     const focusScale = SYSTEM_FOCUS_SCALE[activeSystem.id] ?? 1.35;
 
-    if (activeSystem.id === "case-studies") pushAtlasPath(CASE_STUDIES_PATH);
+    const systemPath = atlasSystemPath(activeSystem.id);
+    if (systemPath) pushAtlasPath(systemPath);
     actions.returnToSystem();
     zoomWithTransition(focusScale, sp.x, sp.y);
   }, [actions, activeSystem, zoomWithTransition]);
 
   const exitFocus  = useCallback(() => {
-    if (activePlanetId && getAtlasEntry(activePlanetId)?.category === "case-study") {
-      pushAtlasPath(caseStudyBasePath(activePlanetId));
-    }
+    const entryPath = activePlanetId
+      ? atlasEntryBasePath(activePlanetId)
+      : null;
+    if (entryPath) pushAtlasPath(entryPath);
     actions.exitFocusMode();
     requestAnimationFrame(() => {
       actions.openProjectDrawer();
@@ -424,21 +426,21 @@ useEffect(() => {
       : -1;
 
     if (sectionIndex < 0) {
-      if (destination.category === "case-study") {
-        pushAtlasPath(caseStudyBasePath(destination.id));
-      }
+      const entryPath = atlasEntryBasePath(destination.id);
+      if (entryPath) pushAtlasPath(entryPath);
       actions.openPlanet(destinationSystem.id, destination.id);
       requestAnimationFrame(() => actions.openProjectDrawer());
       return;
     }
 
     try {
-      if (destination.category === "case-study" && source.sectionId) {
-        pushAtlasPath(
-          source.evidenceId
-            ? caseStudyEvidencePath(destination.id, source.sectionId, source.evidenceId)
-            : caseStudySectionPath(destination.id, source.sectionId),
-        );
+      const canonicalPath = source.sectionId
+        ? source.evidenceId
+          ? atlasEntryEvidencePath(destination.id, source.sectionId, source.evidenceId)
+          : atlasEntrySectionPath(destination.id, source.sectionId)
+        : null;
+      if (canonicalPath) {
+        pushAtlasPath(canonicalPath);
       } else {
         const routeSegment = destination.category === "case-study"
           ? "case-study"
@@ -632,11 +634,10 @@ useEffect(() => {
 
             window.setTimeout(() => {
               const activeEntry = getAtlasEntry(activePlanet.id);
-              if (activeEntry?.category === "case-study") {
-                const sectionId = activeEntry.sections?.[index]?.id;
-                if (sectionId) {
-                  pushAtlasPath(caseStudySectionPath(activeEntry.id, sectionId));
-                }
+              const sectionId = activeEntry?.sections?.[index]?.id;
+              if (activeEntry && sectionId) {
+                const sectionPath = atlasEntrySectionPath(activeEntry.id, sectionId);
+                if (sectionPath) pushAtlasPath(sectionPath);
               }
               actions.enterFocusMode(index);
             }, reduceFocusMotion
