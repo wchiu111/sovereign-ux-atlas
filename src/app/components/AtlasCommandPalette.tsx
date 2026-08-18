@@ -232,7 +232,7 @@ export default function AtlasCommandPalette({
   const choosePrompt = (
     promptId: string,
     promptQuery: string,
-    previewDestinationId: string | undefined,
+    destinationId: string,
     method: AtlasSearchInteractionMethod,
   ) => {
     onAnalyticsEvent?.({
@@ -244,13 +244,20 @@ export default function AtlasCommandPalette({
         topic: topicForAtlasQuery(promptQuery),
       },
     });
-    updateQuery(promptQuery, method);
-    onPreviewDestination?.(
-      previewDestinationId
-        ? getAtlasSearchPreviewDestination(previewDestinationId) ?? null
-        : null,
-    );
-    inputRef.current?.focus();
+
+    const destination = resolveAtlasSearchDestination(destinationId);
+    if (!destination) {
+      if (import.meta.env.DEV) {
+        console.warn(`Atlas guided path could not resolve "${destinationId}".`);
+      }
+      updateQuery(promptQuery, method);
+      return;
+    }
+
+    onPreviewDestination?.(null);
+    closePalette(false);
+    setQuery("");
+    onNavigate?.(destination);
   };
 
   const activeDescendant = activeIndex >= 0 && matches[activeIndex]
@@ -422,7 +429,7 @@ export default function AtlasCommandPalette({
                   onClick={(event) => choosePrompt(
                     prompt.id,
                     prompt.query,
-                    prompt.previewDestinationId,
+                    prompt.destinationId,
                     event.detail === 0 ? "keyboard" : pointerMethodRef.current,
                   )}
                   onMouseEnter={() => onPreviewDestination?.(

@@ -51,6 +51,7 @@ export interface AtlasGuidedPrompt {
   id: string;
   label: string;
   query: string;
+  destinationId: string;
   previewDestinationId?: string;
 }
 

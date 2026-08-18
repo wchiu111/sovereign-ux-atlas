@@ -15,6 +15,9 @@ try {
   const destinations = await server.ssrLoadModule(
     "/src/app/search/resolveAtlasSearchDestination.ts",
   );
+  const guidedPrompts = await server.ssrLoadModule(
+    "/src/app/data/atlasGuidedPrompts.ts",
+  );
 
   const runSearch = (query, limit = 4) => search.searchAtlas({
     query,
@@ -122,6 +125,22 @@ try {
       destinations.resolveAtlasSearchDestination("sovereign-ux"),
       { type: "system", targetId: "frameworks" },
     );
+  });
+
+  await test("guided paths resolve directly to live destinations", () => {
+    guidedPrompts.ATLAS_GUIDED_PROMPTS.forEach((prompt) => {
+      assert.ok(
+        destinations.resolveAtlasSearchDestination(prompt.destinationId),
+        prompt.destinationId,
+      );
+    });
+
+    const authorityDrift = guidedPrompts.ATLAS_GUIDED_PROMPTS.find(
+      (prompt) => prompt.id === "authority-drift",
+    );
+    assert.equal(authorityDrift.label, "Explore Authority Drift");
+    assert.equal(authorityDrift.query, "Authority Drift");
+    assert.equal(authorityDrift.destinationId, "authority-drift");
   });
 
   await test("acceptance queries return sensible paths", () => {
