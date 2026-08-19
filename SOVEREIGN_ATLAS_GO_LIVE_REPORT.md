@@ -2,19 +2,19 @@
 
 ## Executive Summary
 
-Overall status: **READY FOR PRODUCTION CONFIGURATION**
+Overall status: **READY FOR PRODUCTION DEPLOYMENT APPROVAL**
 
 The application now builds cleanly, restores canonical Case Study, Experiment, and Framework routes, produces safe environment-specific search metadata, reports Share and Contact failures honestly, and closes the highest-risk accessibility gaps found in the audit. Search, Atlas Assist, routing, Contact handler, production build, desktop interaction, and a narrow mobile pass all passed locally.
 
 The remaining authored Case Study blockers are resolved. Globality, Oracle, and Sovereign Atlas now use approved role metadata through the canonical content model, and Sovereign Atlas is explicitly documented as an intentional five-section project rather than being forced to render an empty Decisions section.
 
-The audited branch is deployed and live staging verification now passes for canonical Atlas routes, direct-load restoration, Search, Share, browser history, the Observatory Contact failure path, priority keyboard retreat, and responsive viewport baselines from 1440px through 320px. Production launch should remain paused until production-only indexing and Contact variables are configured, actual inbox delivery and Reply-To are verified, the staging URL metadata mismatch is corrected, the remaining browser-zoom/assistive-technology matrix is completed, and the favicon/social-card decision is approved. Analytics and error monitoring remain post-launch recommendations.
+The audited branch is deployed and live staging verification now passes for canonical Atlas routes, direct-load restoration, Search, Share, browser history, the Observatory Contact failure path, priority keyboard retreat, responsive viewport baselines from 1440px through 320px, and staging-safe metadata/crawler output. Production launch should remain paused until production-only indexing and Contact variables are configured, actual inbox delivery and Reply-To are verified, the remaining browser-zoom/assistive-technology matrix is completed, and the favicon/social-card owner decision is recorded. Analytics and error monitoring remain post-launch recommendations.
 
 ## Scorecard
 
 | Category | Score | Status |
 | --- | ---: | --- |
-| Identity + SEO | 10 / 13 | Live title/noindex pass; staging canonical URL configuration, favicon, and social image remain |
+| Identity + SEO | 11 / 13 | Live staging metadata/crawler output pass; favicon and social image remain owner decisions |
 | URLs + Sharing | 9 / 9 | Canonical routes, deployed rewrites, refresh, history, and copied staging URLs pass |
 | Case Studies | 9 / 9 | Approved roles and the five-section exception are canonical and verified |
 | Contact | 8 / 10 | Delivery boundary is real and fail-closed; configuration and inbox delivery remain |
@@ -92,9 +92,9 @@ The audited branch is deployed and live staging verification now passes for cano
 | --- | --- | --- |
 | Contact delivery is not production-verified | Secrets and provider/domain state correctly cannot be inferred or logged from source. | Configure the variables below and complete an inbox/reply test. |
 | Production indexing is not deployment-verified | Indexing is deliberately opt-in and staging defaults to noindex. | Set the production-only value and inspect deployed HTML/robots before launch. |
-| Staging URL metadata is misconfigured | Authenticated staging HTML is `noindex`, but canonical and `og:url` currently resolve to `https://wchiudesign.com/`. | Set staging `VITE_SITE_URL=https://staging.wchiudesign.com` and redeploy; keep production configured for `https://wchiudesign.com`. |
 | Browser zoom and assistive-technology checks remain | Deployed semantic checks passed at five widths, but browser zoom and VoiceOver/NVDA were not available in this automated session. | Complete 125%, 150%, and 200% zoom plus basic screen-reader checks on staging. |
-| Favicon/social-card decision remains open | No approved redistributable assets were supplied during the audit. | Supply approved assets or explicitly accept launch without them. |
+| Favicon decision: `BLOCKING BY OWNER DECISION` | No approved redistributable favicon was supplied during the audit. | Supply an approved asset or explicitly mark it `APPROVED TO DEFER`. |
+| Social-card decision: `BLOCKING BY OWNER DECISION` | No approved 1200×630 social-card asset was supplied during the audit. | Supply an approved asset or explicitly mark it `APPROVED TO DEFER`. |
 
 ### P2 — Strongly recommended
 
@@ -118,12 +118,64 @@ The audited branch is deployed and live staging verification now passes for cano
 
 ## Manual Production Checks
 
+### Verified staging configuration
+
+| Variable | Scope | Verified value |
+| --- | --- | --- |
+| `VITE_SITE_URL` | Preview/public | `https://staging.wchiudesign.com` |
+| `VITE_SITE_INDEXABLE` | Preview/public | `false` |
+
+Deployment `dpl_7w17MQKxSQbLViPhkazpyNxEqxv6` reached Ready. Live root and Case Study, Experiment, and Framework metadata use the staging domain for canonical and Open Graph URLs; Twitter metadata and JSON-LD remain present; every checked route renders `noindex, nofollow`; `robots.txt` returns `Disallow: /`; and the generated sitemap contains only `https://staging.wchiudesign.com` URLs. No environment-aware metadata checked in this pass leaked `https://wchiudesign.com`.
+
+### Production variables required
+
+Do not set these until production deployment is explicitly approved.
+
+| Variable | Visibility | Required production value or requirement |
+| --- | --- | --- |
+| `VITE_SITE_URL` | Public/client-visible | `https://wchiudesign.com` |
+| `VITE_SITE_INDEXABLE` | Public/client-visible | `true` |
+| `RESEND_API_KEY` | Server-only secret | Required; never prefix with `VITE_` |
+| `CONTACT_FROM_EMAIL` | Server-only configuration | Required; must use a verified Resend domain or subdomain |
+| `CONTACT_TO_EMAIL` | Server-only configuration | `wchiudesign@gmail.com` |
+| `CONTACT_TIMEOUT_MS` | Server-only configuration | Optional |
+| `CONTACT_REQUESTS_PER_MINUTE` | Server-only configuration | Optional |
+
+The Contact provider is isolated to the server handler, and the visitor's submitted email is used as Reply-To. No Contact secret is referenced through a `VITE_` variable or included in the client bundle.
+
+### Production deployment preflight
+
+Do not execute this sequence until production deployment is explicitly approved.
+
+1. Configure production Vercel variables.
+2. Verify the Resend sending domain.
+3. Deploy production.
+4. Verify the production build reaches Ready.
+5. Verify the root URL.
+6. Verify one Case Study deep link.
+7. Verify one Experiment deep link.
+8. Verify one Framework deep link.
+9. Verify `robots.txt`.
+10. Verify production is `index, follow`.
+11. Verify canonical URLs use `https://wchiudesign.com`.
+12. Verify the sitemap uses production URLs.
+13. Send one real Contact message.
+14. Confirm arrival at `wchiudesign@gmail.com`.
+15. Confirm Reply-To returns to the visitor.
+16. Check provider logs for acceptance.
+17. Run a final Share test.
+18. Run a final Search test.
+19. Run a final Ask test.
+20. Inspect the browser console and network panel.
+21. Complete priority mobile, zoom, and keyboard QA.
+22. Submit the sitemap to Google Search Console after launch.
+
 ### Vercel environments
 
-1. In the **staging** project, set `VITE_SITE_URL` to the staging domain and keep `VITE_SITE_INDEXABLE=false`.
-2. In the **production** project, set `VITE_SITE_URL=https://wchiudesign.com` and `VITE_SITE_INDEXABLE=true`.
+1. Staging is complete: `VITE_SITE_URL=https://staging.wchiudesign.com` and `VITE_SITE_INDEXABLE=false` are set for Preview.
+2. In the **production** project, set `VITE_SITE_URL=https://wchiudesign.com` and `VITE_SITE_INDEXABLE=true` only after approval.
 3. Confirm Preview variables cannot use production mail/OpenAI credentials unless intentionally scoped.
-4. Deploy, then fetch `/`, `/robots.txt`, `/sitemap.xml`, `/case-studies/sovereign-atlas`, `/experiments/authority-drift`, and `/frameworks/authority-gradient` in a private browser.
+4. Deploy production, then fetch `/`, `/robots.txt`, `/sitemap.xml`, `/case-studies/sovereign-atlas`, `/experiments/authority-drift`, and `/frameworks/authority-gradient` in a private browser.
 5. Confirm all deep links return 200, restore the expected state, and retain HTTPS and the production domain.
 
 ### Contact provider
@@ -241,7 +293,7 @@ Choose consent, retention, and query/message-redaction rules before connecting a
 | Mobile/narrow viewport | PASS | Focused Globality retained main content, breadcrumbs, return, Ask, and Evidence at 390×844 and 320×700. |
 | Responsive viewport baseline | PASS | 1440×900, 1024×768, 768×1024, 390×844, and 320×700 checks passed on staging. |
 | Full responsive/zoom matrix | MANUAL TEST REQUIRED | 125%, 150%, 200%, physical touch hardware, and VoiceOver/NVDA remain. |
-| Staging SEO metadata | FAIL | Title, Open Graph, Twitter, JSON-LD, and `noindex, nofollow` exist, but canonical and `og:url` point to production rather than staging. External `robots.txt` inspection is blocked by Vercel SSO; the default build artifact remains `Disallow: /`. |
+| Staging SEO metadata | PASS | Root and canonical deep routes use the staging domain for canonical/`og:url`, retain Twitter and JSON-LD metadata, and render `noindex, nofollow`. Authenticated deployment output returns `Disallow: /` and a staging-only sitemap. |
 | Production build | PASS | Vite transformed 2,225 modules and completed successfully. |
 | TypeScript client/server checks | PASS | `npm run typecheck` completed both TypeScript configurations successfully. |
 | Search tests | PASS | 13 / 13. |
@@ -254,13 +306,13 @@ The independent final verifier re-ran the build/typecheck and reviewed the finis
 
 ## Launch Recommendation
 
-**READY FOR PRODUCTION CONFIGURATION**
+**READY FOR PRODUCTION DEPLOYMENT APPROVAL**
 
 The smallest path from the verified staging build to production **GO** is:
 
-1. Correct staging `VITE_SITE_URL`, then configure production-only indexing and Contact/Resend variables while keeping staging `noindex`.
+1. Approve and configure production-only indexing and Contact/Resend variables while keeping the verified staging deployment `noindex`.
 2. Complete one successful production inbox/Reply-To test.
 3. Complete the remaining zoom, touch-device, and screen-reader checks.
-4. Supply an approved favicon and social-card image, or explicitly accept launching without them.
+4. Resolve the favicon and social-card owner decisions by supplying approved assets or explicitly marking each `APPROVED TO DEFER`.
 
 No merge, PR, production push, or source-of-truth `main` modification was performed by this audit.
