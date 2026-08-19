@@ -30,9 +30,13 @@ export function AtlasStateProvider({ children }: { children: ReactNode }) {
     (fallbackState) => {
       if (typeof window === "undefined") return fallbackState;
       const route = parseAtlasRoute(window.location);
-      if (!route) return fallbackState;
-      if (route.canonicalPath !== currentBrowserPath()) {
-        replaceAtlasPath(route.canonicalPath);
+      if (!route) {
+        replaceAtlasPath("/");
+        return fallbackState;
+      }
+      const canonicalPath = `${route.canonicalPath}${window.location.search}`;
+      if (canonicalPath !== currentBrowserPath()) {
+        replaceAtlasPath(canonicalPath);
       }
       return route.atlasState;
     },
@@ -42,7 +46,11 @@ export function AtlasStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const restoreFromLocation = () => {
       const route = parseAtlasRoute(window.location);
-      if (!route) return;
+      if (!route) {
+        replaceAtlasPath("/");
+        dispatch({ type: "RESTORE_NAVIGATION", state: initialAtlasState });
+        return;
+      }
       dispatch({ type: "RESTORE_NAVIGATION", state: route.atlasState });
     };
 

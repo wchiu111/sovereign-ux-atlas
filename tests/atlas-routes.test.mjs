@@ -33,6 +33,28 @@ try {
     );
   });
 
+  await test("builds and restores canonical Framework paths", () => {
+    assert.equal(routes.atlasSystemPath("frameworks"), "/frameworks");
+    assert.equal(
+      routes.frameworkBasePath("authority-gradient"),
+      "/frameworks/authority-gradient",
+    );
+    const overview = parse("/frameworks/authority-gradient");
+    assert.equal(overview.atlasState.level, 2);
+    assert.equal(overview.atlasState.activePlanetId, "authority-gradient");
+    const section = parse("/frameworks/authority-gradient/system-purpose");
+    assert.equal(section.atlasState.level, 3);
+    assert.equal(section.sectionId, "system-purpose");
+  });
+
+  await test("canonicalizes legacy Framework routes", () => {
+    const route = parse("/framework/authority-gradient/system-purpose");
+    assert.equal(
+      route.canonicalPath,
+      "/frameworks/authority-gradient/system-purpose",
+    );
+  });
+
   await test("restores the Experiments system and overview", () => {
     const system = parse("/experiments");
     assert.equal(system.atlasState.level, 1);

@@ -6,6 +6,13 @@
   "installCommand": "npm install",
   "rewrites": [
     { "source": "/case-studies", "destination": "/index.html" },
-    { "source": "/case-studies/:path*", "destination": "/index.html" }
+    { "source": "/case-studies/:path*", "destination": "/index.html" },
+    { "source": "/experiments", "destination": "/index.html" },
+    { "source": "/experiments/:path*", "destination": "/index.html" },
+    { "source": "/frameworks", "destination": "/index.html" },
+    { "source": "/frameworks/:path*", "destination": "/index.html" },
+    { "source": "/case-study/:path*", "destination": "/index.html" },
+    { "source": "/experiment/:path*", "destination": "/index.html" },
+    { "source": "/framework/:path*", "destination": "/index.html" }
   ]
 }

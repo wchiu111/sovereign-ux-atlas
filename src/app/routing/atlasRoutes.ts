@@ -4,10 +4,11 @@ import { initialAtlasState, type AtlasState } from "../state/atlasState";
 
 export const CASE_STUDIES_PATH = "/case-studies";
 export const EXPERIMENTS_PATH = "/experiments";
+export const FRAMEWORKS_PATH = "/frameworks";
 
 interface RoutableAtlasCategory {
-  category: Extract<AtlasCategory, "case-study" | "experiment">;
-  systemId: "case-studies" | "experiments";
+  category: AtlasCategory;
+  systemId: "case-studies" | "experiments" | "frameworks";
   systemPath: string;
   legacyPrefix: string;
 }
@@ -24,6 +25,12 @@ const ROUTABLE_CATEGORIES: RoutableAtlasCategory[] = [
     systemId: "experiments",
     systemPath: EXPERIMENTS_PATH,
     legacyPrefix: "/experiment/",
+  },
+  {
+    category: "framework",
+    systemId: "frameworks",
+    systemPath: FRAMEWORKS_PATH,
+    legacyPrefix: "/framework/",
   },
 ];
 
@@ -108,6 +115,10 @@ export function caseStudyBasePath(entryId: string): string {
 
 export function experimentBasePath(entryId: string): string {
   return atlasEntryBasePath(entryId) ?? `${EXPERIMENTS_PATH}/${entryId}`;
+}
+
+export function frameworkBasePath(entryId: string): string {
+  return atlasEntryBasePath(entryId) ?? `${FRAMEWORKS_PATH}/${entryId}`;
 }
 
 export function experimentSectionPath(
