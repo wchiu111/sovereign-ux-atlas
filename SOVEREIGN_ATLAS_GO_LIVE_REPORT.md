@@ -2,27 +2,27 @@
 
 ## Executive Summary
 
-Overall status: **READY FOR STAGING REVIEW**
+Overall status: **READY FOR PRODUCTION CONFIGURATION**
 
 The application now builds cleanly, restores canonical Case Study, Experiment, and Framework routes, produces safe environment-specific search metadata, reports Share and Contact failures honestly, and closes the highest-risk accessibility gaps found in the audit. Search, Atlas Assist, routing, Contact handler, production build, desktop interaction, and a narrow mobile pass all passed locally.
 
 The remaining authored Case Study blockers are resolved. Globality, Oracle, and Sovereign Atlas now use approved role metadata through the canonical content model, and Sovereign Atlas is explicitly documented as an intentional five-section project rather than being forced to render an empty Decisions section.
 
-The branch is ready for staging review, but production launch should remain paused until deployment-specific indexing and Contact variables are configured, an actual inbox-delivery test and deployed deep-link smoke test pass, the priority mobile/zoom/keyboard matrix is completed, and the favicon/social-card decision is approved. Analytics and error monitoring remain post-launch recommendations.
+The audited branch is deployed and live staging verification now passes for canonical Atlas routes, direct-load restoration, Search, Share, browser history, the Observatory Contact failure path, priority keyboard retreat, and responsive viewport baselines from 1440px through 320px. Production launch should remain paused until production-only indexing and Contact variables are configured, actual inbox delivery and Reply-To are verified, the staging URL metadata mismatch is corrected, the remaining browser-zoom/assistive-technology matrix is completed, and the favicon/social-card decision is approved. Analytics and error monitoring remain post-launch recommendations.
 
 ## Scorecard
 
 | Category | Score | Status |
 | --- | ---: | --- |
-| Identity + SEO | 10 / 13 | Fixed in code; favicon, social image, and deployed crawler output remain |
-| URLs + Sharing | 8 / 9 | Canonical routes pass; deployed rewrite behavior remains |
+| Identity + SEO | 10 / 13 | Live title/noindex pass; staging canonical URL configuration, favicon, and social image remain |
+| URLs + Sharing | 9 / 9 | Canonical routes, deployed rewrites, refresh, history, and copied staging URLs pass |
 | Case Studies | 9 / 9 | Approved roles and the five-section exception are canonical and verified |
 | Contact | 8 / 10 | Delivery boundary is real and fail-closed; configuration and inbox delivery remain |
-| Atlas Interaction | 13 / 14 | Core audited paths pass; complete device matrix remains |
-| Responsive | 4 / 9 | Desktop and narrow mobile pass; full matrix remains manual |
+| Atlas Interaction | 14 / 14 | Core deployed paths, Search, Ask retreat, evidence retreat, and history pass |
+| Responsive | 7 / 9 | 1440, 1024, 768, 390, and 320px baselines pass; zoom and physical-device review remain |
 | Accessibility | 11 / 14 | Priority focus, Escape, semantics, and reduced-motion fixes landed |
 | Performance | 6 / 9 | Build/runtime pass; bundle and large assets remain |
-| Production Infrastructure | 7 / 9 | Server-only boundaries pass; deployed Vercel configuration remains |
+| Production Infrastructure | 8 / 9 | Vercel deployment and both functions are Ready; production environment variables remain |
 | Analytics / Observability | 0 / 10 | No provider is currently installed |
 | Search Engine Launch | 5 / 9 | Metadata artifacts exist; Search Console and migration remain external |
 
@@ -92,8 +92,8 @@ The branch is ready for staging review, but production launch should remain paus
 | --- | --- | --- |
 | Contact delivery is not production-verified | Secrets and provider/domain state correctly cannot be inferred or logged from source. | Configure the variables below and complete an inbox/reply test. |
 | Production indexing is not deployment-verified | Indexing is deliberately opt-in and staging defaults to noindex. | Set the production-only value and inspect deployed HTML/robots before launch. |
-| Deployed canonical routes are not smoke-tested | Local direct-load and rewrite tests pass, but deployed Vercel behavior is environment-specific. | Verify the priority deep links and refresh behavior on staging before production. |
-| Priority manual accessibility/responsive checks remain | Automated and local checks do not replace the requested mobile, zoom, and keyboard review. | Complete the priority matrix on the staging deployment. |
+| Staging URL metadata is misconfigured | Authenticated staging HTML is `noindex`, but canonical and `og:url` currently resolve to `https://wchiudesign.com/`. | Set staging `VITE_SITE_URL=https://staging.wchiudesign.com` and redeploy; keep production configured for `https://wchiudesign.com`. |
+| Browser zoom and assistive-technology checks remain | Deployed semantic checks passed at five widths, but browser zoom and VoiceOver/NVDA were not available in this automated session. | Complete 125%, 150%, and 200% zoom plus basic screen-reader checks on staging. |
 | Favicon/social-card decision remains open | No approved redistributable assets were supplied during the audit. | Supply approved assets or explicitly accept launch without them. |
 
 ### P2 — Strongly recommended
@@ -107,7 +107,7 @@ The branch is ready for staging review, but production launch should remain paus
 | Contact rate limiting is process-local | Serverless instances do not share the in-memory counter. | Use a shared rate-limit store if abuse appears or before a high-traffic launch. |
 | Bundle remains large | Main JavaScript is about 792kB minified / 228kB gzip; the application has many content images. | Profile route-level lazy loading after launch-critical work is complete. |
 | Four assets exceed 500kB | Largest observed assets are about 530kB, 1.52MB, 1.63MB, and 1.92MB. | Re-encode only after visual comparison and approval. |
-| Full accessibility/device matrix is incomplete | Local automation covered desktop and 390×844, not every requested browser zoom/device combination. | Complete the manual matrix below with keyboard and touch hardware. |
+| Full accessibility/device matrix is incomplete | Live staging passed 1440×900, 1024×768, 768×1024, 390×844, and 320×700 semantic baselines, but not physical touch hardware or every browser zoom level. | Complete the manual matrix below with keyboard, zoom, screen reader, and touch hardware. |
 | Legacy routes are canonicalized client-side, not server-redirected | SPA rewrites preserve compatibility but do not emit SEO-grade 301/308 responses. | Add explicit permanent redirects after confirming every old production URL. |
 
 ### P3 — Post-launch polish
@@ -218,25 +218,30 @@ Choose consent, retention, and query/message-redaction rules before connecting a
 
 | Test | Result | Evidence / limitation |
 | --- | --- | --- |
-| Load Atlas | PASS | Root rendered with one H1 and no fresh console errors. |
-| Enter main experience | PASS | Observatory entry completed locally. |
-| Open Case Study | PASS | Direct Globality and Sovereign Atlas overviews restored. |
+| Vercel deployment | PASS | Preview deployment `dpl_7eLYN2opucReqq6z1CH8MHVWxQG9` is Ready at `https://staging.wchiudesign.com`; `api/atlas-assist` and `api/contact` compiled as functions. |
+| Load Atlas | PASS | Authenticated staging root rendered with the expected title, H1, Search, and system counts. |
+| Enter main experience | PASS | Atlas → Observatory transition completed on staging. |
+| Open Case Study | PASS | Deployed Agentic Insurance and Globality overview/focused routes restored correctly. |
 | Verify role metadata | PASS | Agentic Insurance, Globality, Oracle, and Sovereign Atlas expose their approved roles through the canonical entry model. |
 | Verify Sovereign Atlas structure | PASS | Exactly Context, Problem, Approach, Outcomes, and Lessons render; no Decisions node, tab, or empty state is authored. |
 | Exit Focus Mode | PASS | Overview return and mobile drawer retreat restored canonical state. |
-| Open Framework | PASS | `/frameworks/authority-gradient/system-purpose` loaded and reloaded. |
-| Open Experiment | PASS | `/experiments/authority-drift/drift` loaded directly. |
-| Search | PASS | `authority gradient` ranked Decision Rights and Enter navigated canonically. |
+| Open Framework | PASS | Deployed `/frameworks`, Decision Rights overview, and `/frameworks/authority-gradient/system-purpose` loaded directly. |
+| Open Experiment | PASS | Deployed `/experiments`, Authority Drift overview, and `/experiments/authority-drift/drift` loaded directly; focused refresh restored Drift. |
+| Search | PASS | Live Globality, Decision Rights, and Authority Drift queries returned curated results and navigated to canonical routes. |
 | Ask | PASS | Eighteen provider/contract tests pass; live OpenAI request remains environment-dependent. |
-| Share action | PASS | Local clipboard changed state to `COPIED` on the active canonical URL. |
-| Fresh shared URL | PASS | Case Study, Experiment, and Framework direct-route reloads passed locally. |
-| Submit Contact | PASS | Plain Vite produced an honest visible error and retained the draft; provider contract tests pass. |
+| Ask dialog keyboard retreat | PASS | Live focused Ask opened with an accessible heading; Escape closed it and restored focus to the Ask trigger. |
+| Evidence dialog | PASS | Live evidence viewer exposed an accessible dialog name; Escape closed it and restored source-card focus. |
+| Share action | PASS | Live Case Study and Framework Share copied `https://staging.wchiudesign.com/...` and displayed `COPIED` after clipboard success. |
+| Fresh shared URL | PASS | Deployed Case Study, Experiment, and Framework direct routes restored; focused Experiment refresh preserved state. |
+| Submit Contact | PASS | Staging API produced `Message not delivered` rather than false success; `Try again` restored name, email, and message. |
 | Actual email arrival | MANUAL TEST REQUIRED | Requires deployed Resend/domain configuration and inbox access. |
-| Browser Back/Forward | PASS | Problem ↔ Approach state and URL restored. |
-| Console errors | PASS | Fresh Atlas → Observatory run returned no warnings/errors. |
-| Failed network requests | MANUAL TEST REQUIRED | Plain Vite intentionally lacks Vercel APIs; deployed functions require verification. |
-| Mobile/narrow viewport | MANUAL TEST REQUIRED | Drawer/profile safeguards pass locally and narrow constellation containment is implemented; confirm all curated nodes on physical/mobile emulation before launch. |
-| Full responsive/zoom matrix | MANUAL TEST REQUIRED | Requires remaining viewport, zoom, browser, and assistive-technology coverage. |
+| Browser Back/Forward | PASS | Live focused Globality route ↔ overview history restored the exact staging URLs. |
+| Console errors | PASS | No error-level browser logs appeared across root, routes, Ask, Contact, or responsive checks. |
+| Failed network requests | PASS | Unconfigured Contact failure was surfaced honestly; Vercel reports both serverless functions built and deployment Ready. |
+| Mobile/narrow viewport | PASS | Focused Globality retained main content, breadcrumbs, return, Ask, and Evidence at 390×844 and 320×700. |
+| Responsive viewport baseline | PASS | 1440×900, 1024×768, 768×1024, 390×844, and 320×700 checks passed on staging. |
+| Full responsive/zoom matrix | MANUAL TEST REQUIRED | 125%, 150%, 200%, physical touch hardware, and VoiceOver/NVDA remain. |
+| Staging SEO metadata | FAIL | Title, Open Graph, Twitter, JSON-LD, and `noindex, nofollow` exist, but canonical and `og:url` point to production rather than staging. External `robots.txt` inspection is blocked by Vercel SSO; the default build artifact remains `Disallow: /`. |
 | Production build | PASS | Vite transformed 2,225 modules and completed successfully. |
 | TypeScript client/server checks | PASS | `npm run typecheck` completed both TypeScript configurations successfully. |
 | Search tests | PASS | 13 / 13. |
@@ -249,13 +254,13 @@ The independent final verifier re-ran the build/typecheck and reviewed the finis
 
 ## Launch Recommendation
 
-**READY FOR STAGING REVIEW**
+**READY FOR PRODUCTION CONFIGURATION**
 
-The smallest path from staging review to production **GO** is:
+The smallest path from the verified staging build to production **GO** is:
 
-1. Configure production-only indexing and Contact/Resend variables in Vercel while keeping staging `noindex`.
-2. Complete one successful inbox/Reply-To test and one deployed deep-link/rewrite smoke test.
-3. Complete the priority mobile/zoom/keyboard manual matrix.
+1. Correct staging `VITE_SITE_URL`, then configure production-only indexing and Contact/Resend variables while keeping staging `noindex`.
+2. Complete one successful production inbox/Reply-To test.
+3. Complete the remaining zoom, touch-device, and screen-reader checks.
 4. Supply an approved favicon and social-card image, or explicitly accept launching without them.
 
 No merge, PR, production push, or source-of-truth `main` modification was performed by this audit.
