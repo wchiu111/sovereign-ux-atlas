@@ -3,17 +3,22 @@ import {
   type CSSProperties,
   type FormEvent,
 } from "react";
+import { transmitContactMessage } from "./contactClient";
 
 type TransmissionState = "idle" | "sending" | "success" | "error";
+type ContactDraft = { name: string; email: string; message: string };
+
+const EMPTY_DRAFT: ContactDraft = { name: "", email: "", message: "" };
 
 interface ProfileContactPanelProps {
   onTransmit?: (formData: FormData) => Promise<void>;
 }
 
 export default function ProfileContactPanel({
-  onTransmit,
+  onTransmit = transmitContactMessage,
 }: ProfileContactPanelProps) {
   const [state, setState] = useState<TransmissionState>("idle");
+  const [draft, setDraft] = useState<ContactDraft>(EMPTY_DRAFT);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,17 +26,19 @@ export default function ProfileContactPanel({
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+    setDraft({
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      message: String(formData.get("message") ?? ""),
+    });
 
     setState("sending");
 
     try {
-      if (onTransmit) {
-        await onTransmit(formData);
-      } else {
-        await new Promise((resolve) => window.setTimeout(resolve, 900));
-      }
+      await onTransmit(formData);
 
       form.reset();
+      setDraft(EMPTY_DRAFT);
       setState("success");
     } catch {
       setState("error");
@@ -43,8 +50,8 @@ export default function ProfileContactPanel({
       <TransmissionResult
         status="success"
         eyebrow="Transmission received"
-        title="Message delivered"
-        message="Your signal has entered the Observatory. I’ll respond through the email address you provided."
+        title="Transmission accepted"
+        message="The Observatory accepted your message for delivery. I’ll respond through the email address you provided."
         actionLabel="Send another message"
         onAction={() => setState("idle")}
       />
@@ -157,8 +164,13 @@ export default function ProfileContactPanel({
         Share what you’re building, questioning, or trying to make clearer.
       </p>
 
-      <Field label="Name" name="name" disabled={sending} />
-      <Field label="Email" name="email" type="email" disabled={sending} />
+      <Field label="Name" name="name" defaultValue={draft.name} disabled={sending} />
+      <Field label="Email" name="email" type="email" defaultValue={draft.email} disabled={sending} />
+
+      <label style={{ position: "absolute", left: -10_000 }} aria-hidden="true">
+        Website
+        <input name="website" tabIndex={-1} autoComplete="off" />
+      </label>
 
       <label style={labelStyle}>
         Message
@@ -166,6 +178,7 @@ export default function ProfileContactPanel({
           name="message"
           rows={4}
           required
+          defaultValue={draft.message}
           disabled={sending}
           style={{
             ...inputStyle,
@@ -368,11 +381,13 @@ function Field({
   label,
   name,
   type = "text",
+  defaultValue = "",
   disabled = false,
 }: {
   label: string;
   name: string;
   type?: string;
+  defaultValue?: string;
   disabled?: boolean;
 }) {
   return (
@@ -382,6 +397,7 @@ function Field({
         name={name}
         type={type}
         required
+        defaultValue={defaultValue}
         disabled={disabled}
         style={{ ...inputStyle, opacity: disabled ? 0.58 : 1 }}
       />
