@@ -1,4 +1,5 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import sovereignUxCodex from "../../../imports/case-studies/sovereign-atlas/01-content/01-sovereign-ux-codex.png";
 import foundEcho from "../../../imports/case-studies/sovereign-atlas/01-content/02-found-echo.png";
@@ -16,7 +17,7 @@ import v129Hud from "../../../imports/case-studies/sovereign-atlas/03-approach/v
 import v147SystemPreview from "../../../imports/case-studies/sovereign-atlas/03-approach/v147-system-preview.png";
 import skillsLearned from "../../../imports/case-studies/sovereign-atlas/04-lessons/skills-learned.png";
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Sovereign Atlas",
   subheadline:
     "A navigable knowledge system that began as a search feature and evolved through curiosity, constraint, and continuous building.",
@@ -514,6 +515,11 @@ export default defineAtlasEntry({
     ],
   },
   caseStudyId: "sovereign-atlas-cs",
+  role: "Product Designer · Design Engineer",
+  sectionStructure: {
+    kind: "authored-exception",
+    note: "Intentionally authored as Context, Problem, Approach, Outcomes, and Lessons.",
+  },
   focus,
   sections: focus.sections,
 });

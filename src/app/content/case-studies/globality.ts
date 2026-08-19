@@ -1,4 +1,5 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import oldHomeDashboard from "../../../imports/case-studies/globality/01-context/1-old-home-dashboard.png";
 import oldProjectDashboard from "../../../imports/case-studies/globality/01-context/2-old-project-dashboard.png";
@@ -25,7 +26,7 @@ import beforeAfterProjectList from "../../../imports/case-studies/globality/05-o
 
 import questionsEnterpriseProducts from "../../../imports/case-studies/globality/06-lessons/1-questions-enterprise-products.png";
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Globality",
   subheadline:
     "Redesigning an AI-assisted procurement platform around orientation, work states, and the decisions users needed to make next.",
@@ -606,6 +607,7 @@ export default defineAtlasEntry({
     ],
   },
   caseStudyId: "globality",
+  role: "Senior Product Designer II",
   focus,
   sections: focus.sections,
 });

@@ -1,4 +1,5 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import wireframes from "../../../imports/case-studies/oracle/01-context/1-wireframes.png";
 import micrositeOverview from "../../../imports/case-studies/oracle/01-context/2-microsite-overview.png";
@@ -14,7 +15,7 @@ import modularContentOne from "../../../imports/case-studies/oracle/04-decisions
 import modularContentTwo from "../../../imports/case-studies/oracle/04-decisions/4-modular-content.png";
 import responsiveFinalExperience from "../../../imports/case-studies/oracle/05-outcomes/3-responsive-final-experience.png";
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Oracle Higher Education",
   subheadline:
     "Translating a complex enterprise product ecosystem into a clearer, more adaptable customer experience.",
@@ -440,6 +441,7 @@ export default defineAtlasEntry({
     ],
   },
   caseStudyId: "oracle",
+  role: "Interactive Designer",
   focus,
   sections: focus.sections,
 });

@@ -193,6 +193,11 @@ export interface AtlasEntryOrbit {
   starPrefix: string;
 }
 
+export interface AtlasEntrySectionStructure {
+  kind: "standard" | "authored-exception";
+  note?: string;
+}
+
 export interface AtlasEntry {
   id: string;
   /** Public URL segment. Internal IDs remain stable for Atlas state and relations. */
@@ -206,6 +211,7 @@ export interface AtlasEntry {
   orbit: AtlasEntryOrbit;
   overviewStars?: AtlasOverviewStar[];
   sections?: AtlasEntrySection[];
+  sectionStructure?: AtlasEntrySectionStructure;
   caseStudyId?: string;
   tags?: string[];
   meta?: string;
