@@ -1,4 +1,5 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import output01 from "../../../imports/experiments/gestalt-principles/output-01.png";
 import output02 from "../../../imports/experiments/gestalt-principles/output-02.png";
@@ -22,7 +23,7 @@ const sharedCanvas = {
   ],
 };
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Gestalt Principles",
   subheadline: "Can AI understand why an interface works?",
   sections: [

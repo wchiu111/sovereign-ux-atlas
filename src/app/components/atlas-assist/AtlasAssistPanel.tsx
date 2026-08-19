@@ -35,7 +35,7 @@ export default function AtlasAssistPanel({
   initialQuery?: string;
   initialPromptCategory?: AtlasAssistPromptCategory;
   initialInteractionMethod?: AtlasAssistInteractionMethod;
-  returnFocusRef?: RefObject<HTMLElement | null>;
+  returnFocusRef?: RefObject<HTMLElement>;
   onClose: () => void;
   onOpenSource: (source: AtlasAssistSource) => void;
   provider?: AtlasAssistProvider;

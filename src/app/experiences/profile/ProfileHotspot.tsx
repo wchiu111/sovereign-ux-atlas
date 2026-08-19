@@ -663,7 +663,13 @@ function AboutOrbitalSystem({ color }: { color: string }) {
 }
 
 function PhilosophyConstellation({ color }: { color: string }) {
-  const nodes = [
+  const nodes: ReadonlyArray<{
+    x: number;
+    y: number;
+    r: number;
+    delay: number;
+    primary?: boolean;
+  }> = [
     { x: 18, y: 66, r: 4.5, delay: 220 },
     { x: 62, y: 44, r: 5.5, delay: 340 },
     { x: 108, y: 26, r: 6, delay: 480 },
@@ -671,7 +677,7 @@ function PhilosophyConstellation({ color }: { color: string }) {
     { x: 204, y: 36, r: 5.5, delay: 760 },
     { x: 252, y: 68, r: 5, delay: 900 },
     { x: 296, y: 42, r: 4.5, delay: 1020 },
-  ] as const;
+  ];
 
   return (
     <svg

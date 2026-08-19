@@ -1,4 +1,5 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import chatgptArtifact from "../../../imports/experiments/design-philosophy/a-chatgpt.png";
 import sovereignArtifact from "../../../imports/experiments/design-philosophy/b-sovereign-ux.png";
@@ -12,7 +13,7 @@ const sharedCanvas = {
     "Compare two interfaces generated from the same hiring-assistant brief and inspect how hierarchy, language, and CTA placement reveal different assumptions about decision ownership.",
 };
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Design Philosophy",
   subheadline:
     "What does an interface reveal about what a model believes should own the decision?",

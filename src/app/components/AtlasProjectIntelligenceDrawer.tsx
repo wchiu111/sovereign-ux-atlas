@@ -33,6 +33,7 @@ interface AtlasProjectIntelligenceDrawerProps {
   open: boolean;
   system: SystemLike;
   planet: PlanetLike;
+  onClose: () => void;
   onOpenAssistSource: (source: AtlasAssistSource) => void;
 }
 
@@ -46,16 +47,34 @@ export default function AtlasProjectIntelligenceDrawer({
   open,
   system,
   planet,
+  onClose,
   onOpenAssistSource,
 }: AtlasProjectIntelligenceDrawerProps) {
   const [mode, setMode] = useState<"overview" | "assist">("overview");
   const [assistRequest, setAssistRequest] = useState<AssistRequest | null>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  const drawerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setMode("overview");
     setAssistRequest(null);
   }, [planet.id]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previousFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    drawerRef.current?.focus({ preventScroll: true });
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [onClose, open]);
 
   useEffect(() => {
     if (!import.meta.env.DEV) return;
@@ -82,6 +101,9 @@ export default function AtlasProjectIntelligenceDrawer({
 
   return (
     <aside
+      ref={drawerRef}
+      tabIndex={-1}
+      aria-label={`${planet.label} project overview`}
       className="absolute top-0 right-0 bottom-0 z-30 overflow-hidden"
       style={{
         width: `min(${PROJECT_DRAWER_WIDTH}px, 100vw)`,
@@ -95,6 +117,34 @@ export default function AtlasProjectIntelligenceDrawer({
         color: "#F4EBD0",
       }}
     >
+      <style>{`
+        .atlas-project-drawer-close { display: none; }
+        @media (max-width: 767px) {
+          .atlas-project-drawer-close { display: grid; }
+        }
+      `}</style>
+      <button
+        type="button"
+        className="atlas-project-drawer-close"
+        aria-label="Return to constellation"
+        onClick={onClose}
+        style={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          zIndex: 10,
+          width: 44,
+          height: 44,
+          placeItems: "center",
+          border: "1px solid rgba(138,174,200,0.28)",
+          background: "rgba(4,5,11,0.92)",
+          color: "rgba(244,235,208,0.82)",
+          fontFamily: "'DM Mono', monospace",
+          cursor: "pointer",
+        }}
+      >
+        ←
+      </button>
       <div
         style={{
           display: "flex",
@@ -152,7 +202,7 @@ function DrawerHeader({
   askColor: string;
   askOpen: boolean;
   onAsk: () => void;
-  askButtonRef: React.RefObject<HTMLButtonElement | null>;
+  askButtonRef: React.RefObject<HTMLButtonElement>;
 }) {
   return (
     <div style={drawerHeaderStyle}>
@@ -293,6 +343,7 @@ function OverviewLayer({
 }) {
   const [askOpen, setAskOpen] = useState(false);
   const askButtonRef = useRef<HTMLButtonElement>(null);
+  const overviewRef = useRef<HTMLDivElement>(null);
   const askColor = resolveStellarColor(
     planet.signatureStellarType,
     system.color,
@@ -302,6 +353,10 @@ function OverviewLayer({
     setAskOpen(false);
   }, [planet.id]);
 
+  useEffect(() => {
+    if (overviewRef.current) overviewRef.current.inert = inactive;
+  }, [inactive]);
+
   const closeAsk = () => {
     setAskOpen(false);
     requestAnimationFrame(() => askButtonRef.current?.focus({ preventScroll: true }));
@@ -309,9 +364,9 @@ function OverviewLayer({
 
   return (
     <div
+      ref={overviewRef}
       style={overviewLayerStyle}
       aria-hidden={inactive || undefined}
-      {...(inactive ? { inert: "" } : {})}
     >
       <div style={scrollLayerStyle}>
         <DrawerHeader

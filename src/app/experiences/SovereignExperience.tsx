@@ -12,6 +12,15 @@ export default function SovereignExperience() {
   const [spatialTransition, setSpatialTransition] =
     useState<SpatialTransition>(null);
   const transitionTimerRef = useRef<number | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -34,7 +43,7 @@ export default function SovereignExperience() {
     transitionTimerRef.current = window.setTimeout(() => {
       setSpatialTransition(null);
       transitionTimerRef.current = null;
-    }, SPATIAL_TRANSITION_DURATION);
+    }, reducedMotion ? 0 : SPATIAL_TRANSITION_DURATION);
   };
 
   const enterObservatory = () => {
@@ -74,7 +83,9 @@ export default function SovereignExperience() {
             transformOrigin: "50% 44%",
             willChange: "transform, filter, opacity",
             animation:
-              spatialTransition === "toObservatory"
+              reducedMotion
+                ? undefined
+                : spatialTransition === "toObservatory"
                 ? "observatoryRoomResolve 1420ms cubic-bezier(0.16,1,0.3,1) both"
                 : spatialTransition === "toAtlas"
                   ? "observatoryRoomPushAway 1420ms cubic-bezier(0.16,1,0.3,1) both"
@@ -102,7 +113,9 @@ export default function SovereignExperience() {
           transformOrigin: "50% 44%",
           willChange: "transform, clip-path, filter, opacity",
           animation:
-            spatialTransition === "toObservatory"
+            reducedMotion
+              ? undefined
+              : spatialTransition === "toObservatory"
               ? "atlasPullIntoObservatory 1420ms cubic-bezier(0.16,1,0.3,1) both"
               : spatialTransition === "toAtlas"
                 ? "atlasPushFromObservatory 1420ms cubic-bezier(0.16,1,0.3,1) both"
@@ -115,7 +128,7 @@ export default function SovereignExperience() {
         />
       </div>
 
-      {spatialTransition === "toObservatory" && (
+      {spatialTransition === "toObservatory" && !reducedMotion && (
         <ObservatoryPullbackOverlay />
       )}
 

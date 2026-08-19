@@ -1,7 +1,7 @@
 import { NEBULAE } from "../../utils/atlasParticles";
 
 interface AtlasBackgroundProps {
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  canvasRef: React.RefObject<HTMLCanvasElement>;
 }
 
 export default function AtlasBackground({ canvasRef }: AtlasBackgroundProps) {

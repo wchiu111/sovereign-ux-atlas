@@ -4,7 +4,7 @@ interface AtlasAssistTriggerProps {
   color: string;
   open: boolean;
   onClick: () => void;
-  buttonRef?: RefObject<HTMLButtonElement | null>;
+  buttonRef?: RefObject<HTMLButtonElement>;
   controls?: string;
   hasPopup?: "dialog";
 }

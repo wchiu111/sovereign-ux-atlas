@@ -4,7 +4,7 @@ import { CURSOR_ATTENTION } from "../constellation/visualTokens";
 const LABEL_SELECTOR = "[data-atlas-attention-label]";
 
 interface UseAtlasCursorAttentionOptions {
-  rootRef: RefObject<SVGSVGElement | null>;
+  rootRef: RefObject<SVGSVGElement>;
   enabled: boolean;
 }
 

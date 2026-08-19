@@ -1,6 +1,10 @@
 import { useRef } from "react";
 import { SYSTEMS } from "../../data/atlasSystems";
-import { sysOrbitPos, systemOrbitPath } from "../../utils/atlasGeometry";
+import {
+  containSystemPosition,
+  sysOrbitPos,
+  systemOrbitPath,
+} from "../../utils/atlasGeometry";
 import type { Planet, StarSystem, ViewLevel } from "../../types/atlas";
 import useAtlasCursorAttention from "../hooks/useAtlasCursorAttention";
 import AtlasNexus from "./AtlasNexus";
@@ -13,7 +17,7 @@ interface AtlasCanvasProps {
   activeSystemId: string | null;
   activePlanetId: string | null;
   searchPreviewSystemId?: string | null;
-  zoomableRef: React.RefObject<HTMLDivElement | null>;
+  zoomableRef: React.RefObject<HTMLDivElement>;
   systemGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
   planetGroupRefs: React.MutableRefObject<Map<string, SVGGElement>>;
   outerGlowRefs: React.MutableRefObject<Map<string, SVGCircleElement>>;
@@ -60,7 +64,11 @@ export default function AtlasCanvas({
   const nexusX = width * 0.5;
   const nexusY = height * 0.48;
   const initialSystemPosition = (system: StarSystem) =>
-    sysOrbitPos(system, 0, nexusX, nexusY);
+    containSystemPosition(
+      sysOrbitPos(system, 0, nexusX, nexusY),
+      width,
+      height,
+    );
 
   useAtlasCursorAttention({
     rootRef: svgRef,

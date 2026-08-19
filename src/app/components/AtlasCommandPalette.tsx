@@ -68,10 +68,12 @@ export default function AtlasCommandPalette({
   const isOpenRef = useRef(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const pointerMethodRef = useRef<AtlasSearchInteractionMethod>("mouse");
+  const openMethodRef = useRef<AtlasSearchInteractionMethod>("mouse");
   const lastNoResultQueryRef = useRef("");
 
   const openPalette = useCallback((method: AtlasSearchInteractionMethod) => {
     if (!isOpenRef.current) {
+      openMethodRef.current = method;
       isOpenRef.current = true;
       setIsOpen(true);
       onOpenChange?.(true);
@@ -117,8 +119,9 @@ export default function AtlasCommandPalette({
         inputRef.current?.focus();
       } else if (event.key === "Escape" && isOpenRef.current) {
         event.preventDefault();
-        inputRef.current?.blur();
-        closePalette(true);
+        const restoreShortcutFocus = openMethodRef.current === "keyboard";
+        if (restoreShortcutFocus) inputRef.current?.blur();
+        closePalette(restoreShortcutFocus);
       }
     };
 

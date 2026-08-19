@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   PROFILE_HOTSPOTS,
   ProfileEnvironment,
@@ -19,6 +19,11 @@ export default function ProfileExperience({
   const [hovered, setHovered] = useState<ProfileHotspotId | null>(null);
   const [focus, setFocus] = useState<ProfileHotspotId | null>(null);
   const [closingFocus, setClosingFocus] = useState(false);
+  const hotspotLayerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (hotspotLayerRef.current) hotspotLayerRef.current.inert = Boolean(focus);
+  }, [focus]);
 
   const activeHotspot = useMemo(
     () => PROFILE_HOTSPOTS.find((hotspot) => hotspot.id === focus) ?? null,
@@ -69,6 +74,9 @@ export default function ProfileExperience({
         isolation: "isolate",
       }}
     >
+      <h1 style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>
+        Wilson Chiu Profile Observatory
+      </h1>
       <ProfileStageProvider
         focused={Boolean(activeHotspot)}
         focusPoint={activeHotspot}
@@ -77,6 +85,8 @@ export default function ProfileExperience({
       >
         <ProfileEnvironment hovered={hovered}>
           <div
+            ref={hotspotLayerRef}
+            aria-hidden={Boolean(focus)}
             style={{
               position: "absolute",
               inset: 0,

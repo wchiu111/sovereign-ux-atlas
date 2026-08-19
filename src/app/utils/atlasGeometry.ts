@@ -11,6 +11,22 @@ export interface ProjectedOrbitPosition {
   depth: number;
 }
 
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
+
+export function containSystemPosition(
+  position: ProjectedOrbitPosition,
+  viewportWidth: number,
+  viewportHeight: number,
+): ProjectedOrbitPosition {
+  if (viewportWidth >= 760) return position;
+  return {
+    ...position,
+    x: clamp(position.x, 92, viewportWidth - 92),
+    y: clamp(position.y, 132, viewportHeight - 116),
+  };
+}
+
 /**
  * Keeps each constellation near its authored position while applying a shallow,
  * deterministic elliptical drift oriented around the Sovereign Design nexus.
@@ -82,6 +98,24 @@ export interface ProjectedPlanetPosition {
   y: number;
   scale: number;
   depth: number;
+}
+
+export function containPlanetPosition(
+  position: ProjectedPlanetPosition,
+  systemPosition: ProjectedOrbitPosition,
+  viewportWidth: number,
+  viewportHeight: number,
+): ProjectedPlanetPosition {
+  if (viewportWidth >= 760) return position;
+  const worldX = systemPosition.x + position.x * systemPosition.scale;
+  const worldY = systemPosition.y + position.y * systemPosition.scale;
+  return {
+    ...position,
+    x: (clamp(worldX, 88, viewportWidth - 88) - systemPosition.x)
+      / systemPosition.scale,
+    y: (clamp(worldY, 124, viewportHeight - 104) - systemPosition.y)
+      / systemPosition.scale,
+  };
 }
 
 const LOCAL_PLANET_PERSPECTIVE = 720;

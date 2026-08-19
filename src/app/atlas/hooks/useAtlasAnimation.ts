@@ -1,6 +1,11 @@
 import { useEffect, useRef } from "react";
 import { SYSTEMS, SYSTEM_MAP } from "../../data/atlasSystems";
-import { planetLocalPos, sysOrbitPos } from "../../utils/atlasGeometry";
+import {
+  containPlanetPosition,
+  containSystemPosition,
+  planetLocalPos,
+  sysOrbitPos,
+} from "../../utils/atlasGeometry";
 import { STAR_RGB_ARR, type Particle } from "../../utils/atlasParticles";
 import type { ViewLevel } from "../../types/atlas";
 
@@ -17,8 +22,8 @@ type CameraState = {
 };
 
 interface UseAtlasAnimationArgs {
-  canvasRef: React.RefObject<HTMLCanvasElement | null>;
-  zoomableRef: React.RefObject<HTMLDivElement | null>;
+  canvasRef: React.RefObject<HTMLCanvasElement>;
+  zoomableRef: React.RefObject<HTMLDivElement>;
   particlesRef: React.MutableRefObject<Particle[]>;
   dimsRef: React.MutableRefObject<{ w: number; h: number }>;
   levelRef: React.MutableRefObject<ViewLevel>;
@@ -27,6 +32,7 @@ interface UseAtlasAnimationArgs {
   isFollowingRef: React.MutableRefObject<boolean>;
   cameraRef: React.MutableRefObject<CameraState>;
   active?: boolean;
+  reducedMotion?: boolean;
 }
 
 export function useAtlasAnimation({
@@ -40,6 +46,7 @@ export function useAtlasAnimation({
   isFollowingRef,
   cameraRef,
   active = true,
+  reducedMotion = false,
 }: UseAtlasAnimationArgs) {
   const systemGroupRefs = useRef<Map<string, SVGGElement>>(new Map());
   const planetGroupRefs = useRef<Map<string, SVGGElement>>(new Map());
@@ -61,7 +68,7 @@ export function useAtlasAnimation({
 
     const animate = (timestamp: number) => {
       if (startTime === null) startTime = timestamp;
-      const elapsed = timestamp - startTime;
+      const elapsed = reducedMotion ? 0 : timestamp - startTime;
       elapsedRef.current = elapsed;
       const { w, h } = dimsRef.current;
       const nexusX = w * 0.5;
@@ -70,8 +77,10 @@ export function useAtlasAnimation({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (const particle of particlesRef.current) {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
+        if (!reducedMotion) {
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+        }
 
         if (particle.x < 0) particle.x += canvas.width;
         if (particle.x > canvas.width) particle.x -= canvas.width;
@@ -123,7 +132,11 @@ export function useAtlasAnimation({
       }
 
       SYSTEMS.forEach((system) => {
-        const systemPosition = sysOrbitPos(system, elapsed, nexusX, nexusY);
+        const systemPosition = containSystemPosition(
+          sysOrbitPos(system, elapsed, nexusX, nexusY),
+          w,
+          h,
+        );
         const systemElement = systemGroupRefs.current.get(system.id);
 
         if (systemElement) {
@@ -142,7 +155,12 @@ export function useAtlasAnimation({
         }
 
         system.planets.forEach((planet) => {
-          const planetPosition = planetLocalPos(planet, elapsed);
+          const planetPosition = containPlanetPosition(
+            planetLocalPos(planet, elapsed),
+            systemPosition,
+            w,
+            h,
+          );
           const planetElement = planetGroupRefs.current.get(planet.id);
 
           if (planetElement) {
@@ -167,7 +185,11 @@ export function useAtlasAnimation({
 
         if (systemId && currentLevel >= 1) {
           const system = SYSTEM_MAP[systemId];
-          const systemPosition = sysOrbitPos(system, elapsed, nexusX, nexusY);
+          const systemPosition = containSystemPosition(
+            sysOrbitPos(system, elapsed, nexusX, nexusY),
+            w,
+            h,
+          );
 
           let targetScale: number | null = null;
           let targetTx: number | null = null;
@@ -177,7 +199,12 @@ export function useAtlasAnimation({
             const planet = system.planets.find(item => item.id === planetId);
 
             if (planet) {
-              const planetPosition = planetLocalPos(planet, elapsed);
+              const planetPosition = containPlanetPosition(
+                planetLocalPos(planet, elapsed),
+                systemPosition,
+                w,
+                h,
+              );
               const worldX =
                 systemPosition.x + planetPosition.x * systemPosition.scale;
               const worldY =
@@ -218,7 +245,7 @@ export function useAtlasAnimation({
         }
       }
 
-      rafRef.current = requestAnimationFrame(animate);
+      if (!reducedMotion) rafRef.current = requestAnimationFrame(animate);
     };
 
     rafRef.current = requestAnimationFrame(animate);
@@ -234,6 +261,7 @@ export function useAtlasAnimation({
     particlesRef,
     zoomableRef,
     active,
+    reducedMotion,
   ]);
 
   return {

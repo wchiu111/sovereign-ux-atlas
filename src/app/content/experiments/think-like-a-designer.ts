@@ -1,11 +1,12 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import genericArtifact from "../../../imports/experiments/think-like-a-designer/a-generic.png";
 import contextArtifact from "../../../imports/experiments/think-like-a-designer/b-user-context.png";
 import reflectionArtifact from "../../../imports/experiments/think-like-a-designer/c-after-reflection.png";
 import portalImage from "../../../imports/experiments/think-like-a-designer/think-like-a-designer-portal.jpg";
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Think Like a Designer",
   subheadline:
     "Can AI move beyond user context and reconsider the assumptions behind its own design?",

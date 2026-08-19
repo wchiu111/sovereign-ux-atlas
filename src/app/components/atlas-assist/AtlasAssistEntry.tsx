@@ -30,12 +30,17 @@ export default function AtlasAssistEntry({
   const [question, setQuestion] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const shellRef = useRef<HTMLDivElement>(null);
   const submissionMethodRef = useRef<AtlasAssistInteractionMethod>("keyboard");
   const { error: contextError } = useAtlasAssistContext({
     mode: "overview",
     scope: "atlas",
     projectId,
   });
+
+  useEffect(() => {
+    if (shellRef.current) shellRef.current.inert = !open;
+  }, [open]);
   const providerMode = useMemo(() => {
     try {
       return createAtlasAssistProviderSelection().mode;
@@ -104,10 +109,10 @@ export default function AtlasAssistEntry({
 
   return (
     <div
+      ref={shellRef}
       className="atlas-assist-entry-shell"
       data-open={open || undefined}
       aria-hidden={!open}
-      {...(!open ? { inert: "" } : {})}
     >
       <button
         type="button"

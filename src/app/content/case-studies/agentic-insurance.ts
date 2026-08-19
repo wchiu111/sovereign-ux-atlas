@@ -1,4 +1,5 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import layeredClaimsJourney from "../../../imports/case-studies/agentic-insurance/01-context/1-layered-claims-journey.png";
 import driverJourney from "../../../imports/case-studies/agentic-insurance/01-context/2-driver-journey.png";
@@ -24,7 +25,7 @@ import confidenceVsConsequence from "../../../imports/case-studies/agentic-insur
 import emotionalRepairLayer from "../../../imports/case-studies/agentic-insurance/06-lessons/1-emotional-repair-layer.png";
 import humanOverrideFeedback from "../../../imports/case-studies/agentic-insurance/06-lessons/2-human-override-feedback.png";
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Agentic Insurance",
   subheadline:
     "Exploring where AI could support insurance decisions—and where real validation still had to begin.",

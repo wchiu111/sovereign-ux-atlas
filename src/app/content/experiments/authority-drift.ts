@@ -1,11 +1,12 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import type { AtlasEntrySection } from "../types";
 
 import baselineArtifact from "../../../imports/experiments/authority-drift/a-baseline.png";
 import unconstrainedArtifact from "../../../imports/experiments/authority-drift/b-unconstrained-ai.png";
 import constrainedArtifact from "../../../imports/experiments/authority-drift/c-authority-constrained.png";
 import authorityDriftPortal from "../../../imports/experiments/authority-drift/authority-drift-portal.jpg";
 
-const focus = {
+const focus: { headline: string; subheadline: string; sections: AtlasEntrySection[] } = {
   headline: "Authority Drift",
   subheadline:
     "How AI implementation can quietly rewrite who appears to hold authority inside an existing interface.",

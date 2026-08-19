@@ -238,6 +238,7 @@ useEffect(() => {
     isFollowingRef,
     cameraRef,
     active,
+    reducedMotion: reduceFocusMotion,
   });
 
   // ── Navigation helpers ────────────────────────────────────────────────
@@ -471,7 +472,7 @@ useEffect(() => {
 
   return (
     <>
-    <div className="relative w-full h-screen overflow-hidden" style={{ background:"#05050A" }}>
+    <main className="relative w-full h-screen overflow-hidden" style={{ background:"#05050A" }}>
 
       <div
         aria-hidden="true"
@@ -668,17 +669,29 @@ useEffect(() => {
               "opacity 620ms cubic-bezier(0.16,1,0.3,1), filter 720ms cubic-bezier(0.16,1,0.3,1), transform 720ms cubic-bezier(0.16,1,0.3,1)",
           }}>
           <div>
-            <div
+            {level === 0 ? <h1
               style={{
                 fontFamily: "'DM Mono', monospace",
                 fontSize: "10px",
                 letterSpacing: "0.2em",
                 color: "rgba(232,200,109,0.82)",
                 textTransform: "uppercase",
+                margin: 0,
               }}
             >
               The Sovereign Atlas
-            </div>
+            </h1> : <div
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "10px",
+                letterSpacing: "0.2em",
+                color: "rgba(232,200,109,0.82)",
+                textTransform: "uppercase",
+                margin: 0,
+              }}
+            >
+              The Sovereign Atlas
+            </div>}
             <div style={{ fontFamily:"'EB Garamond',serif", fontSize:"14px",
               letterSpacing:"0.06em", color:"rgba(200,169,110,0.52)",
               marginTop:"3px", fontStyle:"regular" }}>
@@ -856,6 +869,7 @@ useEffect(() => {
           open={drawerOpen}
           system={activeSystem}
           planet={activePlanet}
+          onClose={backToSystem}
           onOpenAssistSource={openAssistSource}
         />
       )}
@@ -872,7 +886,7 @@ useEffect(() => {
           onOpenAssistSource={openAssistSource}
         />
       )}
-    </div>
+    </main>
       </>
   );
 }

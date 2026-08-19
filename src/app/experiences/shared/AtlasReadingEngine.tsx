@@ -250,7 +250,7 @@ function SectionContent({
   sequenceLabel?: string;
   assistOpen: boolean;
   onToggleAssist: () => void;
-  assistTriggerRef: RefObject<HTMLButtonElement | null>;
+  assistTriggerRef: RefObject<HTMLButtonElement>;
 }) {
   return (
     <div style={{
@@ -286,11 +286,11 @@ function SectionContent({
         marginBottom:"12px",
       }}>
         <div style={{ minWidth:0 }}>
-          <div style={{ fontFamily:"'EB Garamond',serif", fontSize:"40px",
+          <h1 style={{ fontFamily:"'EB Garamond',serif", fontSize:"40px",
             lineHeight:1.04, color:"rgba(255,252,245,0.97)",
             letterSpacing:"0.01em", marginBottom:"12px", fontWeight:500 }}>
             {section.title}
-          </div>
+          </h1>
           <div style={{ fontFamily:"'EB Garamond',serif", fontStyle:"regular",
             fontSize:"18px", lineHeight:1.55,
             color:"rgba(200,180,130,0.72)" }}>
@@ -769,13 +769,39 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
 }) {
   const [copied, setCopied] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    const previousFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    closeRef.current?.focus({ preventScroll: true });
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      if (e.key === "Tab" && dialogRef.current) {
+        const controls = Array.from(
+          dialogRef.current.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        );
+        if (!controls.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+      previousFocus?.focus({ preventScroll: true });
+    };
   }, [onClose]);
 
   useEffect(() => {
@@ -795,7 +821,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
   };
 
   const viewer = (
-    <div role="dialog" aria-modal={fullscreen ? true : undefined} style={{
+    <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={`${item.title} evidence viewer`} style={{
       position: fullscreen ? "fixed" : "absolute",
       inset:0,
       zIndex: fullscreen ? 2000 : 50,
@@ -842,11 +868,11 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
             {fullscreen ? <Minimize2 size={10}/> : <ZoomIn size={10}/>}
             {fullscreen ? "EXIT FULLSCREEN" : "FULLSCREEN"}
           </button>
-          <button aria-label="Close evidence viewer" onClick={onClose} style={{
+          <button ref={closeRef} aria-label="Close evidence viewer" onClick={onClose} style={{
             display:"flex", alignItems:"center", justifyContent:"center",
             color:"rgba(200,180,130,0.75)", background:"none",
             border:"1px solid rgba(200,180,130,0.52)",
-            width:"27px", height:"27px", cursor:"pointer",
+            width:"44px", height:"44px", cursor:"pointer",
           }}>
             <X size={14}/>
           </button>
@@ -1024,7 +1050,7 @@ export default function AtlasReadingEngine({
 
   const [activeSection, setActiveSection] = useState<Section>(getInitialSection);
   const [activeEvidence, setActiveEvidence] = useState<EvidenceItem|null>(null);
-  const [shareConfirm, setShareConfirm] = useState(false);
+  const [shareStatus, setShareStatus] = useState<"copied" | "failed" | null>(null);
   const [assistOpen, setAssistOpen] = useState(false);
   const assistTriggerRef = useRef<HTMLButtonElement>(null);
   const sectionColor = resolveStellarColor(
@@ -1140,11 +1166,11 @@ export default function AtlasReadingEngine({
   const handleShare = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      setShareStatus("copied");
     } catch {
-      // clipboard not available in sandbox
+      setShareStatus("failed");
     }
-    setShareConfirm(true);
-    setTimeout(() => setShareConfirm(false), 2000);
+    setTimeout(() => setShareStatus(null), 2000);
   }, []);
 
   const breadcrumbButtonStyle = {
@@ -1222,12 +1248,12 @@ export default function AtlasReadingEngine({
           <button onClick={handleShare} style={{
             display:"flex", alignItems:"center", gap:"5px",
             fontSize:"10px", letterSpacing:"0.20em",
-            color: shareConfirm ? color : "rgba(200,180,130,0.70)",
+            color: shareStatus === "copied" ? color : "rgba(200,180,130,0.70)",
             background:"none", border:"1px solid rgba(200,180,130,0.42)",
             padding:"5px 10px", cursor:"pointer", transition:"color 0.2s",
           }}>
             <Share2 size={10}/>
-            {shareConfirm ? "COPIED" : "SHARE"}
+            {shareStatus === "copied" ? "COPIED" : shareStatus === "failed" ? "COPY FAILED" : "SHARE"}
           </button>
          
         </div>

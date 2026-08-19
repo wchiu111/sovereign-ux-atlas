@@ -24,6 +24,7 @@ const focusAreas = [
 export default function ProfileAboutPanel() {
   return (
     <div
+      className="profile-about"
       style={{
         display: "grid",
         gap: 30,
@@ -32,7 +33,18 @@ export default function ProfileAboutPanel() {
         boxSizing: "border-box",
       }}
     >
+      <style>{`
+        @media (max-width: 900px) {
+          .profile-about { padding: 24px 20px 36px !important; gap: 24px !important; }
+          .profile-about__hero,
+          .profile-about__columns,
+          .profile-about__detail { grid-template-columns: minmax(0, 1fr) !important; }
+          .profile-about__hero { align-items: start !important; gap: 22px !important; }
+          .profile-about__headline { font-size: 30px !important; }
+        }
+      `}</style>
       <section
+        className="profile-about__hero"
         style={{
           display: "grid",
           gridTemplateColumns: "180px minmax(0, 1fr)",
@@ -47,6 +59,7 @@ export default function ProfileAboutPanel() {
         <div style={{ maxWidth: 640 }}>
           <div style={eyebrowStyle}>Product designer · Design engineer</div>
           <h3
+            className="profile-about__headline"
             style={{
               margin: "12px 0 0",
               fontFamily: "'EB Garamond', serif",
@@ -89,6 +102,7 @@ export default function ProfileAboutPanel() {
       </section>
 
       <div
+        className="profile-about__columns"
         style={{
           display: "grid",
           gridTemplateColumns: "minmax(0, 1fr) minmax(320px, 0.9fr)",
@@ -97,6 +111,7 @@ export default function ProfileAboutPanel() {
       >
         <QuietBlock index="01" title="Principles">
           <div
+            className="profile-about__detail"
             style={{
               display: "grid",
               gridTemplateColumns: "minmax(0, 1fr) minmax(210px, 0.72fr)",
@@ -115,6 +130,7 @@ export default function ProfileAboutPanel() {
 
         <QuietBlock index="02" title="Current focus">
           <div
+            className="profile-about__detail"
             style={{
               display: "grid",
               gridTemplateColumns: "minmax(0, 1fr) minmax(190px, 0.8fr)",
