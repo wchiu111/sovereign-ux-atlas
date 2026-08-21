@@ -40,15 +40,21 @@ const focus = {
 
 The platform already supported a complex procurement journey. The problem was not a lack of capability. It was that users could not always tell where they were, what required attention, or what they should do next.
 
-When we reviewed the experience through the perspective of both new and returning users, a deeper issue became visible.
+This was not a new problem.
+
+When I joined the team, I noticed that the logged-in home experience and the project workspace looked structurally similar even though they served very different purposes. Customer-facing teams were hearing the same confusion from users: people could enter a project and lose their sense of whether they were still at the platform level or working inside a specific piece of work.
+
+The problem persisted until a new VP of Design made the navigation experience a priority roughly two years into my time at Globality.
+
+What began as an exploration of navigation patterns exposed something larger.
+
+Global actions, account tools, project-specific destinations, onboarding, and AI assistance were competing inside an experience that did not clearly communicate changes in context.
 
 The navigation existed, but it did not guide.
 
-The logged-in home experience and the project workspace looked structurally similar, even though they served different purposes. Global actions, account tools, and project-specific destinations competed inside the same navigation model. Important actions such as creating a project were present, but not surfaced at the moment they became relevant.
-
-What initially appeared to be a navigation redesign became a broader effort to improve orientation across the product.`,
+What initially appeared to be a navigation redesign became a broader effort to rethink how the product oriented users throughout the procurement journey.`,
       insight:
-        "The system knew whether someone was browsing the platform or working inside a project. The interface did not communicate that distinction clearly enough.",
+        "The system knew whether someone was browsing the platform or working inside a project. The interface needed to make that distinction just as clear to the user.",
       evidence: [
         {
           id: "old-home-dashboard",
@@ -95,7 +101,7 @@ What initially appeared to be a navigation redesign became a broader effort to i
       id: "problem",
       label: "The Problem",
       accentStellarType: "risk",
-      subtitle: "Small orientation failures accumulated across the entire workflow",
+      subtitle: "Small orientation failures accumulated across a collaborative workflow",
       readingTime: 4,
       content: `The usability issues were not isolated to a single screen.
 
@@ -103,26 +109,33 @@ They appeared across the path from login to active project work.
 
 New users needed a clear place to begin, but the primary create-project action was treated like another navigation item. Returning users needed to scan active work, compare project states, and identify what required attention, but the card-based project view made cross-project comparison difficult.
 
-The homepage also tried to serve too many purposes at once. It needed to onboard new users, help returning users resume work, surface projects, provide support, and make the AI assistant visible.
+But procurement introduced another complication.
 
-Inside a project, the dashboard still relied heavily on broad prompts rather than clearly surfacing project state, recent changes, and next actions.
+Projects rarely belonged to one person from beginning to end.
 
-The AI assistant added another layer of friction. Its prompts were often relevant in a general sense, but they repeated what the interface already showed rather than resolving a specific moment of uncertainty.
+A project manager might create an RFP or RFQ. Another team member could review it later. Someone else might add requirements, evaluate providers, or enter the project at another stage entirely.
 
-The product contained the information users needed. The difficulty was recognizing what mattered now.
+That meant the project could have continuity even when the person entering it did not.
 
-Every transition required users to rebuild their context:
+Someone could be familiar with procurement—and even with Globality—while still arriving inside a project state they had never seen before.
 
-• Am I at the platform level or inside a project?
-• What stage is this project in?
-• What changed since I was last here?
-• Which action should I take next?
+The homepage and project dashboard did little to resolve that uncertainty. Both relied on similar structures, broad prompts, and persistent AI assistance while giving less emphasis to project state, recent changes, and the actions most likely to move the work forward.
 
-The problem was not that the platform lacked navigation.
+The product contained the information users needed.
 
-The problem was that the product repeatedly asked users to orient themselves.`,
+The difficulty was recognizing what mattered now.
+
+Every transition forced users to reconstruct their context:
+
+Am I at the platform level or inside a project? What stage is this project in? What changed since I was last here? Which action should I take next?
+
+This changed how I understood the problem.
+
+The goal was not simply to make navigation easier to use.
+
+The interface needed to orient users before asking them to act.`,
       insight:
-        "The largest usability cost came from making users reconstruct their context after every transition.",
+        "In collaborative workflows, orientation is continuous. A user may enter an existing project without sharing the context of the people who worked on it before them.",
       evidence: [
         {
           id: "homepage-serving-everyone",
@@ -169,39 +182,39 @@ The problem was that the product repeatedly asked users to orient themselves.`,
       id: "approach",
       label: "Approach",
       accentStellarType: "strategy",
-      subtitle: "Exploring how navigation could preserve context without consuming the workspace",
-      readingTime: 4,
-      content: `We did not need to begin with a completely new research program.
+      subtitle: "Turning a navigation exploration into an experience architecture",
+      readingTime: 5,
+      content: `The initial assignment from the VP of Design was relatively focused:
 
-Feedback from designers, product managers, leadership, Customer Success, and internal procurement users was already pointing toward the same issues: users struggled to distinguish the home experience from the project experience, critical actions were difficult to locate, and the navigation did not reflect the way procurement work actually progressed.
+Explore whether Globality should use a top navigation or a left navigation.
 
-We consolidated those signals and mapped the platform around the user journey:
+I was the design lead for the initiative, working closely with a PM and Engineering Director through weekly reviews. UX Research supported moderated testing, Customer Success helped surface recurring customer problems, internal procurement users provided domain context, and the evolving vision was reviewed with product and executive leadership.
 
-1. Create a project
-2. Develop the brief
-3. Match with providers
-4. Review providers and proposals
-5. Collaborate and decide
-6. Award and launch the work
+My role was to synthesize those inputs into the experience direction.
 
-From there, I explored multiple navigation structures.
+The navigation exploration quickly exposed decisions that extended far beyond navigation.
 
-The goal was not simply to choose between a top navigation and a side navigation. Each direction tested a different balance between visibility, recognition, screen space, and contextual depth.
+If we changed how users moved through Globality, we also had to decide what belonged on Home, what belonged inside a project, how new and returning users should enter the experience, how active projects should be represented, where persistent project context should live, and how Glo—the AI assistant—should behave within that system.
 
-The collapsed states tested how little navigation could remain visible while still preserving orientation. The open states tested whether users could reveal labels and deeper destinations without permanently shrinking the work area.
+I explored both top and left-navigation models.
 
-That distinction matters.
+A compact top navigation created more horizontal workspace during focused work, but its advantages weakened when expanded. The navigation still needed a container large enough to expose deeper destinations, reduced space for Globality and customer branding, and occupied an area I believed should eventually communicate persistent project context.
 
-The closed and open versions were not competing final designs. They were paired states of the same interaction model: one optimized for focused work, the other for deliberate navigation.
+The left-navigation model stayed closer to existing interaction patterns while preserving the top of the workspace for something more valuable: the active project’s identity, status, and eventual next action.
 
-The exploration ultimately led to a two-level architecture:
+From there, I mapped the experience around the procurement journey:
+
+Create a project, develop the brief, match with providers, review providers and proposals, collaborate and decide, award and launch the work.
+
+The exploration ultimately produced a two-level architecture:
 
 • Home-level navigation for creating work, reviewing the portfolio, accessing resources, and managing the account
+
 • In-project navigation for the brief, providers, proposals, collaborators, and project-specific actions
 
-The interface could now communicate a meaningful shift between browsing the platform and acting inside a project.`,
+What started as a question about navigation placement became a model for distinguishing managing work from progressing work.`,
       insight:
-        "The navigation needed to preserve orientation in its quiet state and reveal depth only when the user asked for it.",
+        "My role was not simply to choose a navigation pattern. It was to define the experience architecture that navigation needed to support.",
       evidence: [
         {
           id: "top-navigation-closed",
@@ -275,42 +288,46 @@ The interface could now communicate a meaningful shift between browsing the plat
       label: "Key Decisions",
       accentStellarType: "judgment",
       subtitle: "Designing the interface around the next decision",
-      readingTime: 5,
-      content: `Several decisions reshaped the experience beyond navigation.
+      readingTime: 6,
+      content: `Several decisions extended the architecture beyond navigation.
 
-The first was to elevate “Create Project” from a navigation link into a contextual action on the home experience. New work could begin where the need became visible rather than inside a menu users first had to interpret.
+The first was to elevate “Create Project” from a navigation destination into a contextual action on Home. Starting new work should not require users to interpret a menu before they could begin.
 
-The second was to replace the project cards with a table.
+The second was to replace project cards with a table.
 
-Returning procurement users were often managing several projects at once. They needed to compare stage, ownership, recent activity, status, deadlines, and next steps. The table treated the portfolio as operational work rather than a gallery of individual projects.
+Returning procurement users often managed several projects simultaneously. They needed to compare stage, ownership, recent activity, status, deadlines, and next steps. A table treated the portfolio as operational work rather than a gallery of individual projects.
 
-The third decision was to redesign the home and project dashboards around different questions.
+The third was to give Home and Project different responsibilities.
 
-The home experience answered:
+Home answered:
 
-• What work is active?
-• What changed?
-• Where should I resume?
-• How do I start something new?
+What work is active? What changed? Where should I resume? How do I start something new?
 
-The project workspace answered:
+The Project Dashboard answered:
 
-• What stage is this project in?
-• What requires attention?
-• Who is involved?
-• What action will move the project forward?
+What stage is this project in? What requires attention? Who is involved? What action will move the project forward?
 
-The fourth decision was to make the product state-aware.
+That led to another important decision: persistent project context.
 
-A project beginning with a brief should not expose the same destinations and actions as a project reviewing proposals or preparing to launch. Navigation and available actions needed to evolve with the work.
+I wanted status and the next action to sit high in the project hierarchy, but the complete vision required several engineering sprints. Rather than replace the direction with an easier short-term solution, the PM and I broke the experience into milestones that could progressively move toward the intended architecture.
 
-The AI assistant followed the same principle.
+That also meant avoiding temporary components when we already knew they would be discarded in a later milestone.
 
-Instead of maintaining a large, persistent presence, Glo could remain quiet during routine activity and surface only when the system had something useful to say. We described this behavior as thresholding.
+Engineering constraints became part of the design system rather than something addressed after the interface was complete. Legacy decision points had to transition safely into the new architecture. A persistent project title bar consumed additional vertical space on smaller screens. Existing components had to accommodate new positioning. Each decision created consequences elsewhere in the product.
 
-The assistant might appear after a brief was completed, when provider matches became available, or when a stalled decision could be unblocked. Its value came from timing and context—not constant visibility.`,
+Glo followed the same principle.
+
+The question was no longer simply where the AI assistant should live.
+
+It became:
+
+When is AI assistance useful enough to interrupt the user?
+
+Instead of maintaining a large persistent presence, Glo could remain quiet during routine work and surface when context made its assistance useful—after completing a brief, when provider matches became available, or when a stalled decision could be unblocked.
+
+Its value came from timing and context, not constant visibility.`,
       insight:
-        "The interface became clearer when every surface answered one question: what does the user need to understand before making the next decision?",
+        "Every surface needed to answer the same question: what does the user need to understand before making the next decision?",
       evidence: [
         {
           id: "project-cards-to-operational-awareness",
@@ -370,35 +387,37 @@ The assistant might appear after a brief was completed, when provider matches be
       id: "outcomes",
       label: "Outcomes",
       accentStellarType: "agentic",
-      subtitle: "A clearer distinction between entering, managing, and progressing work",
-      readingTime: 4,
-      content: `We built and tested a three-screen prototype covering the Home experience, the project portfolio, and the Project Dashboard.
+      subtitle: "From usability improvement to a new product standard",
+      readingTime: 5,
+      content: `We tested the redesigned experience through moderated usability sessions with approximately 20 new users.
 
-Internal procurement users completed realistic tasks such as identifying a project that required attention, returning to a specific brief, and understanding what action was available next.
+UX Research conducted the sessions while I observed. Participants were first interviewed about their professional responsibilities and familiarity with procurement workflows such as RFPs and RFQs, then asked to perform representative tasks using prototypes I designed and assembled.
 
-The strongest signals were behavioral.
+The difference was visible in behavior.
 
-Users distinguished the home and project contexts more easily. The table improved scanning across active work. The project dashboard provided clearer orientation around stage, status, collaborators, and next actions. Contextual navigation reduced unnecessary searching.
+New users were able to identify where to begin, distinguish Home from Project, navigate the proposal-creation journey, and recognize the next available action with less searching and hesitation.
 
-The redesign was reviewed across product, design, engineering, leadership, and Customer Success.
+For the target proposal-creation task, the redesigned experience produced approximately 40% faster task completion during usability testing.
 
-Customer-facing teams had already documented recurring confusion around the previous navigation and homepage. The new structure gave the organization a clearer shared model for how users should move from portfolio-level awareness into focused project work.
+The table also improved scanning across active work, while the redesigned Project Dashboard gave users stronger orientation around stage, status, collaborators, and next actions.
 
-I would not attach performance or satisfaction percentages to this version of the case study unless the original measurement source can be documented.
+But the most important outcome was not limited to the test.
 
-What the evidence does support is a visible structural improvement:
+The architecture shipped.
 
-• Home and project contexts became distinct
-• Active work became easier to compare
-• Next actions became more explicit
-• AI assistance became quieter and more contextual
-• The experience better reflected the procurement journey
+The new navigation, Home experience, project portfolio, Project Dashboard, interface hierarchy, and repositioned AI assistant became part of the product.
 
-The product did not become less complex.
+And once they shipped, they became constraints for what came next.
 
-It became better at communicating which part of that complexity mattered now.`,
+New product work had to account for the persistent project title layer. Components previously occupying the top-right workspace had to adapt to Glo’s new position. Future features had to consider whether they belonged at the platform or project level and how they behaved across different states of work.
+
+The redesign also influenced the design system. I worked with another designer on the team to establish enough of the new architectural rules and constraints for the system to support subsequent product work.
+
+The redesign did not make procurement less complex.
+
+It gave users—and eventually the organization—a clearer model for deciding which part of that complexity mattered now.`,
       insight:
-        "The redesign worked because the product began communicating context before asking the user to act.",
+        "The strongest outcome was not a single screen. The redesign became the product architecture that subsequent work had to build within.",
       evidence: [
         {
           id: "before-after-home",
@@ -446,43 +465,32 @@ It became better at communicating which part of that complexity mattered now.`,
       label: "Lessons",
       accentStellarType: "purpose",
       subtitle: "What navigation work taught me about orientation",
-      readingTime: 3,
+      readingTime: 4,
       content: `At the time, I thought I was redesigning navigation.
 
-Looking back, I was designing orientation.
+Looking back, I was designing orientation. Users do not experience enterprise products as a sequence of pages. They experience changing states of work:
 
-Users do not experience enterprise products as a sequence of pages. They experience changing states of work:
+Entering, learning, starting, planning, reviewing, deciding, completing and returning.
 
-• entering
-• learning
-• starting
-• planning
-• reviewing
-• deciding
-• completing
-• returning
-
-A product becomes easier to use when its structure communicates those changes.
-
-The project gave me a model I continued to use in later work.
+And in collaborative systems, those states do not necessarily belong to one continuous user journey. People enter work started by others. They return after context has changed. They inherit decisions they did not make. A product becomes easier to use when its structure continuously helps people reconstruct that context. The project gave me a model I continued to use in later work.
 
 Every product should continuously answer five questions:
 
-• Where am I?
-• What changed?
-• What matters now?
-• What can I do next?
-• How do I return?
+Where am I? What changed? What matters now? What can I do next? How do I return?
 
-When those questions are answered clearly, users can spend less attention interpreting the interface and more attention on the work itself.
+But Globality taught me something else. Once the architecture shipped, those questions stopped being useful only to designers.
 
-The lesson also changed how I thought about AI assistance.
+They became constraints for future product decisions.
 
-An intelligent system should not speak merely because it can. It should understand the user’s state, recognize when uncertainty has crossed a meaningful threshold, and offer the right support without taking over the experience.
+New features had to establish where they belonged. New components had to respect persistent project context. AI behavior had to respond to the user’s state rather than simply remain visible. The design system had to accommodate the architecture the product had adopted.
+
+A useful design principle can therefore do more than improve an interface. It can give an organization a shared way to decide where future product behavior belongs. The project also changed how I thought about AI assistance.
+
+An intelligent system should not speak merely because it can. It should understand the user’s state, recognize when uncertainty has crossed a meaningful threshold, and offer support without taking over the experience.
 
 That thinking later became part of how I approached presence, context, and spatial continuity in Sovereign Atlas.`,
       insight:
-        "Users should not have to reconstruct their context every time they change screens. Good enterprise products preserve orientation throughout the journey.",
+        "Orientation is not a navigation feature. It is a system for preserving enough context that people—and the products supporting them—can make coherent decisions.",
       evidence: [
         {
           id: "questions-every-product-must-answer",
