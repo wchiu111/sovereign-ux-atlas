@@ -103,29 +103,17 @@ What initially appeared to be a navigation redesign became a broader effort to r
       accentStellarType: "risk",
       subtitle: "Small orientation failures accumulated across a collaborative workflow",
       readingTime: 4,
-      content: `The usability issues were not isolated to a single screen.
-
-They appeared across the path from login to active project work.
+      content: `The usability issues were not isolated to a single screen. They appeared across the path from login to active project work.
 
 New users needed a clear place to begin, but the primary create-project action was treated like another navigation item. Returning users needed to scan active work, compare project states, and identify what required attention, but the card-based project view made cross-project comparison difficult.
 
-But procurement introduced another complication.
+But procurement introduced another complication. Projects rarely belonged to one person from beginning to end.
 
-Projects rarely belonged to one person from beginning to end.
-
-A project manager might create an RFP or RFQ. Another team member could review it later. Someone else might add requirements, evaluate providers, or enter the project at another stage entirely.
-
-That meant the project could have continuity even when the person entering it did not.
-
-Someone could be familiar with procurement—and even with Globality—while still arriving inside a project state they had never seen before.
+A project manager might create an RFP or RFQ. Another team member could review it later. Someone else might add requirements, evaluate providers, or enter the project at another stage entirely. That meant the project could have continuity even when the person entering it did not. Someone could be familiar with procurement—and even with Globality—while still arriving inside a project state they had never seen before.
 
 The homepage and project dashboard did little to resolve that uncertainty. Both relied on similar structures, broad prompts, and persistent AI assistance while giving less emphasis to project state, recent changes, and the actions most likely to move the work forward.
 
-The product contained the information users needed.
-
-The difficulty was recognizing what mattered now.
-
-Every transition forced users to reconstruct their context:
+The product contained the information users needed. The difficulty was recognizing what mattered now. Every transition forced users to reconstruct their context:
 
 Am I at the platform level or inside a project? What stage is this project in? What changed since I was last here? Which action should I take next?
 

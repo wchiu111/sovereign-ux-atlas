@@ -983,6 +983,66 @@ function EvidenceRail({
                 imageFit={item.imageFit}
               />
             </div>
+
+            <div style={{ padding: "12px 14px 14px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  marginBottom: "6px",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "'DM Mono',monospace",
+                    fontSize: "9px",
+                    color,
+                    opacity: 0.7,
+                    border: `1px solid ${color}40`,
+                    padding: "2px 6px",
+                    letterSpacing: "0.14em",
+                  }}
+                >
+                  {item.number}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'DM Mono',monospace",
+                    fontSize: "9.5px",
+                    letterSpacing: "0.16em",
+                    color: "rgba(200,180,130,0.38)",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {item.type}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  fontFamily: "'EB Garamond',serif",
+                  fontSize: "16px",
+                  lineHeight: 1.3,
+                  color: "rgba(245,235,210,0.85)",
+                  marginBottom: "6px",
+                  fontWeight: 500,
+                }}
+              >
+                {item.title}
+              </div>
+
+              <div
+                style={{
+                  fontFamily: "'EB Garamond',serif",
+                  fontSize: "14.5px",
+                  lineHeight: 1.55,
+                  color: "rgba(200,180,130,0.55)",
+                }}
+              >
+                {item.description}
+              </div>
+            </div>
           </button>
         ))}
       </div>
@@ -1087,6 +1147,125 @@ function EvidenceViewer({
             <EvidenceLargeView item={item} color={color} />
           </div>
         </div>
+
+        {!fullscreen && (
+          <div
+            style={{
+              width: "300px",
+              flexShrink: 0,
+              overflowY: "auto",
+              scrollbarWidth: "none",
+              borderLeft: "1px solid rgba(200,180,130,0.08)",
+              padding: "28px 24px",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "'DM Mono',monospace",
+                fontSize: "10px",
+                letterSpacing: "0.28em",
+                color,
+                opacity: 0.65,
+                marginBottom: "12px",
+                textTransform: "uppercase",
+              }}
+            >
+              {item.type}
+            </div>
+
+            <div
+              style={{
+                fontFamily: "'EB Garamond',serif",
+                fontSize: "22px",
+                lineHeight: 1.1,
+                color: "rgba(255,252,245,0.95)",
+                marginBottom: "20px",
+                fontWeight: 500,
+              }}
+            >
+              {item.title}
+            </div>
+
+            <div
+              style={{
+                borderBottom: "1px solid rgba(200,180,130,0.07)",
+                marginBottom: "20px",
+              }}
+            />
+
+            <div
+              style={{
+                fontFamily: "'EB Garamond',serif",
+                fontSize: "16px",
+                lineHeight: 1.78,
+                color: "rgba(240,232,215,0.82)",
+                marginBottom: "24px",
+              }}
+            >
+              {item.description}
+            </div>
+
+            <div
+              style={{
+                borderBottom: "1px solid rgba(200,180,130,0.07)",
+                marginBottom: "20px",
+              }}
+            />
+
+            <div
+              style={{
+                fontFamily: "'DM Mono',monospace",
+                fontSize: "11px",
+                letterSpacing: "0.24em",
+                color: "rgba(200,180,130,0.40)",
+                marginBottom: "10px",
+                textTransform: "uppercase",
+              }}
+            >
+              CAPTION
+            </div>
+
+            <div
+              style={{
+                fontFamily: "'EB Garamond',serif",
+                fontSize: "15px",
+                lineHeight: 1.68,
+                color: "rgba(200,180,130,0.62)",
+              }}
+            >
+              {item.caption}
+            </div>
+
+            <div style={{ marginTop: "32px" }}>
+              <div
+                style={{
+                  fontFamily: "'DM Mono',monospace",
+                  fontSize: "11px",
+                  letterSpacing: "0.24em",
+                  color: "rgba(200,180,130,0.40)",
+                  marginBottom: "10px",
+                  textTransform: "uppercase",
+                }}
+              >
+                ARTIFACT
+              </div>
+
+              <div
+                style={{
+                  fontFamily: "'DM Mono',monospace",
+                  fontSize: "10px",
+                  letterSpacing: "0.16em",
+                  color: "rgba(200,180,130,0.50)",
+                  lineHeight: 2.2,
+                }}
+              >
+                <div>NO. {item.number}</div>
+                <div>TYPE · {item.type}</div>
+                <div>SECTION · {section.title}</div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
