@@ -338,3 +338,49 @@ The smallest path from the current production deployment to **GO** is:
 4. Resolve the favicon and social-card owner decisions by supplying approved assets or explicitly marking each `APPROVED TO DEFER`.
 
 No merge, PR, or source-of-truth `main` modification was performed by this production pass.
+
+## SEO Pass 1 Staging Promotion — 2026-08-22
+
+### Promotion and deployment
+
+- Source: `seo/pass-1-primary-pages` at `0b0a7ce`.
+- Target: `staging`; merged with a non-fast-forward merge because staging already contained its documentation-only launch record.
+- Staging merge: `7ea654a`.
+- Staging-only app-shell canonical correction: `403da4f`.
+- Verified preview deployment: `dpl_AfUku7vHexXv5xx2AZfb5n1gEZXj` (`Ready`, Preview), aliased to `https://staging.wchiudesign.com`.
+- Production safety: `origin/main` remained at `0dc59b5`; no production deployment or production environment change was made.
+
+### Raw HTML and indexing QA
+
+All nine approved Pass 1 pages returned their approved unique title, description, staging canonical, Open Graph URL, Twitter metadata, and valid JSON-LD. Every staging page returned `noindex, nofollow`; no `Sovereign UX Atlas 2.0` branding remained.
+
+| Route | Result |
+| --- | --- |
+| `/` | PASS |
+| `/case-studies/agentic-insurance` | PASS |
+| `/case-studies/globality` | PASS |
+| `/case-studies/oracle` | PASS |
+| `/case-studies/sovereign-atlas` | PASS |
+| `/frameworks/authority-gradient` | PASS |
+| `/frameworks/relational-ai-literacy` | PASS |
+| `/frameworks/regenerative-systems` | PASS |
+| `/frameworks/presence-navigation` | PASS |
+
+- `robots.txt`: PASS — disallows all staging crawling.
+- `sitemap.xml`: PASS — exactly nine staging URLs; no production-domain, Experiment, or Application Kit URLs.
+- App-state-only routes: PASS — `/case-studies`, `/experiments/authority-drift`, `/frameworks/application-kit`, and `/case-studies/globality/problem` resolve through the SPA shell with `noindex, nofollow` and no server-rendered canonical. `AtlasSeo` supplies route-aware metadata after hydration without making these states indexable.
+
+### Runtime regression QA
+
+- Search: PASS — `Globality` returned the canonical Case Study result and navigated to `/case-studies/globality`.
+- Focused deep link and refresh: PASS — `/case-studies/globality/problem` restored `The Problem` directly and survived refresh.
+- Share: PASS — focused Share reported `COPIED` while retaining the exact staging route.
+- Retreat and history: PASS — Focused → Overview, Back, and Forward restored the expected URLs.
+- Hydration and console: PASS — no error-level browser logs appeared during the tested flows.
+- Build verification: PASS — TypeScript, production build, staging build, SEO tests (12/12), route tests (7/7), Search tests (13/13), Contact tests (4/4), Atlas Assist tests (18/18), and Case Study metadata tests (3/3).
+
+### Staging recommendation
+
+**READY FOR PRODUCTION SEO PROMOTION**
+
+This recommendation covers the reviewed SEO Pass 1 promotion only. Production remains unchanged and requires its separately approved promotion workflow.
