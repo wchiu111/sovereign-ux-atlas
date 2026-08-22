@@ -30,8 +30,13 @@ export default function AtlasSeo() {
     setMeta('meta[property="og:url"]', canonicalUrl);
     setMeta('meta[name="twitter:title"]', metadata.title);
     setMeta('meta[name="twitter:description"]', metadata.description);
-    document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
-      ?.setAttribute("href", canonicalUrl);
+    let canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = canonicalUrl;
 
     const schema = buildSeoSchema(metadata, siteUrl);
     let structuredData = document.head.querySelector<HTMLScriptElement>(

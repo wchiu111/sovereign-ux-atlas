@@ -43,7 +43,7 @@ function renderMetadata(
   const canonical = absoluteSeoUrl(metadata.canonicalPath, siteUrl)
   const robots = shouldIndex ? 'index, follow' : 'noindex, nofollow'
   const schema = JSON.stringify(buildSeoSchema(metadata, siteUrl)).replaceAll('<', '\\u003c')
-  return html
+  const rendered = html
     .replaceAll('__ATLAS_TITLE__', escapeHtml(metadata.title))
     .replaceAll('__ATLAS_DESCRIPTION__', escapeHtml(metadata.description))
     .replaceAll('__ATLAS_SITE_URL__/', canonical)
@@ -59,6 +59,10 @@ function renderMetadata(
     .replace(/(<meta name="twitter:title" content=")[^"]*(" \/>)/, `$1${escapeHtml(metadata.title)}$2`)
     .replace(/(<meta name="twitter:description" content=")[^"]*(" \/>)/, `$1${escapeHtml(metadata.description)}$2`)
     .replace(/(<script id="atlas-structured-data" type="application\/ld\+json">).*?(<\/script>)/, `$1${schema}$2`)
+
+  return metadata.indexability === 'app-state-only'
+    ? rendered.replace(/\s*<link rel="canonical" href="[^"]*" \/>/, '')
+    : rendered
 }
 
 function atlasMetadata(): Plugin {

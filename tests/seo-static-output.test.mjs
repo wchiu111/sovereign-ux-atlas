@@ -50,6 +50,7 @@ for (const [route, title, description] of expected) {
 await test("application states use a noindex initial shell", async () => {
   const html = await readFile("dist/app-shell.html", "utf8");
   assert.equal(content(html, /<meta name="robots" content="([^"]+)"/, "robots"), "noindex, nofollow");
+  assert.doesNotMatch(html, /<link rel="canonical"/);
   assert.match(html, /<script type="module" crossorigin src="\/assets\/index-[^"]+\.js"><\/script>/);
 });
 
