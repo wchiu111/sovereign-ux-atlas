@@ -10,6 +10,7 @@
     "test:search": "node tests/atlas-search.test.mjs",
     "test:routes": "node tests/atlas-routes.test.mjs",
     "test:case-studies": "node tests/case-study-metadata.test.mjs",
+    "test:seo": "node tests/seo-static-output.test.mjs",
     "test:assist": "node tests/atlas-assist-provider.test.mjs",
     "test:contact": "node tests/contact.test.mjs"
   },

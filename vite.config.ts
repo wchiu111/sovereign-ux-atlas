@@ -3,7 +3,14 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import fs from 'node:fs'
-import type { Plugin } from 'vite'
+import type { Plugin, ResolvedConfig } from 'vite'
+import {
+  absoluteSeoUrl,
+  buildSeoSchema,
+  getIndexableSeoRoutes,
+  HOMEPAGE_SEO,
+  type AtlasSeoMetadata,
+} from './src/app/seo/seoMetadata'
 
 
 function figmaAssetResolver(): Plugin {
@@ -18,41 +25,57 @@ function figmaAssetResolver(): Plugin {
   }
 }
 
-function collectAtlasOverviewPaths() {
-  const categories = {
-    'case-studies': 'case-studies',
-    experiments: 'experiments',
-    frameworks: 'frameworks',
-  }
-  const paths = ['/', '/case-studies', '/experiments', '/frameworks']
+function escapeHtml(value: string) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+}
 
-  Object.entries(categories).forEach(([directory, routeRoot]) => {
-    const contentDirectory = path.resolve(__dirname, 'src/app/content', directory)
-    fs.readdirSync(contentDirectory)
-      .filter((filename) => filename.endsWith('.ts') && filename !== 'index.ts')
-      .forEach((filename) => {
-        const source = fs.readFileSync(path.join(contentDirectory, filename), 'utf8')
-        const id = source.match(/export default defineAtlasEntry\(\{\s*id:\s*["']([^"']+)/)?.[1]
-        const slug = source.match(/\n\s*routeSlug:\s*["']([^"']+)/)?.[1]
-        if (id) paths.push(`/${routeRoot}/${slug ?? id}`)
-      })
-  })
-  return paths
+function renderMetadata(
+  html: string,
+  metadata: AtlasSeoMetadata,
+  siteUrl: string,
+  indexableBuild: boolean,
+) {
+  const shouldIndex = indexableBuild && metadata.indexability === 'index'
+  const canonical = absoluteSeoUrl(metadata.canonicalPath, siteUrl)
+  const robots = shouldIndex ? 'index, follow' : 'noindex, nofollow'
+  const schema = JSON.stringify(buildSeoSchema(metadata, siteUrl)).replaceAll('<', '\\u003c')
+  return html
+    .replaceAll('__ATLAS_TITLE__', escapeHtml(metadata.title))
+    .replaceAll('__ATLAS_DESCRIPTION__', escapeHtml(metadata.description))
+    .replaceAll('__ATLAS_SITE_URL__/', canonical)
+    .replaceAll('__ATLAS_ROBOTS__', robots)
+    .replace('__ATLAS_SCHEMA__', schema)
+    .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(metadata.title)}</title>`)
+    .replace(/(<meta name="description" content=")[^"]*(" \/>)/, `$1${escapeHtml(metadata.description)}$2`)
+    .replace(/(<meta name="robots" content=")[^"]*(" \/>)/, `$1${robots}$2`)
+    .replace(/(<link rel="canonical" href=")[^"]*(" \/>)/, `$1${canonical}$2`)
+    .replace(/(<meta property="og:title" content=")[^"]*(" \/>)/, `$1${escapeHtml(metadata.title)}$2`)
+    .replace(/(<meta property="og:description" content=")[^"]*(" \/>)/, `$1${escapeHtml(metadata.description)}$2`)
+    .replace(/(<meta property="og:url" content=")[^"]*(" \/>)/, `$1${canonical}$2`)
+    .replace(/(<meta name="twitter:title" content=")[^"]*(" \/>)/, `$1${escapeHtml(metadata.title)}$2`)
+    .replace(/(<meta name="twitter:description" content=")[^"]*(" \/>)/, `$1${escapeHtml(metadata.description)}$2`)
+    .replace(/(<script id="atlas-structured-data" type="application\/ld\+json">).*?(<\/script>)/, `$1${schema}$2`)
 }
 
 function atlasMetadata(): Plugin {
   const siteUrl = (process.env.VITE_SITE_URL ?? 'https://wchiudesign.com').replace(/\/$/, '')
   const indexable = process.env.VITE_SITE_INDEXABLE === 'true'
-  const robots = indexable ? 'index, follow' : 'noindex, nofollow'
+  let resolvedConfig: ResolvedConfig
   return {
     name: 'atlas-metadata',
+    configResolved(config) {
+      resolvedConfig = config
+    },
     transformIndexHtml(html: string) {
-      return html
-        .replaceAll('__ATLAS_SITE_URL__', siteUrl)
-        .replace('__ATLAS_ROBOTS__', robots)
+      return renderMetadata(html, HOMEPAGE_SEO, siteUrl, indexable)
     },
     generateBundle() {
-      const routeUrls = collectAtlasOverviewPaths().map((route) => `${siteUrl}${route}`)
+      const indexableRoutes = getIndexableSeoRoutes()
+      const routeUrls = indexableRoutes.map((route) => absoluteSeoUrl(route.path, siteUrl))
       this.emitFile({
         type: 'asset',
         fileName: 'robots.txt',
@@ -65,6 +88,32 @@ function atlasMetadata(): Plugin {
         fileName: 'sitemap.xml',
         source: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routeUrls.map((url) => `  <url><loc>${url}</loc></url>`).join('\n')}\n</urlset>\n`,
       })
+    },
+    writeBundle() {
+      const outputDirectory = path.resolve(resolvedConfig.root, resolvedConfig.build.outDir)
+      const homepagePath = path.join(outputDirectory, 'index.html')
+      const template = fs.readFileSync(homepagePath, 'utf8')
+
+      getIndexableSeoRoutes()
+        .filter((route) => route.path !== '/')
+        .forEach((route) => {
+          const routeDirectory = path.join(outputDirectory, route.path.slice(1))
+          fs.mkdirSync(routeDirectory, { recursive: true })
+          fs.writeFileSync(
+            path.join(routeDirectory, 'index.html'),
+            renderMetadata(template, route, siteUrl, indexable),
+          )
+        })
+
+      fs.writeFileSync(
+        path.join(outputDirectory, 'app-shell.html'),
+        renderMetadata(
+          template,
+          { ...HOMEPAGE_SEO, indexability: 'app-state-only' },
+          siteUrl,
+          false,
+        ),
+      )
     },
   }
 }
