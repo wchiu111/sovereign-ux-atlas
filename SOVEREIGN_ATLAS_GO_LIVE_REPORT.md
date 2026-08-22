@@ -2,29 +2,50 @@
 
 ## Executive Summary
 
-Overall status: **READY FOR PRODUCTION DEPLOYMENT APPROVAL**
+Overall status: **NO-GO — PRODUCTION DEPLOYED, ATLAS ASSIST BLOCKED BY PROVIDER 429**
 
-The application now builds cleanly, restores canonical Case Study, Experiment, and Framework routes, produces safe environment-specific search metadata, reports Share and Contact failures honestly, and closes the highest-risk accessibility gaps found in the audit. Search, Atlas Assist, routing, Contact handler, production build, desktop interaction, and a narrow mobile pass all passed locally.
+The approved production artifact is deployed and `Ready` at `https://wchiudesign.com`. Canonical routes, indexing output, Search, Share, browser history, Contact provider acceptance, deep-link refresh, and production console checks pass. Contact returned HTTP `202` only after Resend accepted the test message, and Reply-To remains wired to the validated visitor address.
+
+Production launch is currently **NO-GO** because two live Atlas Assist attempts reached `/api/atlas-assist` and returned HTTP `429`. The UI handled the failure safely, but no production grounded answer was produced. Actual arrival at `wchiudesign@gmail.com` and a real Reply-To action also remain owner verification because the available authenticated browser inbox was a different account.
 
 The remaining authored Case Study blockers are resolved. Globality, Oracle, and Sovereign Atlas now use approved role metadata through the canonical content model, and Sovereign Atlas is explicitly documented as an intentional five-section project rather than being forced to render an empty Decisions section.
 
-The audited branch is deployed and live staging verification now passes for canonical Atlas routes, direct-load restoration, Search, Share, browser history, the Observatory Contact failure path, priority keyboard retreat, responsive viewport baselines from 1440px through 320px, and staging-safe metadata/crawler output. Production launch should remain paused until production-only indexing and Contact variables are configured, actual inbox delivery and Reply-To are verified, the remaining browser-zoom/assistive-technology matrix is completed, and the favicon/social-card owner decision is recorded. Analytics and error monitoring remain post-launch recommendations.
+The audited branch is deployed to production. Production indexing and Contact configuration are active and verified at the request/provider boundary. Launch should remain paused until Atlas Assist returns a successful grounded answer, actual inbox delivery and Reply-To are owner-verified, the remaining browser-zoom/assistive-technology matrix is completed, and the favicon/social-card owner decision is recorded. Analytics and error monitoring remain post-launch recommendations.
 
 ## Scorecard
 
 | Category | Score | Status |
 | --- | ---: | --- |
-| Identity + SEO | 11 / 13 | Live staging metadata/crawler output pass; favicon and social image remain owner decisions |
-| URLs + Sharing | 9 / 9 | Canonical routes, deployed rewrites, refresh, history, and copied staging URLs pass |
+| Identity + SEO | 11 / 13 | Live production metadata/crawler output pass; favicon and social image remain owner decisions |
+| URLs + Sharing | 9 / 9 | Canonical routes, deployed rewrites, refresh, history, and copied production URLs pass |
 | Case Studies | 9 / 9 | Approved roles and the five-section exception are canonical and verified |
-| Contact | 8 / 10 | Delivery boundary is real and fail-closed; configuration and inbox delivery remain |
-| Atlas Interaction | 14 / 14 | Core deployed paths, Search, Ask retreat, evidence retreat, and history pass |
+| Contact | 9 / 10 | Production provider acceptance and Reply-To wiring pass; destination inbox confirmation remains |
+| Atlas Interaction | 12 / 14 | Core paths, Search, retreat, evidence, and history pass; live Ask returns HTTP 429 |
 | Responsive | 7 / 9 | 1440, 1024, 768, 390, and 320px baselines pass; zoom and physical-device review remain |
 | Accessibility | 11 / 14 | Priority focus, Escape, semantics, and reduced-motion fixes landed |
 | Performance | 6 / 9 | Build/runtime pass; bundle and large assets remain |
-| Production Infrastructure | 8 / 9 | Vercel deployment and both functions are Ready; production environment variables remain |
+| Production Infrastructure | 9 / 9 | Production deployment and both functions are Ready; required variable names/scopes are present |
 | Analytics / Observability | 0 / 10 | No provider is currently installed |
 | Search Engine Launch | 5 / 9 | Metadata artifacts exist; Search Console and migration remain external |
+
+## Production Deployment Verification — 2026-08-21
+
+- Deployment: `dpl_HhjSkw9JNvp29jNRJmGnWjMdr86c`
+- Status: `Ready`
+- Production URL: `https://sovereign-ux-atlas-staging-k9e02m5rs-wchiudesign-1181s-projects.vercel.app`
+- Active aliases: `https://wchiudesign.com`, `https://www.wchiudesign.com`
+- Functions compiled: `api/atlas-assist`, `api/contact`
+- Production environment names/scopes verified without revealing values: `RESEND_API_KEY`, `CONTACT_FROM_EMAIL`, `CONTACT_TO_EMAIL`, `VITE_SITE_URL`, `VITE_SITE_INDEXABLE`, and the existing Atlas Assist variables are all scoped to Production.
+- Contact test: `POST /api/contact` returned HTTP `202` and `{ "accepted": true }`; Vercel runtime logs independently recorded the `202`.
+- Reply-To: server adapter sends `reply_to: message.email`, where `message.email` is the validated visitor address.
+- Inbox arrival: not directly verified because the available authenticated Gmail session was not `wchiudesign@gmail.com`; no unrelated inbox content was inspected.
+- Atlas Assist: two production requests returned HTTP `429`; the UI rendered a recoverable rate-limit message and did not blank or crash.
+- Production metadata: root title, canonical, `index, follow`, Open Graph URL, Twitter card, and JSON-LD pass.
+- Crawlers: `/robots.txt` allows `/` and points to the production sitemap; `/sitemap.xml` contains production-domain URLs only.
+- Deep links: Case Study, Experiment, Framework, and focused Case Study routes load directly; focused refresh and Back/Forward preserve canonical state.
+- Search: Globality, Decision Rights, and Authority Drift navigate to their canonical production routes.
+- Share: copied the exact production focused route.
+- Console: no warning- or error-level browser logs were observed during the production smoke pass.
 
 ## Changes Implemented
 
@@ -90,8 +111,8 @@ The audited branch is deployed and live staging verification now passes for cano
 
 | Issue | Why unresolved | Recommended next action |
 | --- | --- | --- |
-| Contact delivery is not production-verified | Secrets and provider/domain state correctly cannot be inferred or logged from source. | Configure the variables below and complete an inbox/reply test. |
-| Production indexing is not deployment-verified | Indexing is deliberately opt-in and staging defaults to noindex. | Set the production-only value and inspect deployed HTML/robots before launch. |
+| Atlas Assist returns HTTP `429` in production | The request reaches the deployed function, but the live provider does not produce an answer. | Resolve OpenAI project quota/rate limits or model access, then repeat a production grounded-answer test. |
+| Contact inbox arrival and Reply-To action are not owner-verified | Resend accepted the message, but the authorized destination inbox was not accessible in the available browser account. | Confirm the `Production QA` message arrived at `wchiudesign@gmail.com`, then reply and verify the recipient is the submitted visitor address. |
 | Browser zoom and assistive-technology checks remain | Deployed semantic checks passed at five widths, but browser zoom and VoiceOver/NVDA were not available in this automated session. | Complete 125%, 150%, and 200% zoom plus basic screen-reader checks on staging. |
 | Favicon decision: `BLOCKING BY OWNER DECISION` | No approved redistributable favicon was supplied during the audit. | Supply an approved asset or explicitly mark it `APPROVED TO DEFER`. |
 | Social-card decision: `BLOCKING BY OWNER DECISION` | No approved 1200×630 social-card asset was supplied during the audit. | Supply an approved asset or explicitly mark it `APPROVED TO DEFER`. |
@@ -270,30 +291,31 @@ Choose consent, retention, and query/message-redaction rules before connecting a
 
 | Test | Result | Evidence / limitation |
 | --- | --- | --- |
-| Vercel deployment | PASS | Preview deployment `dpl_7eLYN2opucReqq6z1CH8MHVWxQG9` is Ready at `https://staging.wchiudesign.com`; `api/atlas-assist` and `api/contact` compiled as functions. |
-| Load Atlas | PASS | Authenticated staging root rendered with the expected title, H1, Search, and system counts. |
-| Enter main experience | PASS | Atlas → Observatory transition completed on staging. |
+| Vercel deployment | PASS | Production deployment `dpl_HhjSkw9JNvp29jNRJmGnWjMdr86c` is Ready; `api/atlas-assist` and `api/contact` compiled as functions. |
+| Load Atlas | PASS | Production root rendered with the expected title, H1, Search, and system counts. |
+| Enter main experience | PASS | Atlas → Observatory transition completed on production. |
 | Open Case Study | PASS | Deployed Agentic Insurance and Globality overview/focused routes restored correctly. |
 | Verify role metadata | PASS | Agentic Insurance, Globality, Oracle, and Sovereign Atlas expose their approved roles through the canonical entry model. |
 | Verify Sovereign Atlas structure | PASS | Exactly Context, Problem, Approach, Outcomes, and Lessons render; no Decisions node, tab, or empty state is authored. |
 | Exit Focus Mode | PASS | Overview return and mobile drawer retreat restored canonical state. |
 | Open Framework | PASS | Deployed `/frameworks`, Decision Rights overview, and `/frameworks/authority-gradient/system-purpose` loaded directly. |
 | Open Experiment | PASS | Deployed `/experiments`, Authority Drift overview, and `/experiments/authority-drift/drift` loaded directly; focused refresh restored Drift. |
-| Search | PASS | Live Globality, Decision Rights, and Authority Drift queries returned curated results and navigated to canonical routes. |
-| Ask | PASS | Eighteen provider/contract tests pass; live OpenAI request remains environment-dependent. |
-| Ask dialog keyboard retreat | PASS | Live focused Ask opened with an accessible heading; Escape closed it and restored focus to the Ask trigger. |
+| Search | PASS | Production Globality, Decision Rights, and Authority Drift queries returned curated results and navigated to canonical routes. |
+| Ask | FAIL | Two production requests reached `/api/atlas-assist` and returned HTTP `429`; no grounded answer rendered. |
+| Ask dialog keyboard retreat | PASS | Production focused Ask opened with an accessible heading; Escape closed it and restored focus to the Ask trigger. |
 | Evidence dialog | PASS | Live evidence viewer exposed an accessible dialog name; Escape closed it and restored source-card focus. |
-| Share action | PASS | Live Case Study and Framework Share copied `https://staging.wchiudesign.com/...` and displayed `COPIED` after clipboard success. |
-| Fresh shared URL | PASS | Deployed Case Study, Experiment, and Framework direct routes restored; focused Experiment refresh preserved state. |
-| Submit Contact | PASS | Staging API produced `Message not delivered` rather than false success; `Try again` restored name, email, and message. |
-| Actual email arrival | MANUAL TEST REQUIRED | Requires deployed Resend/domain configuration and inbox access. |
-| Browser Back/Forward | PASS | Live focused Globality route ↔ overview history restored the exact staging URLs. |
+| Share action | PASS | Production Share copied the exact `https://wchiudesign.com/...` focused route. |
+| Fresh shared URL | PASS | Production Case Study, Experiment, Framework, and focused routes restored; focused refresh preserved state. |
+| Submit Contact | PASS | Production `POST /api/contact` returned HTTP `202` and provider acceptance. |
+| Actual email arrival | OWNER VERIFICATION REQUIRED | The authenticated browser inbox was a different Gmail account; the destination inbox was not inspected. |
+| Reply-To | PARTIAL PASS | Server payload uses the validated visitor email as `reply_to`; an actual reply remains owner verification. |
+| Browser Back/Forward | PASS | Production history restored exact canonical Framework and focused Case Study URLs. |
 | Console errors | PASS | No error-level browser logs appeared across root, routes, Ask, Contact, or responsive checks. |
-| Failed network requests | PASS | Unconfigured Contact failure was surfaced honestly; Vercel reports both serverless functions built and deployment Ready. |
+| Network behavior | FAIL | Contact returned HTTP `202`; Atlas Assist returned HTTP `429` twice. |
 | Mobile/narrow viewport | PASS | Focused Globality retained main content, breadcrumbs, return, Ask, and Evidence at 390×844 and 320×700. |
 | Responsive viewport baseline | PASS | 1440×900, 1024×768, 768×1024, 390×844, and 320×700 checks passed on staging. |
 | Full responsive/zoom matrix | MANUAL TEST REQUIRED | 125%, 150%, 200%, physical touch hardware, and VoiceOver/NVDA remain. |
-| Staging SEO metadata | PASS | Root and canonical deep routes use the staging domain for canonical/`og:url`, retain Twitter and JSON-LD metadata, and render `noindex, nofollow`. Authenticated deployment output returns `Disallow: /` and a staging-only sitemap. |
+| Production SEO metadata | PASS | Root and deep routes use the production canonical domain, render `index, follow`, retain Open Graph, Twitter, and JSON-LD metadata; robots allows `/` and the sitemap is production-only. |
 | Production build | PASS | Vite transformed 2,225 modules and completed successfully. |
 | TypeScript client/server checks | PASS | `npm run typecheck` completed both TypeScript configurations successfully. |
 | Search tests | PASS | 13 / 13. |
@@ -306,13 +328,13 @@ The independent final verifier re-ran the build/typecheck and reviewed the finis
 
 ## Launch Recommendation
 
-**READY FOR PRODUCTION DEPLOYMENT APPROVAL**
+**NO-GO**
 
-The smallest path from the verified staging build to production **GO** is:
+The smallest path from the current production deployment to **GO** is:
 
-1. Approve and configure production-only indexing and Contact/Resend variables while keeping the verified staging deployment `noindex`.
-2. Complete one successful production inbox/Reply-To test.
+1. Resolve the Atlas Assist provider `429` and complete one successful grounded production answer.
+2. Confirm the accepted Contact message arrived at `wchiudesign@gmail.com` and that Reply-To targets the submitted visitor address.
 3. Complete the remaining zoom, touch-device, and screen-reader checks.
 4. Resolve the favicon and social-card owner decisions by supplying approved assets or explicitly marking each `APPROVED TO DEFER`.
 
-No merge, PR, production push, or source-of-truth `main` modification was performed by this audit.
+No merge, PR, or source-of-truth `main` modification was performed by this production pass.
