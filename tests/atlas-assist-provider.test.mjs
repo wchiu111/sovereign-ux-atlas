@@ -82,7 +82,7 @@ try {
 
   await test("keeps full authored sections, evidence annotations, and collection modules", () => {
     const atlasBodies = atlasContext.contentBlocks.map((block) => block.body).join("\n");
-    assert.match(atlasBodies, /The third decision was to redesign the home and project dashboards/);
+    assert.match(atlasBodies, /The third was to give Home and Project different responsibilities/);
     assert.match(atlasBodies, /Human makes the final decision/);
     assert.match(atlasBodies, /Decision outcome simulation/);
   });

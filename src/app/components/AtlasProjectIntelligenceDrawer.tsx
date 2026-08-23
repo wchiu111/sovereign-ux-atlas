@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import type { AtlasStellarType } from "../content/types";
+import type {
+  AtlasResolvedRelationship,
+  AtlasStellarType,
+} from "../content/types";
 import { resolveStellarColor } from "../atlas/constellation/stellarPalette";
+import AtlasLineageLink from "../atlas/components/AtlasLineageLink";
 import AtlasAssistEntry from "./atlas-assist/AtlasAssistEntry";
 import AtlasAssistPanel from "./atlas-assist/AtlasAssistPanel";
 import AtlasAssistTrigger from "./atlas-assist/AtlasAssistTrigger";
@@ -27,6 +31,7 @@ interface PlanetLike {
   keyDiscovery: string;
   signatureStellarType?: AtlasStellarType;
   tags?: string[];
+  relationships?: AtlasResolvedRelationship[];
 }
 
 interface AtlasProjectIntelligenceDrawerProps {
@@ -264,13 +269,14 @@ function SemanticTags({
   planet: PlanetLike;
 }) {
   const stellarType = planet.signatureStellarType;
-  if (!stellarType && !planet.tags?.length) return null;
+  const relationships = planet.relationships ?? [];
+  if (!stellarType && !planet.tags?.length && !relationships.length) return null;
 
   const stellarColor = resolveStellarColor(stellarType, system.color);
 
   return (
     <div
-      aria-label="Semantic characteristics"
+      aria-label="Project characteristics and lineage"
       style={{
         display: "flex",
         flexWrap: "wrap",
@@ -303,6 +309,15 @@ function SemanticTags({
         <span key={tag} style={facetChipStyle}>
           {tag}
         </span>
+      ))}
+
+      {relationships.map((relationship) => (
+        <AtlasLineageLink
+          key={relationship.id}
+          relationship={relationship}
+          currentLabel={planet.label}
+          variant="chip"
+        />
       ))}
     </div>
   );

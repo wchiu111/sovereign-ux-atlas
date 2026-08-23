@@ -3,6 +3,7 @@ import type {
   AtlasStarIntensity,
   AtlasStarLabelPosition,
   AtlasStellarType,
+  AtlasResolvedRelationship,
 } from "../content/types";
 
 export interface StarNode {
@@ -34,6 +35,7 @@ export interface Planet {
   stars: StarNode[];
   signatureStellarType?: AtlasStellarType;
   tags?: string[];
+  relationships?: AtlasResolvedRelationship[];
   constellationConnections?: ConstellationConnection[];
   showCenterConnections?: boolean;
   what: string; why: string; researchFocus: string; keyDiscovery: string;

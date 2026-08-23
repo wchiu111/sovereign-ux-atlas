@@ -7,6 +7,7 @@ import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
 import FrameworkEvidenceCanvas from "../frameworks/FrameworkEvidenceCanvas";
 import AtlasAssistPanel from "../../components/atlas-assist/AtlasAssistPanel";
 import AtlasAssistTrigger from "../../components/atlas-assist/AtlasAssistTrigger";
+import AtlasLineageLink from "../../atlas/components/AtlasLineageLink";
 import type { AtlasAssistSource } from "../../types/atlasAssist";
 
 function LeftNav({
@@ -239,6 +240,8 @@ function SectionContent({
   sectionCount,
   categoryLabel,
   sequenceLabel,
+  relationships,
+  currentLabel,
   assistOpen,
   onToggleAssist,
   assistTriggerRef,
@@ -248,10 +251,17 @@ function SectionContent({
   sectionCount: number;
   categoryLabel: string;
   sequenceLabel?: string;
+  relationships: CaseStudy["relationships"];
+  currentLabel: string;
   assistOpen: boolean;
   onToggleAssist: () => void;
   assistTriggerRef: RefObject<HTMLButtonElement>;
 }) {
+  const sectionRelationships = relationships.filter(
+    (relationship) => relationship.sectionId === section.id,
+  );
+  const showLineageBlock = section.id === "lessons" && relationships.length > 0;
+
   return (
     <div style={{
       flex:1, overflowY:"auto", scrollbarWidth:"none",
@@ -339,6 +349,24 @@ function SectionContent({
           {section.keyInsight}
         </div>
       </div>
+
+      {sectionRelationships.map((relationship) => (
+        <AtlasLineageLink
+          key={`${relationship.id}-${relationship.direction}-inline`}
+          relationship={relationship}
+          currentLabel={currentLabel}
+          variant="inline"
+        />
+      ))}
+
+      {showLineageBlock && relationships.map((relationship) => (
+        <AtlasLineageLink
+          key={`${relationship.id}-${relationship.direction}-block`}
+          relationship={relationship}
+          currentLabel={currentLabel}
+          variant="block"
+        />
+      ))}
     </div>
   );
 }
@@ -1276,6 +1304,8 @@ export default function AtlasReadingEngine({
         sectionCount={caseStudy.sections.length}
         categoryLabel={caseStudy.categoryLabel}
         sequenceLabel={caseStudy.sequenceLabel}
+        relationships={caseStudy.relationships}
+        currentLabel={caseStudy.title}
         assistOpen={assistOpen}
         onToggleAssist={() => setAssistOpen(open => !open)}
         assistTriggerRef={assistTriggerRef}

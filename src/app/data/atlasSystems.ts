@@ -1,4 +1,4 @@
-import { getEntriesByCategory } from "../content";
+import { getAtlasRelationships, getEntriesByCategory } from "../content";
 import type { AtlasCategory } from "../content";
 import type { StarNode, StarSystem } from "../types/atlas";
 import { ATLAS_SYSTEM_CONFIGS } from "./atlasSystemConfig";
@@ -74,6 +74,7 @@ export const SYSTEMS: StarSystem[] = ATLAS_SYSTEM_CONFIGS.map((config) => ({
       orbitOffsetY: orbitPlane * 15,
       signatureStellarType: entry.signatureStellarType,
       tags: entry.tags,
+      relationships: getAtlasRelationships(entry.id),
       showCenterConnections: entry.constellation?.showCenterConnections,
       constellationConnections: entry.constellation?.connections?.map((connection) => ({
         from: `${entry.orbit.starPrefix}-${connection.from}`,
