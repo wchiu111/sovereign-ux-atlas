@@ -10,6 +10,7 @@ import {
   EvidenceLargeView,
 } from "../../case-study/components/EvidenceArtwork";
 import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
+import AtlasLineageLink from "../../atlas/components/AtlasLineageLink";
 import FrameworkEvidenceCanvas from "../frameworks/FrameworkEvidenceCanvas";
 
 function LeftNav({
@@ -259,6 +260,8 @@ function SectionContent({
   sectionCount,
   categoryLabel,
   sequenceLabel,
+  relationships,
+  currentLabel,
   askOpen,
   onToggleAsk,
 }: {
@@ -267,11 +270,17 @@ function SectionContent({
   sectionCount: number;
   categoryLabel: string;
   sequenceLabel?: string;
+  relationships: CaseStudy["relationships"];
+  currentLabel: string;
   askOpen: boolean;
   onToggleAsk: () => void;
 }) {
   const [askHovered, setAskHovered] = useState(false);
   const askIsActive = askOpen || askHovered;
+  const sectionRelationships = relationships.filter(
+    (relationship) => relationship.sectionId === section.id,
+  );
+  const showLineageBlock = section.id === "lessons" && relationships.length > 0;
 
   return (
     <div
@@ -466,6 +475,25 @@ function SectionContent({
           {section.keyInsight}
         </div>
       </div>
+
+      {sectionRelationships.map((relationship) => (
+        <AtlasLineageLink
+          key={`${relationship.id}-${relationship.direction}-inline`}
+          relationship={relationship}
+          currentLabel={currentLabel}
+          variant="inline"
+        />
+      ))}
+
+      {showLineageBlock &&
+        relationships.map((relationship) => (
+          <AtlasLineageLink
+            key={`${relationship.id}-${relationship.direction}-block`}
+            relationship={relationship}
+            currentLabel={currentLabel}
+            variant="block"
+          />
+        ))}
     </div>
   );
 }
@@ -1443,6 +1471,8 @@ export default function AtlasReadingEngine({
           sectionCount={caseStudy.sections.length}
           categoryLabel={caseStudy.categoryLabel}
           sequenceLabel={caseStudy.sequenceLabel}
+          relationships={caseStudy.relationships}
+          currentLabel={caseStudy.title}
           askOpen={askOpen}
           onToggleAsk={() => setAskOpen((open) => !open)}
         />

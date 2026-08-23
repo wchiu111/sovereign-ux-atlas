@@ -1,4 +1,7 @@
-import type { AtlasEvidenceCanvas } from "../../content/types";
+import type {
+  AtlasEvidenceCanvas,
+  AtlasResolvedRelationship,
+} from "../../content/types";
 
 export interface ReadingEvidenceItem {
   id: string;
@@ -36,5 +39,6 @@ export interface ReadingDocument {
   railLabel: string;
   artifactLabel: string;
   emptyRailMessage?: string;
+  relationships: AtlasResolvedRelationship[];
   sections: ReadingSection[];
 }

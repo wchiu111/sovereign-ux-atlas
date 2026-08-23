@@ -1,5 +1,6 @@
 import type {
   AtlasConnectionStrength,
+  AtlasResolvedRelationship,
   AtlasStarIntensity,
   AtlasStarLabelPosition,
   AtlasStellarType,
@@ -34,6 +35,7 @@ export interface Planet {
   stars: StarNode[];
   signatureStellarType?: AtlasStellarType;
   tags?: string[];
+  relationships?: AtlasResolvedRelationship[];
   constellationConnections?: ConstellationConnection[];
   showCenterConnections?: boolean;
   what: string; why: string; researchFocus: string; keyDiscovery: string;

@@ -1,6 +1,10 @@
 import { useState } from "react";
-import type { AtlasStellarType } from "../content/types";
+import type {
+  AtlasResolvedRelationship,
+  AtlasStellarType,
+} from "../content/types";
 import { resolveStellarColor } from "../atlas/constellation/stellarPalette";
+import AtlasLineageLink from "../atlas/components/AtlasLineageLink";
 
 export const PROJECT_DRAWER_WIDTH = 420;
 
@@ -19,6 +23,7 @@ interface PlanetLike {
   keyDiscovery: string;
   signatureStellarType?: AtlasStellarType;
   tags?: string[];
+  relationships?: AtlasResolvedRelationship[];
 }
 
 interface AtlasProjectIntelligenceDrawerProps {
@@ -158,13 +163,14 @@ function SemanticTags({
   planet: PlanetLike;
 }) {
   const stellarType = planet.signatureStellarType;
-  if (!stellarType && !planet.tags?.length) return null;
+  const relationships = planet.relationships ?? [];
+  if (!stellarType && !planet.tags?.length && !relationships.length) return null;
 
   const stellarColor = resolveStellarColor(stellarType, system.color);
 
   return (
     <div
-      aria-label="Framework characteristics"
+      aria-label="Project characteristics and lineage"
       style={{
         display: "flex",
         flexWrap: "wrap",
@@ -197,6 +203,15 @@ function SemanticTags({
         <span key={tag} style={facetChipStyle}>
           {tag}
         </span>
+      ))}
+
+      {relationships.map((relationship) => (
+        <AtlasLineageLink
+          key={relationship.id}
+          relationship={relationship}
+          currentLabel={planet.label}
+          variant="chip"
+        />
       ))}
     </div>
   );
@@ -441,7 +456,8 @@ const infoBlockStyle = {
 const keyDiscoveryStyle = (color: string) => ({
   marginTop: 30,
   padding: "19px 20px 20px",
-  background: "linear-gradient(90deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018))",
+  background:
+    "linear-gradient(90deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018))",
   borderLeft: `2px solid ${color}`,
   borderTop: "1px solid rgba(255,255,255,0.045)",
   borderBottom: "1px solid rgba(255,255,255,0.035)",
@@ -455,7 +471,8 @@ const sectionDividerStyle = {
   width: 52,
   height: 1,
   marginTop: 25,
-  background: "linear-gradient(90deg, rgba(200,169,110,0.7), transparent)",
+  background:
+    "linear-gradient(90deg, rgba(200,169,110,0.7), transparent)",
 };
 
 const questionBoxStyle = {
@@ -584,7 +601,8 @@ const scrollLayerStyle = {
 const footerStyle = {
   padding: "17px 22px 22px",
   borderTop: "1px solid rgba(255,255,255,0.04)",
-  background: "linear-gradient(180deg, rgba(4,4,10,0.7), rgba(4,4,10,0.98) 24%)",
+  background:
+    "linear-gradient(180deg, rgba(4,4,10,0.7), rgba(4,4,10,0.98) 24%)",
 };
 
 const backButtonStyle = {

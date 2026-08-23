@@ -29,6 +29,32 @@ export type AtlasSemanticRelationshipType =
   | "evidences"
   | "related";
 
+export type AtlasLineageRelationshipType = "informed";
+
+export interface AtlasEntryRelationship {
+  id: string;
+  type: AtlasLineageRelationshipType;
+  sourceId: string;
+  targetId: string;
+  sourceSectionId?: string;
+  targetSectionId?: string;
+  summary: string;
+  reverseSummary?: string;
+  lineageSummary?: string;
+}
+
+export interface AtlasResolvedRelationship {
+  id: string;
+  type: AtlasLineageRelationshipType;
+  direction: "outgoing" | "incoming";
+  relatedId: string;
+  relatedLabel: string;
+  relatedCategory: AtlasCategory;
+  sectionId?: string;
+  summary: string;
+  lineageSummary: string;
+}
+
 export interface AtlasConceptSemantics {
   keywords: string[];
   aliases?: string[];

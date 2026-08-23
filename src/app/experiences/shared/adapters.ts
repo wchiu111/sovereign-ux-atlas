@@ -1,4 +1,5 @@
 import type { AtlasEntry, AtlasEntrySection } from "../../content/types";
+import { getAtlasRelationships } from "../../content/registry";
 import type { ReadingDocument, ReadingSection } from "./types";
 
 const CATEGORY_LABEL = {
@@ -57,6 +58,7 @@ export function atlasEntryToReadingDocument(entry: AtlasEntry): ReadingDocument 
     railLabel: entry.presentation?.railLabel ?? "EVIDENCE",
     artifactLabel: entry.presentation?.artifactLabel ?? "ARTIFACT",
     emptyRailMessage: entry.presentation?.emptyRailMessage,
+    relationships: getAtlasRelationships(entry.id),
     sections,
   };
 }
