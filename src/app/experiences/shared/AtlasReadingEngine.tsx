@@ -820,6 +820,8 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const viewerControlHeight = "28px";
+
   const viewer = (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={`${item.title} evidence viewer`} style={{
       position: fullscreen ? "fixed" : "absolute",
@@ -863,7 +865,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
             fontFamily:"'DM Mono',monospace", fontSize:"10px",
             letterSpacing:"0.20em", color:"rgba(200,180,130,0.70)",
             background:"none", border:"1px solid rgba(200,180,130,0.52)",
-            padding:"5px 10px", cursor:"pointer", transition:"all 0.2s",
+            height:viewerControlHeight, padding:"5px 10px", cursor:"pointer", transition:"all 0.2s",
           }}>
             {fullscreen ? <Minimize2 size={10}/> : <ZoomIn size={10}/>}
             {fullscreen ? "EXIT FULLSCREEN" : "FULLSCREEN"}
@@ -872,7 +874,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
             display:"flex", alignItems:"center", justifyContent:"center",
             color:"rgba(200,180,130,0.75)", background:"none",
             border:"1px solid rgba(200,180,130,0.52)",
-            width:"44px", height:"44px", cursor:"pointer",
+            width:"44px", height:viewerControlHeight, cursor:"pointer",
           }}>
             <X size={14}/>
           </button>
