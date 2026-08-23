@@ -10,6 +10,17 @@ import AtlasAssistTrigger from "../../components/atlas-assist/AtlasAssistTrigger
 import AtlasLineageLink from "../../atlas/components/AtlasLineageLink";
 import type { AtlasAssistSource } from "../../types/atlasAssist";
 
+// Shared dark-reader text roles. Explicit colors keep meaningful text above AA
+// contrast thresholds without flattening the reader's visual hierarchy.
+const readerText = {
+  primary: "#F5F1E6",
+  secondary: "#D1C5A8",
+  metadata: "#B9AC8E",
+  inactive: "#B8A887",
+  interactive: "#B8D2E6",
+  caption: "#B8AD93",
+} as const;
+
 function LeftNav({
   caseStudy, activeSection, onSection, onExit, color,
 }: {
@@ -44,7 +55,7 @@ function LeftNav({
         fontFamily:"'DM Mono',monospace",
         fontSize:"9.5px",
         letterSpacing:"0.2em",
-        color:"rgba(200,180,130,0.56)",
+        color:readerText.interactive,
         background:"rgba(8,10,18,0.28)",
         border:"none",
         borderBottom:"1px solid rgba(200,180,130,0.08)",
@@ -83,7 +94,7 @@ function LeftNav({
           fontFamily:"'DM Mono',monospace",
           fontSize:"10.5px",
           lineHeight:1.6,
-          color:"rgba(200,166,96,0.58)",
+          color:readerText.metadata,
           letterSpacing:"0.10em",
         }}>
           {caseStudy.meta}
@@ -103,7 +114,7 @@ function LeftNav({
           fontFamily:"'DM Mono',monospace",
           fontSize:"8.5px",
           letterSpacing:"0.24em",
-          color:"rgba(200,166,96,0.45)",
+          color:readerText.metadata,
           textTransform:"uppercase",
           marginBottom:"10px",
         }}>
@@ -117,7 +128,7 @@ function LeftNav({
           fontFamily:"'DM Mono',monospace",
           fontSize:"10px",
           letterSpacing:"0.18em",
-          color:"rgba(200,166,96,0.66)",
+          color:readerText.metadata,
           textTransform:"uppercase",
         }}>
           <span style={{ color, opacity:0.70 }}>◷</span>
@@ -172,7 +183,7 @@ function LeftNav({
                     ? color
                     : isHovered
                       ? "rgba(180,210,255,0.72)"
-                      : "rgba(200,166,96,0.42)",
+                      : readerText.inactive,
                 
                 minWidth:"25px",
                 flexShrink:0,
@@ -189,7 +200,7 @@ function LeftNav({
                     ? "rgba(255,248,230,0.94)"
                     : isHovered
                       ? "rgba(245,235,210,0.82)"
-                      : "rgba(200,166,96,0.58)",
+                    : readerText.inactive,
                 
                 textTransform:"uppercase",
                 transition:
@@ -213,7 +224,7 @@ function LeftNav({
           fontFamily:"'DM Mono',monospace",
           fontSize:"8px",
           letterSpacing:"0.24em",
-          color:"rgba(200,166,96,0.54)",
+          color:readerText.metadata,
           lineHeight:2.1,
           textTransform:"uppercase",
         }}>
@@ -271,17 +282,17 @@ function SectionContent({
       {/* Orientation */}
       <div style={{ marginBottom:"40px" }}>
         <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-          letterSpacing:"0.28em", color:"rgba(200,180,130,0.40)",
+          letterSpacing:"0.28em", color:readerText.metadata,
           marginBottom:"3px" }}>
           {sequenceLabel ?? categoryLabel}
         </div>
         <div style={{ display:"flex", alignItems:"baseline", gap:"9px" }}>
           <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-            letterSpacing:"0.16em", color:color, opacity:0.80 }}>
+            letterSpacing:"0.16em", color }}>
             {section.number} {section.title.toUpperCase()}
           </span>
           <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-            letterSpacing:"0.14em", color:"rgba(200,180,130,0.35)" }}>
+            letterSpacing:"0.14em", color:readerText.metadata }}>
             of {String(sectionCount).padStart(2,"0")}
           </span>
         </div>
@@ -303,7 +314,7 @@ function SectionContent({
           </h1>
           <div style={{ fontFamily:"'EB Garamond',serif", fontStyle:"regular",
             fontSize:"18px", lineHeight:1.55,
-            color:"rgba(200,180,130,0.72)" }}>
+            color:readerText.secondary }}>
             {section.subtitle}
           </div>
         </div>
@@ -340,7 +351,7 @@ function SectionContent({
         margin:"40px 0",
       }}>
         <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-          letterSpacing:"0.30em", color:color, opacity:0.70,
+          letterSpacing:"0.30em", color,
           marginBottom:"10px", textTransform:"uppercase" }}>
           KEY INSIGHT
         </div>
@@ -438,13 +449,13 @@ function EvidenceRail({
       <div style={{ padding:"24px 20px 16px",
         borderBottom:"1px solid rgba(200,180,130,0.06)" }}>
         <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"11px",
-          letterSpacing:"0.32em", color:"rgba(200,180,130,0.60)",
+          letterSpacing:"0.32em", color:readerText.secondary,
           textTransform:"uppercase" }}>
           {railLabel}
         </div>
         {artifactLabel && (
           <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-            letterSpacing:"0.18em", color:"rgba(200,180,130,0.48)", marginTop:"3px" }}>
+            letterSpacing:"0.18em", color:readerText.metadata, marginTop:"3px" }}>
             {railItemCount} {artifactLabel}
             {railItemCount !== 1 ? "S" : ""}
           </div>
@@ -516,7 +527,7 @@ function EvidenceRail({
               fontSize:"8.5px",
               lineHeight:1.8,
               letterSpacing:"0.14em",
-              color:"rgba(200,180,130,0.52)",
+              color:readerText.metadata,
               textTransform:"uppercase",
             }}>
               {emptyMessage}
@@ -670,7 +681,7 @@ function EvidenceRail({
                 fontFamily:"'EB Garamond',serif",
                 fontSize:"14px",
                 lineHeight:1.5,
-                color:"rgba(200,180,130,.62)",
+                color:readerText.secondary,
               }}>
                 {portalItem.canvas?.description}
               </div>
@@ -738,7 +749,7 @@ function EvidenceRail({
                   marginBottom:"6px" }}>
                   <span style={{
                     fontFamily:"'DM Mono',monospace", fontSize:"9px",
-                    color:color, opacity:0.70,
+                    color,
                     border:`1px solid ${color}40`,
                     padding:"2px 6px",
                     letterSpacing:"0.14em",
@@ -746,7 +757,7 @@ function EvidenceRail({
                     {item.number}
                   </span>
                   <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9.5px",
-                    letterSpacing:"0.16em", color:"rgba(200,180,130,0.38)",
+                    letterSpacing:"0.16em", color:readerText.metadata,
                     textTransform:"uppercase" }}>
                     {item.type}
                   </span>
@@ -758,7 +769,7 @@ function EvidenceRail({
                 </div>
                 <div style={{ fontFamily:"'EB Garamond',serif", fontStyle:"regular",
                   fontSize:"14.5px", lineHeight:1.55,
-                  color:"rgba(200,180,130,0.55)" }}>
+                  color:readerText.secondary }}>
                   {item.description}
                 </div>
                 {item.canvas && (
@@ -770,7 +781,6 @@ function EvidenceRail({
                     fontSize:"8.5px",
                     letterSpacing:"0.16em",
                     color,
-                    opacity:0.72,
                     textTransform:"uppercase",
                   }}>
                     {item.canvas.annotations.length} framework signals · Open canvas
@@ -873,17 +883,17 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
       }}>
         <div style={{ display:"flex", alignItems:"center", gap:"8px" }}>
           <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-            letterSpacing:"0.22em", color:"rgba(200,180,130,0.40)" }}>
+            letterSpacing:"0.22em", color:readerText.metadata }}>
             {caseStudyTitle.toUpperCase()}
           </span>
           <span style={{ color:"rgba(200,180,130,0.25)" }}>·</span>
           <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-            letterSpacing:"0.22em", color:"rgba(200,180,130,0.40)" }}>
+            letterSpacing:"0.22em", color:readerText.metadata }}>
             {section.title.toUpperCase()}
           </span>
           <span style={{ color:"rgba(200,180,130,0.25)" }}>·</span>
           <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9px",
-            letterSpacing:"0.22em", color:color, opacity:0.75 }}>
+            letterSpacing:"0.22em", color }}>
             ARTIFACT {item.number}
           </span>
         </div>
@@ -891,7 +901,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
           <button onClick={() => setFullscreen(f => !f)} style={{
             display:"flex", alignItems:"center", gap:"5px",
             fontFamily:"'DM Mono',monospace", fontSize:"10px",
-            letterSpacing:"0.20em", color:"rgba(200,180,130,0.70)",
+            letterSpacing:"0.20em", color:readerText.interactive,
             background:"none", border:"1px solid rgba(200,180,130,0.52)",
             height:viewerControlHeight, padding:"5px 10px", cursor:"pointer", transition:"all 0.2s",
           }}>
@@ -900,7 +910,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
           </button>
           <button ref={closeRef} aria-label="Close evidence viewer" onClick={onClose} style={{
             display:"flex", alignItems:"center", justifyContent:"center",
-            color:"rgba(200,180,130,0.75)", background:"none",
+            color:readerText.interactive, background:"none",
             border:"1px solid rgba(200,180,130,0.52)",
             width:"44px", height:viewerControlHeight, cursor:"pointer",
           }}>
@@ -936,7 +946,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
             padding:"28px 24px",
           }}>
             <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"10px",
-              letterSpacing:"0.28em", color:color, opacity:0.65,
+              letterSpacing:"0.28em", color,
               marginBottom:"12px", textTransform:"uppercase" }}>
               {item.type}
             </div>
@@ -952,23 +962,23 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
             </div>
             <div style={{ borderBottom:"1px solid rgba(200,180,130,0.07)", marginBottom:"20px" }}/>
             <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"11px",
-              letterSpacing:"0.24em", color:"rgba(200,180,130,0.40)",
+              letterSpacing:"0.24em", color:readerText.metadata,
               marginBottom:"10px", textTransform:"uppercase" }}>
               CAPTION
             </div>
             <div style={{ fontFamily:"'EB Garamond',serif", fontStyle:"regular",
-              fontSize:"15px", lineHeight:1.68, color:"rgba(200,180,130,0.62)" }}>
+              fontSize:"15px", lineHeight:1.68, color:readerText.caption }}>
               {item.caption}
             </div>
 
             <div style={{ marginTop:"32px" }}>
               <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"11px",
-                letterSpacing:"0.24em", color:"rgba(200,180,130,0.40)",
+                letterSpacing:"0.24em", color:readerText.metadata,
                 marginBottom:"10px", textTransform:"uppercase" }}>
                 ARTIFACT
               </div>
               <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"10px",
-                letterSpacing:"0.16em", color:"rgba(200,180,130,0.50)",
+                letterSpacing:"0.16em", color:readerText.metadata,
                 lineHeight:2.2 }}>
                 <div>NO. {item.number}</div>
                 <div>TYPE · {item.type}</div>
@@ -1237,10 +1247,10 @@ export default function AtlasReadingEngine({
             title="Back to Atlas"
             style={{
               ...breadcrumbButtonStyle,
-              color:"rgba(200,180,130,0.42)",
+              color:readerText.interactive,
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(245,235,210,0.82)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(200,180,130,0.42)"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = readerText.primary; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = readerText.interactive; }}
           >
             ATLAS
           </button>
@@ -1252,10 +1262,10 @@ export default function AtlasReadingEngine({
             style={{
               ...breadcrumbButtonStyle,
               color,
-              opacity:0.72,
+              opacity:1,
             }}
             onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = "0.72"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
           >
             {system.label}
           </button>
@@ -1266,10 +1276,10 @@ export default function AtlasReadingEngine({
             title={`Back to ${caseStudy.title} overview`}
             style={{
               ...breadcrumbButtonStyle,
-              color:"rgba(245,235,210,0.66)",
+              color:readerText.secondary,
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(245,235,210,0.92)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(245,235,210,0.66)"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = readerText.primary; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = readerText.secondary; }}
           >
             {caseStudy.title}
           </button>
@@ -1278,7 +1288,7 @@ export default function AtlasReadingEngine({
           <button onClick={handleShare} style={{
             display:"flex", alignItems:"center", gap:"5px",
             fontSize:"10px", letterSpacing:"0.20em",
-            color: shareStatus === "copied" ? color : "rgba(200,180,130,0.70)",
+            color: shareStatus === "copied" ? color : readerText.interactive,
             background:"none", border:"1px solid rgba(200,180,130,0.42)",
             padding:"5px 10px", cursor:"pointer", transition:"color 0.2s",
           }}>
