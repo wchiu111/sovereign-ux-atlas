@@ -1092,6 +1092,7 @@ function EvidenceViewer({
   onClose: () => void;
 }) {
   const [fullscreen, setFullscreen] = useState(false);
+  const viewerControlHeight = "28px";
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -1136,23 +1137,36 @@ function EvidenceViewer({
           <button
             onClick={() => setFullscreen((value) => !value)}
             style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              fontFamily: "'DM Mono',monospace",
+              fontSize: "10px",
+              letterSpacing: "0.20em",
               color: "rgba(200,180,130,0.70)",
               background: "none",
               border: "1px solid rgba(200,180,130,0.52)",
+              height: viewerControlHeight,
               padding: "5px 10px",
               cursor: "pointer",
+              transition: "all 0.2s",
             }}
           >
             {fullscreen ? <Minimize2 size={10} /> : <ZoomIn size={10} />}
+            {fullscreen ? "EXIT FULLSCREEN" : "FULLSCREEN"}
           </button>
           <button
             onClick={onClose}
+            aria-label="Close evidence viewer"
             style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               color: "rgba(200,180,130,0.75)",
               background: "none",
               border: "1px solid rgba(200,180,130,0.52)",
-              width: "27px",
-              height: "27px",
+              width: "44px",
+              height: viewerControlHeight,
               cursor: "pointer",
             }}
           >
