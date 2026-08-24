@@ -33,17 +33,19 @@ const focus = {
       id: "context",
       label: "Context",
       accentStellarType: "relational",
-      subtitle: "How curiosity became a domain-research problem",
+      subtitle: "How a fully agentic assumption began to break down",
       readingTime: 3,
       content: `This project began while I was interviewing for a product design role at an insurance company.
 
-At first, I was mostly curious about what insurance UX might look like with AI-assisted tools. I assumed there would be opportunities to summarize claims, reduce manual work, and help adjusters move through cases more efficiently.
+I entered it with a fairly expansive idea of agentic UX. I assumed a strong AI experience should be able to guide a customer from the moment of collision through evidence capture, estimates, claim explanations, recommendations, settlement guidance, and next steps.
 
-Once I started researching the role, I realized the domain was far more complicated than I had expected. Claims are influenced by legal requirements, jurisdictional differences, policy language, internal processes, and the judgment of the person reviewing the case.
+The attraction was obvious: a more seamless journey with fewer handoffs and less uncertainty.
 
-That changed the direction of the project. Instead of beginning with an interface, I needed to understand the person doing the work.`,
+Once I started researching the role, that assumption began to break down. Claims are influenced by legal requirements, jurisdictional differences, policy language, internal processes, professional experience, and the judgment of the person reviewing the case.
+
+That changed the direction of the project. Instead of asking how much of the journey AI could perform, I needed to understand where its contribution should stop and where human judgment still needed to take over.`,
       insight:
-        "The project became less about adding AI to insurance and more about learning enough about the role to know where AI should—and should not—intervene.",
+        "The project began as an exploration of fully agentic UX and became an investigation into where AI capability should stop short of decision authority.",
       evidence: [
         {
           id: "layered-claims-journey",
@@ -90,19 +92,19 @@ That changed the direction of the project. Instead of beginning with an interfac
       id: "problem",
       label: "The Problem",
       accentStellarType: "risk",
-      subtitle: "Designing without direct access to the person doing the work",
+      subtitle: "When capability stopped being the same thing as judgment",
       readingTime: 3,
       content: `I did not have direct access to claim adjusters, and I did not know what their typical day looked like.
 
 Without that context, it would have been easy to design a polished AI tool around assumptions that were completely wrong.
 
-The real question became:
+The deeper research exposed a more specific problem. An AI system could inspect a vehicle-damage photo and produce an estimate almost instantly. But an experienced mechanic or adjuster may know that visible damage does not represent the true repair cost. Hidden damage, prior cases, repair patterns, jurisdictional rules, and claim context can materially change the number.
 
-Before deciding where AI belongs in the workflow, how do I understand the decisions, pressures, responsibilities, and constraints of the person using it?
+The problem was no longer simply whether AI could produce an answer. It was whether that answer should carry decision authority.
 
-This also raised a second problem. In a high-stakes domain, an AI system cannot simply recommend an action and assume the user will trust it. The adjuster needs to understand what the system found, what it may be missing, and why a recommendation is being made.`,
+In a high-stakes domain, the adjuster needs to understand what the system found, what it may be missing, how similar cases compare, and why a recommendation is being made before deciding what to do next.`,
       insight:
-        "In a high-stakes domain, the first design risk was not a bad interface. It was solving the wrong problem with confidence.",
+        "Capability does not automatically grant authority. A fast answer can still require slower professional judgment.",
       evidence: [
         {
           id: "black-box-moment",
@@ -157,6 +159,8 @@ The AI-generated persona was not treated as a substitute for a real person. It w
 
 From that research, I mapped a customer and adjuster journey and explored where AI-assisted tools might support the process.
 
+As the domain became clearer, the concept moved away from autonomous journey completion and toward decision support. The strongest opportunities were the parts of the workflow where AI could reduce synthesis work without pretending to replace professional judgment.
+
 The concepts focused on areas such as:
 
 • summarizing claim information
@@ -166,7 +170,7 @@ The concepts focused on areas such as:
 • helping the adjuster compare possible next steps
 • preserving a clear record of how a decision was reached`,
       insight:
-        "AI was most useful when it helped me ask better questions about an unfamiliar role—not when it pretended to be the final source of truth.",
+        "AI was most useful when it reduced the work required to understand the claim—not when it pretended to replace the person accountable for the outcome.",
       evidence: [
         {
           id: "post-accident-entry-flow",
@@ -213,23 +217,35 @@ The concepts focused on areas such as:
       id: "decisions",
       label: "Key Decisions",
       accentStellarType: "judgment",
-      subtitle: "Keeping the adjuster responsible for the outcome",
+      subtitle: "Turning AI recommendations into an informed baseline",
       readingTime: 4,
       content: `One of the most important decisions was not to design AI as an autonomous claim decision-maker.
 
-The system was positioned as decision support. It could gather information, surface patterns, and identify possible concerns, but the adjuster remained responsible for interpreting the situation and choosing what happened next.
+The project had started with the assumption that a more advanced agentic experience would remove more human intervention. The claim-adjuster workflow changed that.
 
-I also avoided presenting the AI’s output as certain. The interface needed to distinguish between:
+I began treating the AI as capable of:
 
-• verified information
-• inferred information
-• missing information
-• potential conflicts
-• recommended next steps
+• gathering claim information
+• summarizing evidence
+• comparing similar claims
+• identifying conflicts or missing information
+• recommending a baseline
 
-This made the concept less about automation and more about helping the user form a clearer understanding of the claim.`,
+But consequential decisions remained with the adjuster:
+
+• determining the working estimate
+• changing the reserve
+• escalating the claim
+• approving or finalizing a decision
+• remaining accountable for the judgment
+
+The Editable Reserve Recommendation became the clearest expression of that boundary.
+
+The system could propose a reserve, expose the underlying inputs, and compare similar claims. But the recommendation was not the answer. It was an informed baseline the adjuster could interrogate, change, and document.
+
+The interface therefore needed to make enough of the system visible for the adjuster to understand why a recommendation existed and what evidence supported it. The goal was not to ask the user to blindly approve AI output. It was to reduce the synthesis work while preserving meaningful professional judgment.`,
       insight:
-        "The better design question was not, ‘What can the AI decide?’ It was, ‘What does the adjuster need to understand before making the decision?’",
+        "AI could establish an informed baseline without owning the final decision.",
       evidence: [
         {
           id: "estimate-confidence-explanation",
@@ -268,7 +284,7 @@ This made the concept less about automation and more about helping the user form
           description:
             "The system proposes a reserve and exposes the underlying inputs, while the adjuster can change the amount, compare benchmarks, and document why their judgment differs.",
           caption:
-            "The recommendation acts as a starting point; human judgment remains editable, explicit, and accountable.",
+            "The recommendation acts as an informed baseline; human judgment remains editable, explicit, and accountable.",
         },
       ],
     },
@@ -280,13 +296,15 @@ This made the concept less about automation and more about helping the user form
       readingTime: 3,
       content: `The project resulted in a conceptual customer and adjuster journey showing how AI-assisted tools could be introduced across the claims process.
 
-It helped me identify several areas where AI might reduce cognitive load and improve access to relevant information. It also exposed the limits of designing for a regulated, high-stakes workflow without direct access to the people doing the work.
+It helped me identify several areas where AI might reduce cognitive load and improve access to relevant information. More importantly, it produced a clearer boundary between what AI could synthesize and what still required professional judgment.
+
+The exploration suggested that AI could gather evidence, summarize a case, compare similar claims, and produce recommendations without automatically inheriting the authority to finalize consequential decisions.
 
 I did not conduct formal usability testing with claim adjusters, so I cannot claim that the concept improved speed, accuracy, trust, or decision quality.
 
 That validation would require real users, realistic claim scenarios, and subject-matter experts who could evaluate whether the proposed experience reflected actual insurance practice.`,
       insight:
-        "The outcome was a stronger hypothesis and a clearer research direction—not proof that the concept worked.",
+        "The outcome was a stronger hypothesis, a clearer authority boundary, and a better research direction—not proof that the concept worked.",
       evidence: [
         {
           id: "submission-next-step-visibility",
@@ -346,21 +364,25 @@ That validation would require real users, realistic claim scenarios, and subject
       id: "lessons",
       label: "Lessons",
       accentStellarType: "purpose",
-      subtitle: "Knowing where simulated research has to stop",
+      subtitle: "From maximizing autonomy to designing decision boundaries",
       readingTime: 4,
-      content: `The biggest lesson was that AI-generated research can help expand an investigation, but it cannot complete the validation.
+      content: `I began the project believing the most advanced version of agentic UX would be the one that removed the most human intervention.
 
-AI helped me simulate the role, generate better questions, and uncover aspects of the domain I had not initially considered. It gave me enough context to design a more informed concept than I would have produced from assumptions alone.
+I left with a different view.
 
-But there was a clear stopping point.
+In a high-stakes workflow, seamless automation can hide important inconsistencies. A system may be capable of producing an estimate, recommendation, or suggested action while still lacking the professional context required to own the decision.
 
-Running the design back through another AI model would only produce a simulated evaluation and likely return artificial confidence scores. It would not tell me whether a real adjuster found the system useful, whether the information was legally appropriate, or whether the recommendations supported better decisions.
+The design goal therefore is not to maximize the number of decisions AI can make. It is to decide which parts of the work AI can perform usefully while preserving meaningful human judgment where the consequences are highest.
+
+The project also reinforced another boundary: simulated research has a stopping point.
+
+AI helped me simulate the role, generate better questions, and uncover aspects of the domain I had not initially considered. But running the design back through another AI model would only produce a simulated evaluation. It would not tell me whether a real adjuster found the system useful, whether the information was legally appropriate, or whether the recommendations supported better decisions.
 
 The experiment ended there because I did not have the bandwidth or access required to validate it responsibly.
 
-That limitation became part of the project’s value. It taught me to distinguish between using AI to explore a problem and using evidence to prove that a solution works.`,
+That limitation became part of the project’s value. It taught me to distinguish between using AI to explore a problem, using AI to support a decision, and using real evidence to determine whether either one actually works.`,
       insight:
-        "I used AI to help me understand an unfamiliar role and explore a possible workflow, but I stopped before treating simulated feedback as real validation.",
+        "Capability does not automatically grant decision authority. AI can contribute heavily to judgment without owning the final decision.",
       evidence: [
         {
           id: "emotional-repair-layer",
@@ -404,11 +426,11 @@ export default defineAtlasEntry({
     what:
       "A self-directed exploration of how AI-assisted tools might support claim adjusters and customers during complex insurance decisions.",
     why:
-      "The project started during an interview process, but the research quickly exposed how little I understood about adjuster workflows, jurisdictional constraints, policy interpretation, and human accountability.",
+      "The project started from a fully agentic assumption, but deeper domain research exposed how legal constraints, professional expertise, and accountability changed where AI should stop and human judgment should begin.",
     researchFocus:
-      "I studied what claim adjusters do during a typical workday, how claims move through the system, where information becomes difficult to interpret, and where AI might reduce cognitive load without taking decision authority away from the user.",
+      "I studied claim-adjuster workflows, evidence review, jurisdictional constraints, and the boundary between AI synthesis and consequential human decision-making.",
     keyDiscovery:
-      "AI helped me simulate the role and ask better questions, but it could not validate the solution. Real evidence would require real adjusters, realistic claim scenarios, and insurance subject-matter expertise.",
+      "AI could gather, compare, explain, and recommend without owning the final decision. In high-stakes workflows, capability does not automatically grant authority.",
   },
   orbit: {
     angle: -45,
