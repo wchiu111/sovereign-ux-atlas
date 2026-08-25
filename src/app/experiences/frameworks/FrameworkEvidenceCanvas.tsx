@@ -255,7 +255,7 @@ function EvidenceBoard({
           border: activeAnnotation
             ? "1px solid rgba(225,195,92,0.28)"
             : "1px solid rgba(220,205,175,0.18)",
-          background: "#E8E8E8",
+          background: "transparent",
           boxShadow: activeAnnotation
             ? "0 32px 100px rgba(0,0,0,0.46), 0 0 52px rgba(225,195,92,0.07)"
             : "0 28px 80px rgba(0,0,0,0.38)",
