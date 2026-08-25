@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { AtlasResolvedRelationship } from "../../content/types";
+import type {
+  AtlasEntryRelationshipType,
+  AtlasResolvedRelationship,
+} from "../../content/types";
 import { SYSTEMS } from "../../data/atlasSystems";
 import { useAtlasState } from "../../state";
 import AtlasLineageLink, { ATLAS_LINEAGE_COLOR } from "./AtlasLineageLink";
@@ -12,6 +15,7 @@ interface AtlasRelationshipIndexProps {
 
 type RelationshipGroup = {
   direction: "incoming" | "outgoing";
+  type: AtlasEntryRelationshipType;
   items: AtlasResolvedRelationship[];
 };
 
@@ -26,26 +30,72 @@ const VIEWPORT_PADDING = 18;
 const PANEL_ESTIMATED_HEIGHT = 250;
 const PORTAL_Z_INDEX = 80;
 
+const GROUP_LANGUAGE: Record<
+  AtlasEntryRelationshipType,
+  {
+    outgoingGroup: (count: number) => string;
+    incomingGroup: (count: number) => string;
+    outgoingPanel: string;
+    incomingPanel: string;
+    outgoingDescription: (label: string) => string;
+    incomingDescription: (label: string) => string;
+  }
+> = {
+  informed: {
+    outgoingGroup: (count) => `${count} FRAMEWORK LINEAGES`,
+    incomingGroup: (count) => `${count} ORIGINS IN PRACTICE`,
+    outgoingPanel: "FRAMEWORK LINEAGE",
+    incomingPanel: "ORIGINS IN PRACTICE",
+    outgoingDescription: (label) => `Frameworks later informed by ${label}.`,
+    incomingDescription: (label) =>
+      `Practice origins that contributed to ${label}.`,
+  },
+  applies: {
+    outgoingGroup: (count) => `${count} APPLIED FRAMEWORKS`,
+    incomingGroup: (count) => `${count} APPLICATIONS`,
+    outgoingPanel: "APPLIED FRAMEWORKS",
+    incomingPanel: "APPLIED IN",
+    outgoingDescription: (label) =>
+      `Frameworks deliberately applied throughout ${label}.`,
+    incomingDescription: (label) =>
+      `Projects that apply ${label} in product behavior.`,
+  },
+  embodies: {
+    outgoingGroup: (count) => `${count} EMBODIED FRAMEWORKS`,
+    incomingGroup: (count) => `${count} EXPRESSIONS`,
+    outgoingPanel: "SYSTEM EXPRESSIONS",
+    incomingPanel: "EMBODIED IN",
+    outgoingDescription: (label) =>
+      `Frameworks expressed broadly through ${label}.`,
+    incomingDescription: (label) =>
+      `Projects that embody ${label} as a broader product expression.`,
+  },
+};
+
 export default function AtlasRelationshipIndex({
   relationships,
   currentLabel,
 }: AtlasRelationshipIndexProps) {
   const groups = useMemo<RelationshipGroup[]>(() => {
-    const incoming = relationships.filter(
-      (relationship) => relationship.direction === "incoming",
-    );
-    const outgoing = relationships.filter(
-      (relationship) => relationship.direction === "outgoing",
-    );
+    const map = new Map<string, RelationshipGroup>();
 
-    return [
-      ...(incoming.length
-        ? [{ direction: "incoming" as const, items: incoming }]
-        : []),
-      ...(outgoing.length
-        ? [{ direction: "outgoing" as const, items: outgoing }]
-        : []),
-    ];
+    relationships.forEach((relationship) => {
+      const key = `${relationship.direction}:${relationship.type}`;
+      const existing = map.get(key);
+
+      if (existing) {
+        existing.items.push(relationship);
+        return;
+      }
+
+      map.set(key, {
+        direction: relationship.direction,
+        type: relationship.type,
+        items: [relationship],
+      });
+    });
+
+    return Array.from(map.values());
   }, [relationships]);
 
   return (
@@ -60,7 +110,7 @@ export default function AtlasRelationshipIndex({
           />
         ) : (
           <RelationshipGroupIndex
-            key={group.direction}
+            key={`${group.direction}-${group.type}`}
             group={group}
             currentLabel={currentLabel}
           />
@@ -88,12 +138,18 @@ function RelationshipGroupIndex({
 
   const incoming = group.direction === "incoming";
   const count = group.items.length;
+  const language = GROUP_LANGUAGE[group.type];
   const groupLabel = incoming
-    ? `${count} ORIGINS IN PRACTICE`
-    : `${count} FRAMEWORK LINEAGES`;
-  const panelTitle = incoming ? "ORIGINS IN PRACTICE" : "FRAMEWORK LINEAGE";
+    ? language.incomingGroup(count)
+    : language.outgoingGroup(count);
+  const panelTitle = incoming
+    ? language.incomingPanel
+    : language.outgoingPanel;
+  const panelDescription = incoming
+    ? language.incomingDescription(currentLabel)
+    : language.outgoingDescription(currentLabel);
   const arrow = incoming ? "↙" : "↗";
-  const panelId = `atlas-relationship-index-${group.direction}`;
+  const panelId = `atlas-relationship-index-${group.direction}-${group.type}`;
 
   const close = (restoreFocus = false) => {
     setOpen(false);
@@ -234,9 +290,7 @@ function RelationshipGroupIndex({
               color: "rgba(245,235,210,0.52)",
             }}
           >
-            {incoming
-              ? `Practice origins that contributed to ${currentLabel}.`
-              : `Frameworks later informed by ${currentLabel}.`}
+            {panelDescription}
           </div>
         </div>
 

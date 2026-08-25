@@ -29,11 +29,17 @@ export type AtlasSemanticRelationshipType =
   | "evidences"
   | "related";
 
-export type AtlasLineageRelationshipType = "informed";
+export type AtlasEntryRelationshipType =
+  | "informed"
+  | "applies"
+  | "embodies";
+
+/** @deprecated Use AtlasEntryRelationshipType. */
+export type AtlasLineageRelationshipType = AtlasEntryRelationshipType;
 
 export interface AtlasEntryRelationship {
   id: string;
-  type: AtlasLineageRelationshipType;
+  type: AtlasEntryRelationshipType;
   sourceId: string;
   targetId: string;
   sourceSectionId?: string;
@@ -45,7 +51,7 @@ export interface AtlasEntryRelationship {
 
 export interface AtlasResolvedRelationship {
   id: string;
-  type: AtlasLineageRelationshipType;
+  type: AtlasEntryRelationshipType;
   direction: "outgoing" | "incoming";
   relatedId: string;
   relatedLabel: string;
@@ -165,13 +171,10 @@ export interface AtlasEvidenceCanvas {
   portalImage?: string;
   boardLabel: string;
   boardSubtitle: string;
-  /** Optional authored board width. Falls back to the established 1050px framework width. */
   boardWidth?: number;
-  /** Optional authored artboard height in canvas world pixels. */
   boardHeight?: number;
   transitionFrom?: string;
   transitionTo?: string;
-  /** Labels rendered between boards when a comparison has three or more states. */
   transitionLabels?: string[];
   annotations: AtlasEvidenceAnnotation[];
   groups?: Array<{
@@ -245,10 +248,8 @@ export interface AtlasOverviewStar {
   id: string;
   label: string;
   angle: number;
-  /** Authored offsets from the focused constellation center, measured in orbit radii. */
   x?: number;
   y?: number;
-  /** Relative conceptual gravity. The renderer preserves the interaction hit target. */
   scale?: number;
   stellarType?: AtlasStellarType;
   intensity?: AtlasStarIntensity;

@@ -1,5 +1,9 @@
-import { useState } from "react";
-import type { AtlasResolvedRelationship } from "../../content/types";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import type {
+  AtlasEntryRelationshipType,
+  AtlasResolvedRelationship,
+} from "../../content/types";
 import { SYSTEMS } from "../../data/atlasSystems";
 import { useAtlasState } from "../../state";
 
@@ -13,6 +17,51 @@ interface AtlasLineageLinkProps {
   variant?: AtlasLineageVariant;
 }
 
+const RELATIONSHIP_LANGUAGE: Record<
+  AtlasEntryRelationshipType,
+  {
+    outgoingChipPrefix: string | null;
+    incomingChipPrefix: string | null;
+    outgoingTooltip: string;
+    incomingTooltip: string;
+    outgoingInline: string;
+    incomingInline: string;
+    outgoingBlock: string;
+    incomingBlock: string;
+  }
+> = {
+  informed: {
+    outgoingChipPrefix: null,
+    incomingChipPrefix: null,
+    outgoingTooltip: "Framework Lineage",
+    incomingTooltip: "Origin in Practice",
+    outgoingInline: "This idea later informed",
+    incomingInline: "Origin in practice",
+    outgoingBlock: "Idea Lineage",
+    incomingBlock: "Origin in Practice",
+  },
+  applies: {
+    outgoingChipPrefix: "Applies",
+    incomingChipPrefix: "Applied In",
+    outgoingTooltip: "Framework Application",
+    incomingTooltip: "Applied In",
+    outgoingInline: "This project applies",
+    incomingInline: "Applied in",
+    outgoingBlock: "Framework Application",
+    incomingBlock: "Applied In",
+  },
+  embodies: {
+    outgoingChipPrefix: "Embodies",
+    incomingChipPrefix: "Embodied In",
+    outgoingTooltip: "System Expression",
+    incomingTooltip: "Embodied In",
+    outgoingInline: "This experience embodies",
+    incomingInline: "Embodied in",
+    outgoingBlock: "System Expression",
+    incomingBlock: "Embodied In",
+  },
+};
+
 export default function AtlasLineageLink({
   relationship,
   currentLabel,
@@ -20,9 +69,53 @@ export default function AtlasLineageLink({
 }: AtlasLineageLinkProps) {
   const { actions } = useAtlasState();
   const [active, setActive] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const chipRef = useRef<HTMLButtonElement>(null);
 
   const outgoing = relationship.direction === "outgoing";
   const arrow = outgoing ? "↗" : "↙";
+  const language = RELATIONSHIP_LANGUAGE[relationship.type];
+
+  const updateTooltipPosition = () => {
+    const trigger = chipRef.current;
+    if (!trigger) return;
+
+    const rect = trigger.getBoundingClientRect();
+    const width = 270;
+    const gap = 10;
+    const viewportPadding = 18;
+    const desiredLeft = rect.right - width;
+    const maxLeft = Math.max(
+      viewportPadding,
+      window.innerWidth - width - viewportPadding,
+    );
+
+    setTooltipPosition({
+      top: rect.bottom + gap,
+      left: Math.min(Math.max(desiredLeft, viewportPadding), maxLeft),
+    });
+  };
+
+  useEffect(() => {
+    if (!active || variant !== "chip") {
+      setTooltipPosition(null);
+      return;
+    }
+
+    updateTooltipPosition();
+
+    const reposition = () => updateTooltipPosition();
+    window.addEventListener("resize", reposition);
+    window.addEventListener("scroll", reposition, true);
+
+    return () => {
+      window.removeEventListener("resize", reposition);
+      window.removeEventListener("scroll", reposition, true);
+    };
+  }, [active, variant]);
 
   const navigate = () => {
     for (const system of SYSTEMS) {
@@ -48,7 +141,9 @@ export default function AtlasLineageLink({
 
     return (
       <section
-        aria-label="Idea lineage"
+        aria-label={
+          outgoing ? language.outgoingBlock : language.incomingBlock
+        }
         style={{
           marginTop: "46px",
           padding: "22px 22px 21px",
@@ -68,7 +163,7 @@ export default function AtlasLineageLink({
             marginBottom: "12px",
           }}
         >
-          {outgoing ? "IDEA LINEAGE" : "ORIGIN IN PRACTICE"}
+          {outgoing ? language.outgoingBlock : language.incomingBlock}
         </div>
 
         <div
@@ -144,17 +239,20 @@ export default function AtlasLineageLink({
   }
 
   if (variant === "inline") {
+    const inlineLabel = outgoing
+      ? language.outgoingInline
+      : language.incomingInline;
+
     return (
       <button
+        ref={chipRef}
         type="button"
         onClick={navigate}
         onMouseEnter={() => setActive(true)}
         onMouseLeave={() => setActive(false)}
         onFocus={() => setActive(true)}
         onBlur={() => setActive(false)}
-        aria-label={`${
-          outgoing ? "This idea later informed" : "Origin in practice"
-        }: ${relationship.relatedLabel}`}
+        aria-label={`${inlineLabel}: ${relationship.relatedLabel}`}
         style={{
           display: "flex",
           alignItems: "center",
@@ -193,7 +291,7 @@ export default function AtlasLineageLink({
             textTransform: "uppercase",
           }}
         >
-          {outgoing ? "This idea later informed" : "Origin in practice"}
+          {inlineLabel}
         </span>
         <span
           style={{
@@ -213,18 +311,24 @@ export default function AtlasLineageLink({
     );
   }
 
+  const chipPrefix = outgoing
+    ? language.outgoingChipPrefix
+    : language.incomingChipPrefix;
+  const tooltipLabel = outgoing
+    ? language.outgoingTooltip
+    : language.incomingTooltip;
+
   return (
     <span style={{ position: "relative", display: "inline-flex" }}>
       <button
+        ref={chipRef}
         type="button"
         onClick={navigate}
         onMouseEnter={() => setActive(true)}
         onMouseLeave={() => setActive(false)}
         onFocus={() => setActive(true)}
         onBlur={() => setActive(false)}
-        aria-label={`${
-          outgoing ? "Framework lineage" : "Origin in practice"
-        }: ${relationship.relatedLabel}. ${relationship.summary}`}
+        aria-label={`${tooltipLabel}: ${relationship.relatedLabel}. ${relationship.summary}`}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -244,7 +348,7 @@ export default function AtlasLineageLink({
           fontFamily: "'DM Mono',monospace",
           fontSize: "8px",
           lineHeight: 1,
-          letterSpacing: "0.16em",
+          letterSpacing: "0.14em",
           textTransform: "uppercase",
           cursor: "pointer",
           whiteSpace: "nowrap",
@@ -253,61 +357,66 @@ export default function AtlasLineageLink({
         }}
       >
         <span aria-hidden="true">{arrow}</span>
+        {chipPrefix ? `${chipPrefix} · ` : ""}
         {relationship.relatedLabel}
       </button>
 
-      {active && (
-        <div
-          role="tooltip"
-          style={{
-            position: "absolute",
-            zIndex: 40,
-            top: "calc(100% + 10px)",
-            left: 0,
-            width: 270,
-            padding: "14px 15px 15px",
-            border: `1px solid ${ATLAS_LINEAGE_COLOR}55`,
-            background: "rgba(7,8,14,0.985)",
-            boxShadow: "0 18px 48px rgba(0,0,0,0.42)",
-            pointerEvents: "none",
-          }}
-        >
+      {active &&
+        tooltipPosition &&
+        typeof document !== "undefined" &&
+        createPortal(
           <div
+            role="tooltip"
             style={{
-              fontFamily: "'DM Mono',monospace",
-              fontSize: "8px",
-              letterSpacing: "0.22em",
-              color: ATLAS_LINEAGE_COLOR,
-              textTransform: "uppercase",
-              marginBottom: "8px",
+              position: "fixed",
+              zIndex: 80,
+              top: tooltipPosition.top,
+              left: tooltipPosition.left,
+              width: 270,
+              padding: "14px 15px 15px",
+              border: `1px solid ${ATLAS_LINEAGE_COLOR}55`,
+              background: "rgba(7,8,14,0.985)",
+              boxShadow: "0 18px 48px rgba(0,0,0,0.42)",
+              pointerEvents: "none",
             }}
           >
-            {outgoing ? "Framework Lineage" : "Origin in Practice"}
-          </div>
-          <div
-            style={{
-              fontFamily: "'EB Garamond',serif",
-              fontSize: "14px",
-              lineHeight: 1.55,
-              color: "rgba(245,235,210,0.76)",
-            }}
-          >
-            {relationship.summary}
-          </div>
-          <div
-            style={{
-              marginTop: "10px",
-              fontFamily: "'DM Mono',monospace",
-              fontSize: "8px",
-              letterSpacing: "0.12em",
-              color: ATLAS_LINEAGE_COLOR,
-              textTransform: "uppercase",
-            }}
-          >
-            {outgoing ? "View" : "Open"} {relationship.relatedLabel} {arrow}
-          </div>
-        </div>
-      )}
+            <div
+              style={{
+                fontFamily: "'DM Mono',monospace",
+                fontSize: "8px",
+                letterSpacing: "0.22em",
+                color: ATLAS_LINEAGE_COLOR,
+                textTransform: "uppercase",
+                marginBottom: "8px",
+              }}
+            >
+              {tooltipLabel}
+            </div>
+            <div
+              style={{
+                fontFamily: "'EB Garamond',serif",
+                fontSize: "14px",
+                lineHeight: 1.55,
+                color: "rgba(245,235,210,0.76)",
+              }}
+            >
+              {relationship.summary}
+            </div>
+            <div
+              style={{
+                marginTop: "10px",
+                fontFamily: "'DM Mono',monospace",
+                fontSize: "8px",
+                letterSpacing: "0.12em",
+                color: ATLAS_LINEAGE_COLOR,
+                textTransform: "uppercase",
+              }}
+            >
+              {outgoing ? "View" : "Open"} {relationship.relatedLabel} {arrow}
+            </div>
+          </div>,
+          document.body,
+        )}
     </span>
   );
 }

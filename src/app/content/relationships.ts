@@ -43,4 +43,31 @@ export const ATLAS_RELATIONSHIPS: AtlasEntryRelationship[] = [
     lineageSummary:
       "The Higher Education experience treated information as a sequence rather than a static hierarchy. Product context, exploration, proof, and detail were revealed as they became useful—a pattern that later evolved into Presence Navigation’s focus on temporal hierarchy.",
   },
+  {
+    id: "sovereign-atlas-presence-navigation",
+    type: "applies",
+    sourceId: "sovereign-atlas-cs",
+    targetId: "presence-navigation",
+    sourceSectionId: "approach",
+    targetSectionId: "exploration",
+    summary:
+      "Atlas applies Presence Navigation through an intentional arrival sequence, progressive disclosure, Focus Mode, and spatial continuity across deeper states.",
+    reverseSummary:
+      "Presence Navigation is applied throughout Atlas to guide arrival, orientation, focus, and exploration without removing user agency.",
+    lineageSummary:
+      "Atlas operationalizes Presence Navigation through Arrival, Focus Mode, progressive disclosure, and preservation of spatial context as readers move from overview into deeper states.",
+  },
+  {
+    id: "sovereign-atlas-sovereign-ux",
+    type: "embodies",
+    sourceId: "sovereign-atlas-cs",
+    targetId: "sovereign-ux",
+    sourceSectionId: "outcomes",
+    summary:
+      "Atlas embodies Sovereign UX by turning context, agency, evidence, reflection, and user-directed exploration into product behavior.",
+    reverseSummary:
+      "Sovereign Atlas is a product expression of Sovereign UX, translating the philosophy into navigation, evidence, interaction, and grounded AI behavior.",
+    lineageSummary:
+      "Atlas does not only describe Sovereign UX. It makes the philosophy explorable through contextual continuity, evidence before claims, reflective interaction, visible retreat, user-directed navigation, and grounded AI assistance.",
+  },
 ];
