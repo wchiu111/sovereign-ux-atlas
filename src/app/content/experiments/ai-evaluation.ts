@@ -27,7 +27,6 @@ const focus = {
     {
       id: "question",
       label: "Question",
-      angle: -141,
       accentStellarType: "purpose",
       subtitle: "Task success doesn't tell us everything about AI behavior",
       readingTime: 1,
@@ -48,7 +47,6 @@ Can an evaluator distinguish between an AI that successfully completes a task an
     {
       id: "setup",
       label: "Setup",
-      angle: -36,
       accentStellarType: "relational",
       subtitle: "Same task. Different context.",
       readingTime: 2,
@@ -77,7 +75,6 @@ Both systems then generate a solution to the same task. The outputs are compared
     {
       id: "evidence",
       label: "Evidence",
-      angle: 13,
       accentStellarType: "judgment",
       subtitle: "Two outputs. Two evaluation lenses.",
       readingTime: 2,
@@ -289,7 +286,6 @@ Open the canvas to inspect the artifacts before interpreting the result.`,
     {
       id: "results",
       label: "Results",
-      angle: 77,
       accentStellarType: "judgment",
       subtitle: "What the comparison reveals",
       readingTime: 1,
@@ -314,7 +310,6 @@ All three outcomes are useful because the experiment is testing the evaluation m
     {
       id: "implications",
       label: "Implications",
-      angle: 145,
       accentStellarType: "relational",
       subtitle: "Beyond task success",
       readingTime: 1,
@@ -375,6 +370,7 @@ export default defineAtlasEntry({
     {
       id: "question",
       label: "QUESTION",
+      angle: -141,
       x: -0.72,
       y: -0.58,
       scale: 0.96,
@@ -385,6 +381,7 @@ export default defineAtlasEntry({
     {
       id: "setup",
       label: "SETUP",
+      angle: -36,
       x: 0.58,
       y: -0.42,
       scale: 0.93,
@@ -395,6 +392,7 @@ export default defineAtlasEntry({
     {
       id: "evidence",
       label: "EVIDENCE",
+      angle: 13,
       x: 0.72,
       y: 0.16,
       scale: 0.9,
@@ -405,6 +403,7 @@ export default defineAtlasEntry({
     {
       id: "results",
       label: "RESULTS",
+      angle: 77,
       x: 0.16,
       y: 0.68,
       scale: 0.86,
@@ -415,6 +414,7 @@ export default defineAtlasEntry({
     {
       id: "implications",
       label: "IMPLICATIONS",
+      angle: 145,
       x: -0.48,
       y: 0.34,
       scale: 0.82,
