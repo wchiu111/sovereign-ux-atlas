@@ -4,7 +4,7 @@ import type {
   AtlasStellarType,
 } from "../content/types";
 import { resolveStellarColor } from "../atlas/constellation/stellarPalette";
-import AtlasLineageLink from "../atlas/components/AtlasLineageLink";
+import AtlasRelationshipIndex from "../atlas/components/AtlasRelationshipIndex";
 
 export const PROJECT_DRAWER_WIDTH = 420;
 
@@ -205,14 +205,10 @@ function SemanticTags({
         </span>
       ))}
 
-      {relationships.map((relationship) => (
-        <AtlasLineageLink
-          key={relationship.id}
-          relationship={relationship}
-          currentLabel={planet.label}
-          variant="chip"
-        />
-      ))}
+      <AtlasRelationshipIndex
+        relationships={relationships}
+        currentLabel={planet.label}
+      />
     </div>
   );
 }
