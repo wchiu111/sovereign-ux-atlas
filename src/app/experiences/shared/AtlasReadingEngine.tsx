@@ -14,11 +14,12 @@ import type { AtlasAssistSource } from "../../types/atlasAssist";
 // contrast thresholds without flattening the reader's visual hierarchy.
 const readerText = {
   primary: "#F5F1E6",
-  secondary: "#D1C5A8",
-  metadata: "#B9AC8E",
-  inactive: "#B8A887",
-  interactive: "#B8D2E6",
-  caption: "#B8AD93",
+  secondary: "#BDB18E",
+  metadata: "#93876C",
+  inactive: "#897B5D",
+  identity: "#8AAEC8",
+  utility: "#C5A96E",
+  caption: "#968B73",
 } as const;
 
 function LeftNav({
@@ -55,14 +56,14 @@ function LeftNav({
         fontFamily:"'DM Mono',monospace",
         fontSize:"9.5px",
         letterSpacing:"0.2em",
-        color:readerText.interactive,
+        color:readerText.utility,
         background:"rgba(8,10,18,0.28)",
         border:"none",
         borderBottom:"1px solid rgba(200,180,130,0.08)",
         cursor:"pointer",
         textAlign:"left",
       }}>
-        <span style={{ color, opacity:0.70 }}>←</span>
+        <span style={{ color:readerText.utility }}>←</span>
         <span>BACK TO OVERVIEW</span>
       </button>
 
@@ -749,15 +750,15 @@ function EvidenceRail({
                   marginBottom:"6px" }}>
                   <span style={{
                     fontFamily:"'DM Mono',monospace", fontSize:"9px",
-                    color,
-                    border:`1px solid ${color}40`,
+                    color:readerText.identity,
+                    border:`1px solid ${readerText.identity}40`,
                     padding:"2px 6px",
                     letterSpacing:"0.14em",
                   }}>
                     {item.number}
                   </span>
                   <span style={{ fontFamily:"'DM Mono',monospace", fontSize:"9.5px",
-                    letterSpacing:"0.16em", color:readerText.metadata,
+                    letterSpacing:"0.16em", color:readerText.identity,
                     textTransform:"uppercase" }}>
                     {item.type}
                   </span>
@@ -901,7 +902,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
           <button onClick={() => setFullscreen(f => !f)} style={{
             display:"flex", alignItems:"center", gap:"5px",
             fontFamily:"'DM Mono',monospace", fontSize:"10px",
-            letterSpacing:"0.20em", color:readerText.interactive,
+            letterSpacing:"0.20em", color:readerText.utility,
             background:"none", border:"1px solid rgba(200,180,130,0.52)",
             height:viewerControlHeight, padding:"5px 10px", cursor:"pointer", transition:"all 0.2s",
           }}>
@@ -910,7 +911,7 @@ function EvidenceViewer({ item, color, section, caseStudyTitle, onClose, onShare
           </button>
           <button ref={closeRef} aria-label="Close evidence viewer" onClick={onClose} style={{
             display:"flex", alignItems:"center", justifyContent:"center",
-            color:readerText.interactive, background:"none",
+            color:readerText.utility, background:"none",
             border:"1px solid rgba(200,180,130,0.52)",
             width:"44px", height:viewerControlHeight, cursor:"pointer",
           }}>
@@ -1247,10 +1248,10 @@ export default function AtlasReadingEngine({
             title="Back to Atlas"
             style={{
               ...breadcrumbButtonStyle,
-              color:readerText.interactive,
+              color:readerText.metadata,
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = readerText.primary; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = readerText.interactive; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = readerText.metadata; }}
           >
             ATLAS
           </button>
@@ -1261,8 +1262,7 @@ export default function AtlasReadingEngine({
             title={`Back to ${system.label}`}
             style={{
               ...breadcrumbButtonStyle,
-              color,
-              opacity:1,
+              color:readerText.metadata,
             }}
             onMouseEnter={(e) => { e.currentTarget.style.opacity = "1"; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
@@ -1276,10 +1276,10 @@ export default function AtlasReadingEngine({
             title={`Back to ${caseStudy.title} overview`}
             style={{
               ...breadcrumbButtonStyle,
-              color:readerText.secondary,
+              color:readerText.identity,
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = readerText.primary; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = readerText.secondary; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = readerText.identity; }}
           >
             {caseStudy.title}
           </button>
@@ -1288,7 +1288,7 @@ export default function AtlasReadingEngine({
           <button onClick={handleShare} style={{
             display:"flex", alignItems:"center", gap:"5px",
             fontSize:"10px", letterSpacing:"0.20em",
-            color: shareStatus === "copied" ? color : readerText.interactive,
+            color:readerText.utility,
             background:"none", border:"1px solid rgba(200,180,130,0.42)",
             padding:"5px 10px", cursor:"pointer", transition:"color 0.2s",
           }}>
