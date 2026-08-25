@@ -12,6 +12,7 @@ import {
 import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
 import AtlasLineageLink from "../../atlas/components/AtlasLineageLink";
 import FrameworkEvidenceCanvas from "../frameworks/FrameworkEvidenceCanvas";
+import { readerSemanticColor } from "./readerSemanticPalette";
 
 function LeftNav({
   caseStudy,
@@ -58,7 +59,7 @@ function LeftNav({
           fontFamily: "'DM Mono',monospace",
           fontSize: "9.5px",
           letterSpacing: "0.2em",
-          color: "rgba(200,180,130,0.56)",
+          color: readerSemanticColor.utility.primary,
           background: "rgba(8,10,18,0.28)",
           border: "none",
           borderBottom: "1px solid rgba(200,180,130,0.08)",
@@ -66,7 +67,7 @@ function LeftNav({
           textAlign: "left",
         }}
       >
-        <span style={{ color, opacity: 0.7 }}>←</span>
+        <span style={{ color: readerSemanticColor.utility.primary }}>←</span>
         <span>BACK TO OVERVIEW</span>
       </button>
 
@@ -104,7 +105,7 @@ function LeftNav({
             fontFamily: "'DM Mono',monospace",
             fontSize: "10.5px",
             lineHeight: 1.6,
-            color: "rgba(200,166,96,0.58)",
+            color: readerSemanticColor.text.metadata,
             letterSpacing: "0.10em",
           }}
         >
@@ -127,7 +128,7 @@ function LeftNav({
             fontFamily: "'DM Mono',monospace",
             fontSize: "8.5px",
             letterSpacing: "0.24em",
-            color: "rgba(200,166,96,0.45)",
+            color: readerSemanticColor.text.metadata,
             textTransform: "uppercase",
             marginBottom: "10px",
           }}
@@ -143,7 +144,7 @@ function LeftNav({
             fontFamily: "'DM Mono',monospace",
             fontSize: "10px",
             letterSpacing: "0.18em",
-            color: "rgba(200,166,96,0.66)",
+            color: readerSemanticColor.text.metadata,
             textTransform: "uppercase",
           }}
         >
@@ -196,7 +197,7 @@ function LeftNav({
                     ? color
                     : isHovered
                       ? "rgba(180,210,255,0.72)"
-                      : "rgba(200,166,96,0.42)",
+                      : readerSemanticColor.text.inactive,
                   minWidth: "25px",
                   flexShrink: 0,
                 }}
@@ -212,7 +213,7 @@ function LeftNav({
                     ? "rgba(255,248,230,0.94)"
                     : isHovered
                       ? "rgba(245,235,210,0.82)"
-                      : "rgba(200,166,96,0.58)",
+                      : readerSemanticColor.text.inactive,
                   textTransform: "uppercase",
                   whiteSpace: "nowrap",
                 }}
@@ -236,7 +237,7 @@ function LeftNav({
             fontFamily: "'DM Mono',monospace",
             fontSize: "8px",
             letterSpacing: "0.24em",
-            color: "rgba(200,166,96,0.54)",
+            color: readerSemanticColor.text.metadata,
             lineHeight: 2.1,
             textTransform: "uppercase",
           }}
@@ -300,7 +301,7 @@ function SectionContent({
             fontFamily: "'DM Mono',monospace",
             fontSize: "9px",
             letterSpacing: "0.28em",
-            color: "rgba(200,180,130,0.40)",
+            color: readerSemanticColor.text.metadata,
             marginBottom: "3px",
           }}
         >
@@ -313,7 +314,6 @@ function SectionContent({
               fontSize: "9px",
               letterSpacing: "0.16em",
               color,
-              opacity: 0.8,
             }}
           >
             {section.number} {section.title.toUpperCase()}
@@ -323,7 +323,7 @@ function SectionContent({
               fontFamily: "'DM Mono',monospace",
               fontSize: "9px",
               letterSpacing: "0.14em",
-              color: "rgba(200,180,130,0.35)",
+              color: readerSemanticColor.text.metadata,
             }}
           >
             of {String(sectionCount).padStart(2, "0")}
@@ -359,7 +359,7 @@ function SectionContent({
               fontFamily: "'EB Garamond',serif",
               fontSize: "18px",
               lineHeight: 1.55,
-              color: "rgba(200,180,130,0.72)",
+              color: readerSemanticColor.text.secondary,
             }}
           >
             {section.subtitle}
@@ -457,7 +457,6 @@ function SectionContent({
             fontSize: "9px",
             letterSpacing: "0.30em",
             color,
-            opacity: 0.7,
             marginBottom: "10px",
             textTransform: "uppercase",
           }}
@@ -693,7 +692,7 @@ function EvidenceRail({
             fontFamily: "'DM Mono',monospace",
             fontSize: "11px",
             letterSpacing: "0.32em",
-            color: "rgba(200,180,130,0.60)",
+            color: readerSemanticColor.text.secondary,
             textTransform: "uppercase",
           }}
         >
@@ -705,7 +704,7 @@ function EvidenceRail({
               fontFamily: "'DM Mono',monospace",
               fontSize: "9px",
               letterSpacing: "0.18em",
-              color: "rgba(200,180,130,0.48)",
+              color: readerSemanticColor.text.metadata,
               marginTop: "3px",
             }}
           >
@@ -772,7 +771,7 @@ function EvidenceRail({
               fontFamily: "'DM Mono',monospace",
               fontSize: "8.5px",
               lineHeight: 1.8,
-              color: "rgba(200,180,130,0.52)",
+              color: readerSemanticColor.text.metadata,
             }}
           >
             {emptyMessage}
@@ -938,7 +937,7 @@ function EvidenceRail({
                   fontFamily: "'EB Garamond',serif",
                   fontSize: "14px",
                   lineHeight: 1.5,
-                  color: "rgba(200,180,130,.62)",
+                  color: readerSemanticColor.text.secondary,
                 }}
               >
                 {portalItem.canvas?.description}
@@ -1025,9 +1024,8 @@ function EvidenceRail({
                   style={{
                     fontFamily: "'DM Mono',monospace",
                     fontSize: "9px",
-                    color,
-                    opacity: 0.7,
-                    border: `1px solid ${color}40`,
+                    color: readerSemanticColor.identity.primary,
+                    border: `1px solid ${readerSemanticColor.identity.primary}40`,
                     padding: "2px 6px",
                     letterSpacing: "0.14em",
                   }}
@@ -1039,7 +1037,7 @@ function EvidenceRail({
                     fontFamily: "'DM Mono',monospace",
                     fontSize: "9.5px",
                     letterSpacing: "0.16em",
-                    color: "rgba(200,180,130,0.38)",
+                    color: readerSemanticColor.identity.primary,
                     textTransform: "uppercase",
                   }}
                 >
@@ -1065,7 +1063,7 @@ function EvidenceRail({
                   fontFamily: "'EB Garamond',serif",
                   fontSize: "14.5px",
                   lineHeight: 1.55,
-                  color: "rgba(200,180,130,0.55)",
+                  color: readerSemanticColor.text.secondary,
                 }}
               >
                 {item.description}
@@ -1124,14 +1122,25 @@ function EvidenceViewer({
       >
         <div
           style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
             fontFamily: "'DM Mono',monospace",
             fontSize: "9px",
             letterSpacing: "0.22em",
-            color: "rgba(200,180,130,0.40)",
           }}
         >
-          {caseStudyTitle.toUpperCase()} · {section.title.toUpperCase()} · ARTIFACT{" "}
-          {item.number}
+          <span style={{ color: readerSemanticColor.text.metadata }}>
+            {caseStudyTitle.toUpperCase()}
+          </span>
+          <span style={{ color: "rgba(200,180,130,0.25)" }}>·</span>
+          <span style={{ color: readerSemanticColor.text.metadata }}>
+            {section.title.toUpperCase()}
+          </span>
+          <span style={{ color: "rgba(200,180,130,0.25)" }}>·</span>
+          <span style={{ color }}>
+            ARTIFACT {item.number}
+          </span>
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
           <button
@@ -1143,7 +1152,7 @@ function EvidenceViewer({
               fontFamily: "'DM Mono',monospace",
               fontSize: "10px",
               letterSpacing: "0.20em",
-              color: "rgba(200,180,130,0.70)",
+              color: readerSemanticColor.utility.primary,
               background: "none",
               border: "1px solid rgba(200,180,130,0.52)",
               height: viewerControlHeight,
@@ -1162,7 +1171,7 @@ function EvidenceViewer({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "rgba(200,180,130,0.75)",
+              color: readerSemanticColor.utility.primary,
               background: "none",
               border: "1px solid rgba(200,180,130,0.52)",
               width: "44px",
@@ -1207,7 +1216,6 @@ function EvidenceViewer({
                 fontSize: "10px",
                 letterSpacing: "0.28em",
                 color,
-                opacity: 0.65,
                 marginBottom: "12px",
                 textTransform: "uppercase",
               }}
@@ -1240,7 +1248,7 @@ function EvidenceViewer({
                 fontFamily: "'EB Garamond',serif",
                 fontSize: "16px",
                 lineHeight: 1.78,
-                color: "rgba(240,232,215,0.82)",
+                color: readerSemanticColor.text.secondary,
                 marginBottom: "24px",
               }}
             >
@@ -1259,7 +1267,7 @@ function EvidenceViewer({
                 fontFamily: "'DM Mono',monospace",
                 fontSize: "11px",
                 letterSpacing: "0.24em",
-                color: "rgba(200,180,130,0.40)",
+                color: readerSemanticColor.text.metadata,
                 marginBottom: "10px",
                 textTransform: "uppercase",
               }}
@@ -1272,7 +1280,7 @@ function EvidenceViewer({
                 fontFamily: "'EB Garamond',serif",
                 fontSize: "15px",
                 lineHeight: 1.68,
-                color: "rgba(200,180,130,0.62)",
+                color: readerSemanticColor.text.caption,
               }}
             >
               {item.caption}
@@ -1284,7 +1292,7 @@ function EvidenceViewer({
                   fontFamily: "'DM Mono',monospace",
                   fontSize: "11px",
                   letterSpacing: "0.24em",
-                  color: "rgba(200,180,130,0.40)",
+                  color: readerSemanticColor.text.metadata,
                   marginBottom: "10px",
                   textTransform: "uppercase",
                 }}
@@ -1297,7 +1305,7 @@ function EvidenceViewer({
                   fontFamily: "'DM Mono',monospace",
                   fontSize: "10px",
                   letterSpacing: "0.16em",
-                  color: "rgba(200,180,130,0.50)",
+                  color: readerSemanticColor.text.metadata,
                   lineHeight: 2.2,
                 }}
               >
@@ -1427,18 +1435,42 @@ export default function AtlasReadingEngine({
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button onClick={onAtlas ?? onExit} style={breadcrumbButtonStyle}>
+          <button
+            onClick={onAtlas ?? onExit}
+            style={{ ...breadcrumbButtonStyle, color: readerSemanticColor.text.metadata }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = readerSemanticColor.text.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = readerSemanticColor.text.metadata;
+            }}
+          >
             ATLAS
           </button>
           <span style={{ color: "rgba(200,180,130,0.22)" }}>·</span>
           <button
             onClick={onSystem ?? onExit}
-            style={{ ...breadcrumbButtonStyle, color, opacity: 0.72 }}
+            style={{ ...breadcrumbButtonStyle, color: readerSemanticColor.text.metadata }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = readerSemanticColor.text.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = readerSemanticColor.text.metadata;
+            }}
           >
             {system.label}
           </button>
           <span style={{ color: "rgba(200,180,130,0.22)" }}>·</span>
-          <button onClick={onExit} style={breadcrumbButtonStyle}>
+          <button
+            onClick={onExit}
+            style={{ ...breadcrumbButtonStyle, color: readerSemanticColor.identity.primary }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = readerSemanticColor.text.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = readerSemanticColor.identity.primary;
+            }}
+          >
             {caseStudy.title}
           </button>
         </div>
@@ -1451,7 +1483,7 @@ export default function AtlasReadingEngine({
             gap: "5px",
             fontSize: "10px",
             letterSpacing: "0.20em",
-            color: shareConfirm ? color : "rgba(200,180,130,0.70)",
+            color: readerSemanticColor.utility.primary,
             background: "none",
             border: "1px solid rgba(200,180,130,0.42)",
             padding: "5px 10px",
@@ -1558,5 +1590,5 @@ const breadcrumbButtonStyle = {
   padding: "8px 2px",
   cursor: "pointer",
   textTransform: "uppercase" as const,
-  color: "rgba(200,180,130,0.52)",
+  color: readerSemanticColor.text.metadata,
 } as const;
