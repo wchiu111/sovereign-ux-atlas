@@ -138,7 +138,20 @@ Icons, imagery, interface previews, and content groupings needed to explain rela
 Component flexibility:
 The system needed reusable patterns, but those patterns had to accommodate variation across products and content types.
 
-This meant exploring multiple ways to introduce the platform, structure the product portfolio, and reveal supporting information without turning the page into a long, undifferentiated list.`,
+As I worked through the structure, I began thinking less about page sections and more about the sequence in which understanding needed to form.
+
+Each part of the experience needed to answer the question created by the one before it:
+
+• Why should this matter to my institution?
+• What role does Oracle play?
+• Which products are relevant?
+• How do those products work together?
+• What does the experience actually look like?
+• Where can I go deeper?
+
+That sequence became a form of information choreography.
+
+This meant revealing supporting information after enough context existed to make it useful, rather than turning the page into a long, undifferentiated list.`,
       insight:
         "The page did not need to expose every detail at once. It needed to reveal the right information at the moment it became useful.",
       evidence: [
@@ -274,21 +287,21 @@ The design system remained consistent, but the underlying content model became f
       id: "outcomes",
       label: "Outcomes",
       accentStellarType: "agentic",
-      subtitle: "A coherent experience that could support complexity without exposing it all at once",
+      subtitle: "Structural proof across a complex product ecosystem",
       readingTime: 3,
       content: `The final experience brought a large product portfolio into a more coherent customer journey.
 
-The page introduced Oracle’s higher-education platform through a clearer visual narrative, made several product categories easier to compare and explore, and supported variable product content within a consistent system.
+One narrative hierarchy could now accommodate products with very different content needs without forcing them into identical cards. The flexible product explorer preserved a shared interaction model while allowing each category to reveal the links, examples, and interface previews relevant to it.
 
-It also reduced the need to show every detail simultaneously. Visitors could understand the overall portfolio first, then reveal specific products, supporting links, and interface examples as needed.
+Progressive disclosure also reduced the need to expose the entire portfolio at once. Visitors could understand the overall product landscape first, then reveal additional detail after a category became relevant.
 
-The experience remained usable across desktop, tablet, and mobile while aligning with Oracle’s broader visual and content standards.
+That hierarchy held across desktop, tablet, and mobile. Responsive behavior preserved the order and purpose of the experience rather than simply compressing the desktop layout.
 
 I do not have reliable product-performance metrics for this specific experience, so I would not attach conversion or engagement claims to it.
 
-The value of the work is visible in the system itself: the final design supports complexity without requiring the visitor to absorb all of that complexity at once.`,
+The proof in this project is structural: one system could preserve coherence, accommodate meaningful variation, and guide people through complexity without requiring them to absorb all of it at once.`,
       insight:
-        "The outcome was not a simpler product portfolio. It was a clearer path through the complexity that already existed.",
+        "The outcome was not a simpler product portfolio. It was a system that preserved a clear path through complexity across content types and screen sizes.",
       evidence: [
         {
           id: "responsive-final-experience",
@@ -309,7 +322,7 @@ The value of the work is visible in the system itself: the final design supports
       id: "lessons",
       label: "Lessons",
       accentStellarType: "purpose",
-      subtitle: "What enterprise microsite work taught me about translation",
+      subtitle: "From information architecture to the timing of understanding",
       readingTime: 3,
       content: `At the time, I saw much of this work as microsite and campaign design.
 
@@ -324,6 +337,10 @@ I learned that:
 • visual design can explain system relationships
 • progressive disclosure can reduce cognitive load without removing depth
 • enterprise UX often begins with content structure before interface behavior
+
+At Oracle, I did not yet think of this as temporal hierarchy. I thought of it as sequencing a story.
+
+Looking back, the principle was already there: hierarchy is not only about what is visually largest or spatially closest. It is also about what becomes relevant first, what can wait, and what should appear only after the reader has enough context to understand it.
 
 That lesson continued into my later work on enterprise workflows and AI systems.
 
@@ -352,7 +369,7 @@ export default defineAtlasEntry({
     researchFocus:
       "Information hierarchy, content variability, progressive disclosure, responsive behavior, and visual storytelling across an enterprise product ecosystem.",
     keyDiscovery:
-      "Consistency should come from a shared interaction and hierarchy—not from forcing every product into the same content structure.",
+      "People did not need every product detail at once. A shared hierarchy and progressive disclosure could reveal complexity as it became relevant without forcing unlike products into the same content model.",
   },
   orbit: {
     angle: 145,

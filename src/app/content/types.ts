@@ -29,11 +29,17 @@ export type AtlasSemanticRelationshipType =
   | "evidences"
   | "related";
 
-export type AtlasLineageRelationshipType = "informed";
+export type AtlasEntryRelationshipType =
+  | "informed"
+  | "applies"
+  | "embodies";
+
+/** @deprecated Use AtlasEntryRelationshipType. */
+export type AtlasLineageRelationshipType = AtlasEntryRelationshipType;
 
 export interface AtlasEntryRelationship {
   id: string;
-  type: AtlasLineageRelationshipType;
+  type: AtlasEntryRelationshipType;
   sourceId: string;
   targetId: string;
   sourceSectionId?: string;
@@ -45,7 +51,7 @@ export interface AtlasEntryRelationship {
 
 export interface AtlasResolvedRelationship {
   id: string;
-  type: AtlasLineageRelationshipType;
+  type: AtlasEntryRelationshipType;
   direction: "outgoing" | "incoming";
   relatedId: string;
   relatedLabel: string;

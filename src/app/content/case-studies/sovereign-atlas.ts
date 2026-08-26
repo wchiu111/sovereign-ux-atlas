@@ -98,35 +98,17 @@ That small usability problem became the first question Atlas tried to answer.`,
       accentStellarType: "risk",
       subtitle: "When Search Stopped Being Enough",
       readingTime: 3,
-      content: `Search could retrieve Echo instantly.
-
-But the more I thought about it, the more I realized search assumes something important:
+      content: `Search could retrieve Echo instantly but the more I thought about it, the more I realized search assumes something important:
 
 You already know what you are looking for.
 
-Reflection rarely works that way.
+Reflection rarely works that way. Many of the ideas inside the Codex did not emerge because I searched for them. They emerged because I encountered something unexpected nearby.
 
-Many of the ideas inside the Codex did not emerge because I searched for them. They emerged because I encountered something unexpected nearby.
+A framework reminded me of an observation. An observation led to a question. A question eventually became an entirely new project.
 
-A framework reminded me of an observation.
+Those connections were not visible through keywords. They lived in the relationships between ideas. That realization changed the project. The challenge was no longer finding information. It was preserving discovery.
 
-An observation led to a question.
-
-A question eventually became an entirely new project.
-
-Those connections were not visible through keywords. They lived in the relationships between ideas.
-
-That realization changed the project.
-
-The challenge was no longer finding information. It was preserving discovery.
-
-Instead of asking how to search the Codex, I began asking whether the Codex should remain a document at all.
-
-Could knowledge become spatial?
-
-Could relationships become visible?
-
-Could navigation become part of the thinking process?
+Instead of asking how to search the Codex, I began asking whether the Codex should remain a document at all. Could knowledge become spatial? Could relationships become visible? Could navigation become part of the thinking process?
 
 The moment the content became spatial, Atlas stopped being a search feature and became an experiment in how knowledge could be explored.`,
       insight:
@@ -166,23 +148,13 @@ The moment the content became spatial, Atlas stopped being a search feature and 
       accentStellarType: "strategy",
       subtitle: "One Question Led to Another",
       readingTime: 6,
-      content: `Looking back, Atlas was never designed through a conventional roadmap.
+      content: `Looking back, Atlas was never designed through a conventional roadmap. There was no finished specification describing the final system. Every version answered the question I had at that moment, and every answer exposed a more interesting problem underneath.
 
-There was no finished specification describing the final system.
-
-Every version answered the question I had at that moment, and every answer exposed a more interesting problem underneath.
-
-The earliest constellation tested whether ideas could feel like places instead of pages.
-
-Once that worked, the next question became context. How could someone understand what a node meant without leaving the space they were exploring?
+The earliest constellation tested whether ideas could feel like places instead of pages. Once that worked, the next question became context. How could someone understand what a node meant without leaving the space they were exploring?
 
 The drawer answered part of that question, but deeper content introduced another one: how could someone move from the whole system into one subject without losing their sense of place?
 
-That led to Focus Mode.
-
-Search later returned, not because the spatial idea had failed, but because retrieval still mattered. It became one method of navigation inside a larger exploratory system.
-
-AI assistance created another shift. Atlas could move beyond exposing information and begin responding to questions grounded in the work itself.
+That led to Focus Mode. Search later returned, not because the spatial idea had failed, but because retrieval still mattered. It became one method of navigation inside a larger exploratory system. AI assistance created another shift. Atlas could move beyond exposing information and begin responding to questions grounded in the work itself.
 
 As the interaction model became less familiar, the project needed an intentional arrival sequence. The system could no longer assume people would immediately understand how to move through it.
 
@@ -192,9 +164,7 @@ The technical process changed at the same time.
 
 After using the available Figma Make tokens in only a few days, the original tool could no longer support the pace or complexity of the work. Instead of stopping, I began learning the capabilities the next version required: React, TypeScript, component architecture, state management, GitHub, animation, and performance.
 
-Atlas did not become a design-engineering project because I planned it that way.
-
-It became one because the questions kept exceeding the tools and skills I started with.`,
+Atlas did not become a design-engineering project because I planned it that way. It became one because the questions kept exceeding the tools and skills I started with.`,
       insight:
         "Atlas evolved by following curiosity instead of following a specification.",
       evidence: [
@@ -323,40 +293,21 @@ It became one because the questions kept exceeding the tools and skills I starte
       accentStellarType: "agentic",
       subtitle: "A Portfolio Became a Knowledge System",
       readingTime: 4,
-      content: `Atlas transformed far beyond its original purpose.
+      content: `Atlas transformed far beyond its original purpose. What began as a search feature became an application for exploring relationships between ideas, projects, experiments, and frameworks.
 
-What began as a search feature became an application for exploring relationships between ideas, projects, experiments, and frameworks.
-
-The portfolio now supports several distinct ways of understanding the work:
-
-• spatial overview through constellations
-• focused reading through project systems
-• evidence-based investigation inside case studies
-• direct retrieval through search
-• conversational exploration through AI assistance
-• personal context through the Observatory
+The portfolio now supports several distinct ways of understanding the work. Spatial overview through constellations, focused reading through project systems, evidence-based investigation inside case studies, direct retrieval through search, conversational exploration through AI assistance and personal context through the Observatory.
 
 The project also changed how I work.
 
-I learned React, TypeScript, GitHub, component architecture, state management, animation, performance optimization, and design engineering because each new version required something the previous version could not support.
+I learned React, TypeScript, GitHub, component architecture, state management, animation, performance optimization, and design engineering because each new version required something the previous version could not support. Those skills were not separate from the design process. They changed the questions I was able to ask.
 
-Those skills were not separate from the design process. They changed the questions I was able to ask.
-
-Understanding components changed how I thought about reusable interaction patterns.
-
-Understanding state changed how I thought about continuity and context.
-
-Understanding performance changed how I thought about atmosphere, motion, and restraint.
-
-Understanding architecture changed how I thought about whether the system could continue growing without collapsing under its own complexity.
+Understanding components changed how I thought about reusable interaction patterns. Understanding state changed how I thought about continuity and context. Understanding performance changed how I thought about atmosphere, motion, and restraint. Understanding architecture changed how I thought about whether the system could continue growing without collapsing under its own complexity.
 
 Atlas also changed the purpose of the portfolio itself.
 
 Traditional portfolios present finished work in sequence. Atlas allows readers to scan, investigate, compare evidence, move backward, ask questions, and construct their own understanding.
 
-The interface does not only claim that I think in systems.
-
-It lets people experience one.`,
+The interface does not only claim that I think in systems. It lets people experience one.`,
       insight:
         "The most valuable outcome was not the portfolio itself. It was building a system capable of evolving alongside my own thinking.",
       evidence: [],
@@ -367,41 +318,19 @@ It lets people experience one.`,
       accentStellarType: "purpose",
       subtitle: "The Project Changed Me More Than I Changed It",
       readingTime: 4,
-      content: `When I first began building Atlas, I thought I was adding search to a document.
+      content: `When I first began building Atlas, I thought I was adding search to a document. Looking back now, that feels almost insignificant. Every meaningful change happened because the previous version reached a limit.
 
-Looking back now, that feels almost insignificant.
+Sometimes the limit was conceptual. Sometimes it was technical. Sometimes it was simply the limit of my own understanding.
 
-Every meaningful change happened because the previous version reached a limit.
+Atlas taught me that exploration is not the opposite of structure. Structure can emerge through exploration when the work is continuously reflected on, tested, and reorganized. It also taught me that building software changes the way designers think.
 
-Sometimes the limit was conceptual.
+Technical decisions are design decisions. Component boundaries affect how ideas can grow. State architecture affects whether context survives interaction. Performance affects whether motion feels meaningful or obstructive. A design system affects whether many experiments still feel like they belong to the same world.
 
-Sometimes it was technical.
-
-Sometimes it was simply the limit of my own understanding.
-
-Atlas taught me that exploration is not the opposite of structure. Structure can emerge through exploration when the work is continuously reflected on, tested, and reorganized.
-
-It also taught me that building software changes the way designers think.
-
-Technical decisions are design decisions.
-
-Component boundaries affect how ideas can grow.
-
-State architecture affects whether context survives interaction.
-
-Performance affects whether motion feels meaningful or obstructive.
-
-A design system affects whether many experiments still feel like they belong to the same world.
-
-The skills I learned were never listed in an initial project plan. Atlas demanded them one question at a time.
-
-That may be the clearest description of the entire process:
+The skills I learned were never listed in an initial project plan. Atlas demanded them one question at a time. That may be the clearest description of the entire process:
 
 Atlas kept asking more of me than I knew how to do, so I learned whatever the next version required.
 
-The project is still unfinished because the thinking is still unfinished.
-
-There is no final version—only the current state of understanding.`,
+The project is still unfinished because the thinking is still unfinished. There is no final version—only the current state of understanding.`,
       insight:
         "Atlas was not built to prove an idea. It was built by following one question until it naturally became the next.",
       evidence: [
