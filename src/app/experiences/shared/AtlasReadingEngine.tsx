@@ -12,6 +12,7 @@ import {
 import { resolveStellarColor } from "../../atlas/constellation/stellarPalette";
 import AtlasLineageLink from "../../atlas/components/AtlasLineageLink";
 import FrameworkEvidenceCanvas from "../frameworks/FrameworkEvidenceCanvas";
+import SovereignLayeredSystemMapCanvas from "../frameworks/SovereignLayeredSystemMapCanvas";
 import { readerSemanticColor } from "./readerSemanticPalette";
 
 function LeftNav({
@@ -1553,7 +1554,13 @@ export default function AtlasReadingEngine({
           />
         </aside>
 
-        {activeEvidence?.canvas ? (
+        {activeEvidence?.canvas?.id === "sovereign-layered-system-map" ? (
+          <SovereignLayeredSystemMapCanvas
+            frameworkTitle={caseStudy.title}
+            sectionTitle={activeEvidenceSection.title}
+            onClose={handleCloseEvidence}
+          />
+        ) : activeEvidence?.canvas ? (
           <FrameworkEvidenceCanvas
             items={allEvidence.filter(
               (item) => item.canvas?.id === activeEvidence.canvas?.id,
