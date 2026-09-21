@@ -8,6 +8,7 @@ import React, {
   type WheelEvent as ReactWheelEvent,
 } from "react";
 import { Minus, Plus, Scan, X } from "lucide-react";
+import { readerSemanticColor } from "../shared/readerSemanticPalette";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -15,11 +16,10 @@ const WORLD_W = 2100;
 const WORLD_H = 1340;
 const CENTER_X = 950;
 const CENTER_Y = 660;
-const OPENING_SCALE = 0.8;
+const OPENING_SCALE = 1;
 const MIN_SCALE = 0.1;
 const MAX_SCALE = 2.8;
 const DETAIL_PANEL_W = 380;
-const VISITED_STORAGE_KEY = "sovereign-ux-layered-system-visited";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -277,6 +277,34 @@ function edgeColor(id: string): string {
   return GROUP_COLOR[LAYER_BY_ID[id]?.group ?? "surface"];
 }
 
+const LAYER_CONNECTION_DEGREE = EDGES.reduce<Record<string, number>>((degree, edge) => {
+  if (edge.from !== "center") degree[edge.from] = (degree[edge.from] ?? 0) + 1;
+  if (edge.to !== "center") degree[edge.to] = (degree[edge.to] ?? 0) + 1;
+  return degree;
+}, {});
+
+function resolveLayerNodeSize(layer: LayerDef): number {
+  const degree = LAYER_CONNECTION_DEGREE[layer.id] ?? 1;
+  const sizeByDegree: Record<number, number> = {
+    1: 36,
+    2: 44,
+    3: 52,
+    4: 62,
+    5: 74,
+  };
+
+  const groupAdjustment: Record<LayerGroup, number> = {
+    surface: 0,
+    reflective: 8,
+    interaction: 2,
+    temporal: 0,
+    systemic: -2,
+    threshold: -4,
+  };
+
+  return clamp((sizeByDegree[degree] ?? 44) + groupAdjustment[layer.group], 34, 82);
+}
+
 // ─── LayerNode ────────────────────────────────────────────────────────────────
 
 function LayerNode({
@@ -285,7 +313,6 @@ function LayerNode({
   isHovered,
   isNeighbor,
   isDimmed,
-  isVisited,
   viewScale,
   onActivate,
   onPreview,
@@ -295,7 +322,6 @@ function LayerNode({
   isHovered: boolean;
   isNeighbor: boolean;
   isDimmed: boolean;
-  isVisited: boolean;
   viewScale: number;
   onActivate: (l: LayerDef) => void;
   onPreview: (l: LayerDef | null) => void;
@@ -303,10 +329,12 @@ function LayerNode({
   const color = GROUP_COLOR[layer.group];
   const isEcho = layer.group === "reflective";
   const isThreshold = layer.group === "threshold";
-  const size = isEcho ? 58 : 44;
+  const size = resolveLayerNodeSize(layer);
+  const nodeNumberFontSize = clamp(size * (isThreshold ? 0.34 : 0.24), 11, isThreshold ? 18 : 17);
 
-  // Screen-stable label: targets ~8px on screen, clamped so world size stays sane
-  const labelFontSize = ssFontSize(isEcho ? 9 : 8, viewScale, 6, isEcho ? 11 : 10);
+  // Match the desktop constellation label scale while allowing the node itself
+  // to carry stronger topology-based hierarchy.
+  const labelFontSize = ssFontSize(isEcho ? 10 : 9.5, viewScale, 7.5, isEcho ? 14 : 13);
 
   return (
     <div
@@ -325,23 +353,6 @@ function LayerNode({
         filter: isActive || isHovered ? "brightness(1.08)" : "none",
       }}
     >
-      {/* Visited trace — a quiet memory of explored concepts */}
-      {isVisited && !isActive && (
-        <span
-          aria-hidden
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: 0,
-            width: size + 20,
-            height: size + 20,
-            transform: "translate(-50%, calc(-50% + 3px))",
-            borderRadius: "50%",
-            border: "1px dashed rgba(232,220,190,0.28)",
-            pointerEvents: "none",
-          }}
-        />
-      )}
 
       {/* Selection halo */}
       {isActive && (
@@ -396,7 +407,7 @@ function LayerNode({
             : `0 0 18px ${color}16, 0 6px 14px rgba(0,0,0,0.22)`,
           color: isActive ? color : isHovered ? color : isNeighbor ? color + "D4" : color + "C0",
           fontFamily: "'DM Mono', monospace",
-          fontSize: isEcho ? 14 : isThreshold ? 18 : 12,
+          fontSize: nodeNumberFontSize,
           fontWeight: 500,
           cursor: "pointer",
           transition: "all 200ms cubic-bezier(0.16,1,0.3,1)",
@@ -440,12 +451,10 @@ function LayerNode({
           fontSize: labelFontSize,
           letterSpacing: "0.15em",
           color: isActive
-            ? "rgba(255,248,230,0.92)"
-            : isHovered
-            ? "rgba(255,248,230,0.82)"
-            : isNeighbor
-            ? "rgba(255,248,230,0.68)"
-            : "rgba(255,248,230,0.54)",
+            ? readerSemanticColor.text.primary
+            : isHovered || isNeighbor
+            ? readerSemanticColor.text.secondary
+            : readerSemanticColor.text.inactive,
           textAlign: "center",
           lineHeight: 1.35,
           maxWidth: isEcho ? 100 : 82,
@@ -534,8 +543,8 @@ function LayerDetailPanel({
             <div
               style={{
                 fontFamily: "'DM Mono', monospace",
-                fontSize: 8,
-                letterSpacing: "0.26em",
+                fontSize: 9,
+                letterSpacing: "0.24em",
                 color: color,
                 marginBottom: 5,
                 opacity: 0.82,
@@ -546,9 +555,9 @@ function LayerDetailPanel({
             <div
               style={{
                 fontFamily: "'EB Garamond', serif",
-                fontSize: layer.id === "reflection-echo" ? 20 : 24,
+                fontSize: 24,
                 lineHeight: 1.08,
-                color: "rgba(255,248,230,0.96)",
+                color: readerSemanticColor.text.primary,
                 fontWeight: 500,
               }}
             >
@@ -570,7 +579,7 @@ function LayerDetailPanel({
             justifyContent: "center",
             background: "transparent",
             border: "1px solid rgba(200,180,130,0.22)",
-            color: "rgba(200,180,130,0.54)",
+            color: readerSemanticColor.text.metadata,
             cursor: "pointer",
             flexShrink: 0,
           }}
@@ -594,16 +603,16 @@ function LayerDetailPanel({
         <Divider />
 
         <div style={{ marginBottom: 24 }}>
-          <SectionLabel color="rgba(200,180,130,0.44)">DESIGN TAKEAWAY</SectionLabel>
+          <SectionLabel color={readerSemanticColor.text.metadata}>DESIGN TAKEAWAY</SectionLabel>
           <div
             style={{
               padding: "13px 15px",
               border: `1px solid ${color}24`,
               background: `${color}06`,
               fontFamily: "'EB Garamond', serif",
-              fontSize: 15,
+              fontSize: 16,
               lineHeight: 1.68,
-              color: "rgba(240,232,215,0.76)",
+              color: readerSemanticColor.text.secondary,
             }}
           >
             <span style={{ color: color, marginRight: 6, fontStyle: "normal" }}>Ask:</span>
@@ -615,13 +624,13 @@ function LayerDetailPanel({
           <>
             <Divider />
             <div>
-              <SectionLabel color="rgba(200,180,130,0.44)">CODEX LINEAGE</SectionLabel>
+              <SectionLabel color={readerSemanticColor.text.metadata}>CODEX LINEAGE</SectionLabel>
               <div
                 style={{
                   fontFamily: "'EB Garamond', serif",
-                  fontSize: 14.5,
+                  fontSize: 15,
                   lineHeight: 1.7,
-                  color: "rgba(220,205,175,0.58)",
+                  color: readerSemanticColor.text.caption,
                   fontStyle: "italic",
                 }}
               >
@@ -640,23 +649,23 @@ function LayerDetailPanel({
             display: "flex",
             gap: 28,
             fontFamily: "'DM Mono', monospace",
-            fontSize: 8.5,
+            fontSize: 9,
             letterSpacing: "0.18em",
           }}
         >
           <div>
-            <div style={{ color: "rgba(200,180,130,0.34)", marginBottom: 5 }}>TYPE</div>
-            <div style={{ color: "rgba(200,180,130,0.74)" }}>
+            <div style={{ color: readerSemanticColor.text.metadata, marginBottom: 5 }}>TYPE</div>
+            <div style={{ color: readerSemanticColor.text.secondary, fontSize: 10 }}>
               {layer.group === "threshold" ? "Threshold Signal" : "General Practice"}
             </div>
           </div>
           <div>
-            <div style={{ color: "rgba(200,180,130,0.34)", marginBottom: 5 }}>LAYER</div>
-            <div style={{ color }}>{layer.number} of 19</div>
+            <div style={{ color: readerSemanticColor.text.metadata, marginBottom: 5 }}>LAYER</div>
+            <div style={{ color, fontSize: 10 }}>{layer.number} of 19</div>
           </div>
           <div>
-            <div style={{ color: "rgba(200,180,130,0.34)", marginBottom: 5 }}>GROUP</div>
-            <div style={{ color: "rgba(200,180,130,0.62)", textTransform: "capitalize" }}>
+            <div style={{ color: readerSemanticColor.text.metadata, marginBottom: 5 }}>GROUP</div>
+            <div style={{ color: readerSemanticColor.text.secondary, fontSize: 10, textTransform: "capitalize" }}>
               {layer.group}
             </div>
           </div>
@@ -677,8 +686,8 @@ function SectionLabel({
     <div
       style={{
         fontFamily: "'DM Mono', monospace",
-        fontSize: 8.5,
-        letterSpacing: "0.26em",
+        fontSize: 9,
+        letterSpacing: "0.24em",
         color,
         marginBottom: 10,
       }}
@@ -703,9 +712,9 @@ function Section({
       <div
         style={{
           fontFamily: "'EB Garamond', serif",
-          fontSize: 15.5,
+          fontSize: 16,
           lineHeight: 1.72,
-          color: "rgba(240,232,215,0.82)",
+          color: readerSemanticColor.text.secondary,
         }}
       >
         {children}
@@ -758,7 +767,6 @@ export default function SovereignLayeredSystemMapCanvas({
   const [dragging, setDragging] = useState(false);
   const [activeLayer, setActiveLayer] = useState<LayerDef | null>(null);
   const [hoverLayer, setHoverLayer] = useState<LayerDef | null>(null);
-  const [visitedLayerIds, setVisitedLayerIds] = useState<Set<string>>(() => new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
   const [transitionPhase, setTransitionPhase] =
     useState<TransitionPhase>("entering");
@@ -785,17 +793,6 @@ export default function SovereignLayeredSystemMapCanvas({
     setHoverLayer(layer);
   }, []);
 
-  useEffect(() => {
-    try {
-      const stored = window.sessionStorage.getItem(VISITED_STORAGE_KEY);
-      if (!stored) return;
-      const ids = JSON.parse(stored);
-      if (Array.isArray(ids)) {
-        setVisitedLayerIds(new Set(ids.filter((id): id is string => typeof id === "string")));
-      }
-    } catch {}
-  }, []);
-
   // Semantic zoom tier: drives opacity hierarchy across far / mid / close views
   const zoomTier = view.scale < 0.38 ? "far" : view.scale < 0.88 ? "mid" : "close";
   const zoomOpacity =
@@ -809,15 +806,14 @@ export default function SovereignLayeredSystemMapCanvas({
     const vp = viewportRef.current;
     if (!vp) return;
     const rect = vp.getBoundingClientRect();
-    const scale = Math.min(
-      (rect.width - 48) / WORLD_W,
-      (rect.height - 110) / WORLD_H,
-      OPENING_SCALE,
-    );
+
+    // Enter at a true 1:1 world scale with the Sovereign UX core exactly
+    // centered in the available viewport. The wider system intentionally
+    // extends beyond the frame and can be explored by panning or Fit All.
     setView({
-      scale,
-      x: (rect.width - WORLD_W * scale) / 2,
-      y: (rect.height - WORLD_H * scale) / 2,
+      scale: OPENING_SCALE,
+      x: rect.width / 2 - CENTER_X * OPENING_SCALE,
+      y: rect.height / 2 - CENTER_Y * OPENING_SCALE,
     });
   }, []);
 
@@ -939,14 +935,6 @@ export default function SovereignLayeredSystemMapCanvas({
   const handleActivateLayer = useCallback((layer: LayerDef) => {
     setHoverLayer(null);
     setActiveLayer(layer);
-    setVisitedLayerIds((previous) => {
-      const next = new Set(previous);
-      next.add(layer.id);
-      try {
-        window.sessionStorage.setItem(VISITED_STORAGE_KEY, JSON.stringify(Array.from(next)));
-      } catch {}
-      return next;
-    });
 
     const vp = viewportRef.current;
     if (!vp) return;
@@ -1009,7 +997,7 @@ export default function SovereignLayeredSystemMapCanvas({
 
   // Precompute screen-stable font sizes for SVG region labels
   const regionFs = ssFontSize(21, view.scale, 13, 30);
-  const regionFsSub = ssFontSize(7.5, view.scale, 5.5, 11);
+  const regionFsSub = ssFontSize(10, view.scale, 8.5, 12);
 
   return (
     <div
@@ -1020,7 +1008,7 @@ export default function SovereignLayeredSystemMapCanvas({
         inset: 0,
         zIndex: 80,
         background: "#000",
-        color: "rgba(255,248,230,0.94)",
+        color: readerSemanticColor.text.primary,
         overflow: "hidden",
       }}
     >
@@ -1116,9 +1104,9 @@ export default function SovereignLayeredSystemMapCanvas({
                 fontFamily: "'DM Mono', monospace",
                 fontSize: 10,
                 letterSpacing: "0.22em",
-                color: "rgba(225,195,92,0.78)",
+                color: readerSemanticColor.utility.primary,
                 marginBottom: 7,
-                opacity: hasInteracted ? 0.40 : 1,
+                opacity: hasInteracted ? 0.72 : 1,
                 transition: "opacity 1000ms ease",
               }}
             >
@@ -1127,9 +1115,9 @@ export default function SovereignLayeredSystemMapCanvas({
             <div
               style={{
                 fontFamily: "'EB Garamond', serif",
-                fontSize: 25,
-                lineHeight: 1.1,
-                color: "rgba(255,248,230,0.92)",
+                fontSize: 28,
+                lineHeight: 1.08,
+                color: readerSemanticColor.text.primary,
                 marginBottom: 5,
               }}
             >
@@ -1139,10 +1127,10 @@ export default function SovereignLayeredSystemMapCanvas({
             <div
               style={{
                 fontFamily: "'DM Mono', monospace",
-                fontSize: 9,
+                fontSize: 10,
                 letterSpacing: "0.14em",
-                color: "rgba(200,180,130,0.44)",
-                opacity: hasInteracted ? 0.24 : 1,
+                color: readerSemanticColor.text.metadata,
+                opacity: hasInteracted ? 0.72 : 1,
                 transition: "opacity 1000ms ease",
               }}
             >
@@ -1161,11 +1149,11 @@ export default function SovereignLayeredSystemMapCanvas({
               gap: 10,
               minHeight: 40,
               padding: "0 14px",
-              color: "rgba(220,205,175,0.76)",
+              color: readerSemanticColor.utility.primary,
               border: "1px solid rgba(200,180,130,0.42)",
               background: "rgba(7,9,15,0.72)",
               fontFamily: "'DM Mono', monospace",
-              fontSize: 9,
+              fontSize: 10,
               letterSpacing: "0.18em",
               cursor: "pointer",
             }}
@@ -1352,9 +1340,9 @@ export default function SovereignLayeredSystemMapCanvas({
                   Opacity reduces at very close zoom when individual nodes are primary. */}
               <rect
                 x={1248}
-                y={162}
+                y={112}
                 width={526}
-                height={580}
+                height={630}
                 rx={18}
                 fill={`rgba(225,195,92,${view.scale > 1.4 ? 0.012 : 0.022})`}
                 stroke="rgba(225,195,92,0.11)"
@@ -1369,65 +1357,65 @@ export default function SovereignLayeredSystemMapCanvas({
 
               {/* Region / group labels — screen-stable font size, semantic opacity */}
               <text
-                x={580}
-                y={208}
+                x={520}
+                y={260}
                 fontFamily="'EB Garamond', Georgia, serif"
                 fontStyle="italic"
                 fontSize={regionFs}
                 letterSpacing="0.10em"
-                fill="rgba(124,180,213,0.28)"
+                fill="rgba(124,180,213,0.42)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
                 SURFACE LAYERS
               </text>
               <text
-                x={308}
-                y={432}
+                x={320}
+                y={400}
                 fontFamily="'EB Garamond', Georgia, serif"
                 fontStyle="italic"
                 fontSize={regionFs}
                 letterSpacing="0.10em"
-                fill="rgba(155,138,200,0.24)"
+                fill="rgba(155,138,200,0.38)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
                 SYSTEMIC
               </text>
               <text
-                x={630}
-                y={990}
+                x={560}
+                y={965}
                 fontFamily="'EB Garamond', Georgia, serif"
                 fontStyle="italic"
                 fontSize={regionFs}
                 letterSpacing="0.10em"
-                fill="rgba(167,139,219,0.24)"
+                fill="rgba(167,139,219,0.38)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
                 TEMPORAL · RELATIONAL
               </text>
               <text
-                x={1265}
-                y={192}
+                x={1278}
+                y={148}
                 fontFamily="'EB Garamond', Georgia, serif"
                 fontStyle="italic"
                 fontSize={regionFs}
                 letterSpacing="0.10em"
-                fill="rgba(225,195,92,0.32)"
+                fill="rgba(225,195,92,0.44)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
                 THRESHOLD SIGNALS
               </text>
               <text
-                x={1265}
-                y={210}
+                x={1278}
+                y={176}
                 fontFamily="'DM Mono', monospace"
                 fontSize={regionFsSub}
                 letterSpacing="0.06em"
-                fill="rgba(225,195,92,0.28)"
-                opacity={zoomOpacity.regionLabel * 0.65}
+                fill={readerSemanticColor.text.metadata}
+                opacity={view.scale > 1.6 ? 0.68 : 0.92}
                 style={{ transition: "opacity 300ms ease" }}
               >
                 conditions to watch, not goals to optimize for
@@ -1556,9 +1544,9 @@ export default function SovereignLayeredSystemMapCanvas({
                   top: "calc(50% + 56px)",
                   transform: "translateX(-50%)",
                   fontFamily: "'DM Mono', monospace",
-                  fontSize: ssFontSize(9, view.scale, 6, 12),
-                  letterSpacing: "0.32em",
-                  color: "rgba(200,169,110,0.68)",
+                  fontSize: ssFontSize(10, view.scale, 7.5, 14),
+                  letterSpacing: "0.30em",
+                  color: readerSemanticColor.utility.primary,
                   whiteSpace: "nowrap",
                   textAlign: "center",
                 }}
@@ -1589,7 +1577,6 @@ export default function SovereignLayeredSystemMapCanvas({
                   isHovered={isHovered}
                   isNeighbor={isNeighbor}
                   isDimmed={isDimmed}
-                  isVisited={visitedLayerIds.has(layer.id)}
                   viewScale={view.scale}
                   onActivate={handleActivateLayer}
                   onPreview={handlePreviewLayer}
@@ -1618,9 +1605,9 @@ export default function SovereignLayeredSystemMapCanvas({
             display: "flex",
             alignItems: "center",
             gap: 9,
-            color: "rgba(200,180,130,0.40)",
+            color: readerSemanticColor.text.metadata,
             fontFamily: "'DM Mono', monospace",
-            fontSize: 9,
+            fontSize: 10,
             letterSpacing: "0.16em",
             pointerEvents: "none",
             opacity: hasInteracted ? 0 : 1,
@@ -1666,7 +1653,7 @@ export default function SovereignLayeredSystemMapCanvas({
             style={{
               minWidth: 54,
               textAlign: "center",
-              color: "rgba(255,248,230,0.76)",
+              color: readerSemanticColor.text.secondary,
               fontFamily: "'DM Mono', monospace",
               fontSize: 10,
             }}
@@ -1710,13 +1697,13 @@ const zoomBtnStyle = {
   width: 38,
   border: "1px solid rgba(200,180,130,0.16)",
   background: "rgba(255,255,255,0.025)",
-  color: "rgba(255,248,230,0.76)",
+  color: readerSemanticColor.text.secondary,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   gap: 8,
   fontFamily: "'DM Mono', monospace",
-  fontSize: 9,
+  fontSize: 10,
   letterSpacing: "0.12em",
   cursor: "pointer",
 } as const;
