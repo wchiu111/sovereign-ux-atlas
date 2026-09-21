@@ -19,6 +19,7 @@ const OPENING_SCALE = 0.8;
 const MIN_SCALE = 0.1;
 const MAX_SCALE = 2.8;
 const DETAIL_PANEL_W = 380;
+const VISITED_STORAGE_KEY = "sovereign-ux-layered-system-visited";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -271,22 +272,33 @@ function edgePos(id: string): { x: number; y: number } {
   return l ? { x: l.x, y: l.y } : { x: CENTER_X, y: CENTER_Y };
 }
 
+function edgeColor(id: string): string {
+  if (id === "center") return "#C8A96E";
+  return GROUP_COLOR[LAYER_BY_ID[id]?.group ?? "surface"];
+}
+
 // ─── LayerNode ────────────────────────────────────────────────────────────────
 
 function LayerNode({
   layer,
   isActive,
+  isHovered,
   isNeighbor,
   isDimmed,
+  isVisited,
   viewScale,
   onActivate,
+  onPreview,
 }: {
   layer: LayerDef;
   isActive: boolean;
+  isHovered: boolean;
   isNeighbor: boolean;
   isDimmed: boolean;
+  isVisited: boolean;
   viewScale: number;
   onActivate: (l: LayerDef) => void;
+  onPreview: (l: LayerDef | null) => void;
 }) {
   const color = GROUP_COLOR[layer.group];
   const isEcho = layer.group === "reflective";
@@ -307,11 +319,30 @@ function LayerNode({
         flexDirection: "column",
         alignItems: "center",
         gap: 9,
-        zIndex: isActive ? 10 : 4,
-        opacity: isDimmed ? 0.34 : isNeighbor ? 0.88 : 1,
-        transition: "opacity 280ms ease",
+        zIndex: isActive ? 10 : isHovered ? 8 : 4,
+        opacity: isDimmed ? 0.2 : isNeighbor ? 0.92 : 1,
+        transition: "opacity 280ms ease, filter 280ms ease",
+        filter: isActive || isHovered ? "brightness(1.08)" : "none",
       }}
     >
+      {/* Visited trace — a quiet memory of explored concepts */}
+      {isVisited && !isActive && (
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: 0,
+            width: size + 20,
+            height: size + 20,
+            transform: "translate(-50%, calc(-50% + 3px))",
+            borderRadius: "50%",
+            border: "1px dashed rgba(232,220,190,0.28)",
+            pointerEvents: "none",
+          }}
+        />
+      )}
+
       {/* Selection halo */}
       {isActive && (
         <span
@@ -335,7 +366,12 @@ function LayerNode({
       <button
         type="button"
         data-canvas-control
+        data-layer-node
         onClick={() => onActivate(layer)}
+        onMouseEnter={() => onPreview(layer)}
+        onMouseLeave={() => onPreview(null)}
+        onFocus={() => onPreview(layer)}
+        onBlur={() => onPreview(null)}
         aria-label={`Layer ${layer.number}: ${layer.label}`}
         aria-pressed={isActive}
         style={{
@@ -346,13 +382,19 @@ function LayerNode({
           alignItems: "center",
           justifyContent: "center",
           border: `${isEcho ? 2 : 1.5}px solid ${isActive ? color : isNeighbor ? color + "B0" : color + "90"}`,
-          background: isActive ? `${color}1A` : isNeighbor ? `${color}0F` : `${color}08`,
+          background: isActive
+            ? `radial-gradient(circle at 38% 32%, ${color}2C, ${color}12 48%, ${color}06 72%)`
+            : isHovered || isNeighbor
+            ? `radial-gradient(circle at 38% 32%, ${color}1F, ${color}0D 50%, ${color}05 74%)`
+            : `radial-gradient(circle at 38% 32%, ${color}15, ${color}08 52%, ${color}03 76%)`,
           boxShadow: isActive
-            ? `0 0 0 6px ${color}20, 0 0 36px ${color}54, 0 14px 32px rgba(0,0,0,0.4)`
+            ? `0 0 0 6px ${color}1E, 0 0 34px ${color}50, 0 0 72px ${color}1D, 0 14px 32px rgba(0,0,0,0.4)`
+            : isHovered
+            ? `0 0 0 4px ${color}13, 0 0 28px ${color}3D, 0 10px 24px rgba(0,0,0,0.30)`
             : isEcho
             ? `0 0 22px ${color}2E, 0 8px 20px rgba(0,0,0,0.28)`
-            : "0 6px 14px rgba(0,0,0,0.22)",
-          color: isActive ? color : isNeighbor ? color + "D4" : color + "C0",
+            : `0 0 18px ${color}16, 0 6px 14px rgba(0,0,0,0.22)`,
+          color: isActive ? color : isHovered ? color : isNeighbor ? color + "D4" : color + "C0",
           fontFamily: "'DM Mono', monospace",
           fontSize: isEcho ? 14 : isThreshold ? 18 : 12,
           fontWeight: 500,
@@ -362,7 +404,20 @@ function LayerNode({
           flexShrink: 0,
         }}
       >
-        {isThreshold ? "◆" : layer.number}
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: isThreshold ? 8 : 6,
+            borderRadius: "50%",
+            background: `radial-gradient(circle at 38% 34%, ${color}2A 0%, ${color}12 42%, transparent 72%)`,
+            boxShadow: `inset 0 0 0 1px ${color}18`,
+            pointerEvents: "none",
+          }}
+        />
+        <span style={{ position: "relative", zIndex: 1 }}>
+          {isThreshold ? "◆" : layer.number}
+        </span>
         {isEcho && (
           <span
             aria-hidden
@@ -374,6 +429,7 @@ function LayerNode({
               animation: "echoRingPulse 3.2s ease-in-out infinite",
               pointerEvents: "none",
             }}
+            data-echo-ring
           />
         )}
       </button>
@@ -385,6 +441,8 @@ function LayerNode({
           letterSpacing: "0.15em",
           color: isActive
             ? "rgba(255,248,230,0.92)"
+            : isHovered
+            ? "rgba(255,248,230,0.82)"
             : isNeighbor
             ? "rgba(255,248,230,0.68)"
             : "rgba(255,248,230,0.54)",
@@ -699,6 +757,8 @@ export default function SovereignLayeredSystemMapCanvas({
   const [view, setView] = useState<ViewState>({ x: 0, y: 0, scale: OPENING_SCALE });
   const [dragging, setDragging] = useState(false);
   const [activeLayer, setActiveLayer] = useState<LayerDef | null>(null);
+  const [hoverLayer, setHoverLayer] = useState<LayerDef | null>(null);
+  const [visitedLayerIds, setVisitedLayerIds] = useState<Set<string>>(() => new Set());
   const [hasInteracted, setHasInteracted] = useState(false);
   const [transitionPhase, setTransitionPhase] =
     useState<TransitionPhase>("entering");
@@ -707,16 +767,34 @@ export default function SovereignLayeredSystemMapCanvas({
   activeLayerRef.current = activeLayer;
   viewRef.current = view;
 
-  // IDs of nodes directly connected to the active layer
+  // Hover previews the local neighborhood; a locked selection takes priority.
+  const focusLayer = activeLayer ?? hoverLayer;
+
   const connectedIds = useMemo(() => {
-    if (!activeLayer) return null;
+    if (!focusLayer) return null;
     const ids = new Set<string>();
     EDGES.forEach((e) => {
-      if (e.from === activeLayer.id) ids.add(e.to);
-      if (e.to === activeLayer.id) ids.add(e.from);
+      if (e.from === focusLayer.id) ids.add(e.to);
+      if (e.to === focusLayer.id) ids.add(e.from);
     });
     return ids;
-  }, [activeLayer]);
+  }, [focusLayer]);
+
+  const handlePreviewLayer = useCallback((layer: LayerDef | null) => {
+    if (activeLayerRef.current) return;
+    setHoverLayer(layer);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const stored = window.sessionStorage.getItem(VISITED_STORAGE_KEY);
+      if (!stored) return;
+      const ids = JSON.parse(stored);
+      if (Array.isArray(ids)) {
+        setVisitedLayerIds(new Set(ids.filter((id): id is string => typeof id === "string")));
+      }
+    } catch {}
+  }, []);
 
   // Semantic zoom tier: drives opacity hierarchy across far / mid / close views
   const zoomTier = view.scale < 0.38 ? "far" : view.scale < 0.88 ? "mid" : "close";
@@ -859,7 +937,16 @@ export default function SovereignLayeredSystemMapCanvas({
   // Node activation: preserves camera position, only nudges when the node would
   // be hidden behind the detail panel or clipped by a viewport edge.
   const handleActivateLayer = useCallback((layer: LayerDef) => {
+    setHoverLayer(null);
     setActiveLayer(layer);
+    setVisitedLayerIds((previous) => {
+      const next = new Set(previous);
+      next.add(layer.id);
+      try {
+        window.sessionStorage.setItem(VISITED_STORAGE_KEY, JSON.stringify(Array.from(next)));
+      } catch {}
+      return next;
+    });
 
     const vp = viewportRef.current;
     if (!vp) return;
@@ -921,7 +1008,7 @@ export default function SovereignLayeredSystemMapCanvas({
   };
 
   // Precompute screen-stable font sizes for SVG region labels
-  const regionFs = ssFontSize(9, view.scale, 6.5, 13);
+  const regionFs = ssFontSize(21, view.scale, 13, 30);
   const regionFsSub = ssFontSize(7.5, view.scale, 5.5, 11);
 
   return (
@@ -974,12 +1061,19 @@ export default function SovereignLayeredSystemMapCanvas({
         [data-lsc-root][data-transition-phase="exiting"] [data-portal-content] {
           animation: lscRecede 560ms cubic-bezier(.4,0,.7,.2) both;
         }
+        [data-layer-node]:focus-visible {
+          outline: 1px solid rgba(255,248,230,0.86);
+          outline-offset: 5px;
+        }
         @media (prefers-reduced-motion:reduce) {
           [data-lsc-root],[data-portal-content] {
             animation-duration:220ms!important;
             animation-delay:0ms!important;
             filter:none!important;
             transform:none!important;
+          }
+          [data-echo-ring],[data-central-pulse] {
+            animation:none!important;
           }
         }
       `}</style>
@@ -1118,6 +1212,32 @@ export default function SovereignLayeredSystemMapCanvas({
               willChange: "transform",
             }}
           >
+            {/* ── Territorial atmosphere — inherited from the original Codex, softened for Atlas ── */}
+            <div aria-hidden style={{
+              position: "absolute", left: 430, top: 118, width: 820, height: 470,
+              borderRadius: "50%", transform: "rotate(-7deg)",
+              background: "radial-gradient(ellipse at center, rgba(124,180,213,0.075) 0%, rgba(124,180,213,0.030) 42%, transparent 72%)",
+              filter: "blur(2px)", pointerEvents: "none"
+            }} />
+            <div aria-hidden style={{
+              position: "absolute", left: 220, top: 330, width: 640, height: 690,
+              borderRadius: "48%", transform: "rotate(8deg)",
+              background: "radial-gradient(ellipse at center, rgba(155,138,200,0.065) 0%, rgba(155,138,200,0.024) 44%, transparent 72%)",
+              filter: "blur(3px)", pointerEvents: "none"
+            }} />
+            <div aria-hidden style={{
+              position: "absolute", left: 590, top: 700, width: 760, height: 430,
+              borderRadius: "50%", transform: "rotate(4deg)",
+              background: "radial-gradient(ellipse at center, rgba(167,139,219,0.060) 0%, rgba(167,139,219,0.022) 46%, transparent 74%)",
+              filter: "blur(3px)", pointerEvents: "none"
+            }} />
+            <div aria-hidden style={{
+              position: "absolute", left: 1165, top: 100, width: 690, height: 720,
+              borderRadius: "44%", transform: "rotate(-2deg)",
+              background: "radial-gradient(ellipse at center, rgba(225,195,92,0.052) 0%, rgba(225,195,92,0.020) 48%, transparent 76%)",
+              filter: "blur(2px)", pointerEvents: "none"
+            }} />
+
             {/* ── Nebula glows ── */}
             <div
               aria-hidden
@@ -1188,6 +1308,45 @@ export default function SovereignLayeredSystemMapCanvas({
               width={WORLD_W}
               height={WORLD_H}
             >
+              <defs>
+                {EDGES.map((edge, i) => {
+                  const from = edgePos(edge.from);
+                  const to = edgePos(edge.to);
+                  return (
+                    <linearGradient
+                      key={`gradient-${i}`}
+                      id={`sux-edge-gradient-${i}`}
+                      gradientUnits="userSpaceOnUse"
+                      x1={from.x}
+                      y1={from.y}
+                      x2={to.x}
+                      y2={to.y}
+                    >
+                      <stop offset="0%" stopColor={edgeColor(edge.from)} stopOpacity="0.95" />
+                      <stop offset="100%" stopColor={edgeColor(edge.to)} stopOpacity="0.95" />
+                    </linearGradient>
+                  );
+                })}
+              </defs>
+
+              {/* Gravity field: quiet orbital structure around the Sovereign UX core */}
+              <g
+                fill="none"
+                stroke="rgba(200,169,110,0.12)"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+                opacity={focusLayer ? 0.18 : zoomTier === "close" ? 0.22 : 0.42}
+                style={{ transition: "opacity 280ms ease" }}
+              >
+                <circle cx={CENTER_X} cy={CENTER_Y} r={190} strokeDasharray="2 10" />
+                <circle cx={CENTER_X} cy={CENTER_Y} r={330} strokeDasharray="1 15" />
+                <circle cx={CENTER_X} cy={CENTER_Y} r={505} strokeDasharray="2 18" opacity="0.68" />
+                <line x1={CENTER_X} y1={CENTER_Y} x2={690} y2={250} opacity="0.28" />
+                <line x1={CENTER_X} y1={CENTER_Y} x2={430} y2={610} opacity="0.22" />
+                <line x1={CENTER_X} y1={CENTER_Y} x2={930} y2={1060} opacity="0.22" />
+                <line x1={CENTER_X} y1={CENTER_Y} x2={1510} y2={430} opacity="0.26" />
+              </g>
+
               {/* Threshold Signals boundary.
                   vectorEffect keeps stroke at 1px screen-space regardless of zoom.
                   Opacity reduces at very close zoom when individual nodes are primary. */}
@@ -1212,10 +1371,11 @@ export default function SovereignLayeredSystemMapCanvas({
               <text
                 x={580}
                 y={208}
-                fontFamily="'DM Mono', monospace"
+                fontFamily="'EB Garamond', Georgia, serif"
+                fontStyle="italic"
                 fontSize={regionFs}
-                letterSpacing="0.20em"
-                fill="rgba(124,180,213,0.50)"
+                letterSpacing="0.10em"
+                fill="rgba(124,180,213,0.28)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
@@ -1224,10 +1384,11 @@ export default function SovereignLayeredSystemMapCanvas({
               <text
                 x={308}
                 y={432}
-                fontFamily="'DM Mono', monospace"
+                fontFamily="'EB Garamond', Georgia, serif"
+                fontStyle="italic"
                 fontSize={regionFs}
-                letterSpacing="0.18em"
-                fill="rgba(155,138,200,0.42)"
+                letterSpacing="0.10em"
+                fill="rgba(155,138,200,0.24)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
@@ -1236,10 +1397,11 @@ export default function SovereignLayeredSystemMapCanvas({
               <text
                 x={630}
                 y={990}
-                fontFamily="'DM Mono', monospace"
+                fontFamily="'EB Garamond', Georgia, serif"
+                fontStyle="italic"
                 fontSize={regionFs}
-                letterSpacing="0.18em"
-                fill="rgba(167,139,219,0.42)"
+                letterSpacing="0.10em"
+                fill="rgba(167,139,219,0.24)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
@@ -1248,10 +1410,11 @@ export default function SovereignLayeredSystemMapCanvas({
               <text
                 x={1265}
                 y={192}
-                fontFamily="'DM Mono', monospace"
+                fontFamily="'EB Garamond', Georgia, serif"
+                fontStyle="italic"
                 fontSize={regionFs}
-                letterSpacing="0.22em"
-                fill="rgba(225,195,92,0.58)"
+                letterSpacing="0.10em"
+                fill="rgba(225,195,92,0.32)"
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
@@ -1278,18 +1441,13 @@ export default function SovereignLayeredSystemMapCanvas({
               {EDGES.map((edge, i) => {
                 const from = edgePos(edge.from);
                 const to = edgePos(edge.to);
-                const fromLayer = LAYER_BY_ID[edge.from];
-                const baseColor =
-                  edge.from === "center"
-                    ? "#C8A96E"
-                    : GROUP_COLOR[fromLayer?.group ?? "surface"];
                 const baseOpacity =
                   edge.strength === "primary" ? 0.28 : 0.10;
 
                 let strokeOpacity: number;
-                if (activeLayer) {
+                if (focusLayer) {
                   const isDirect =
-                    edge.from === activeLayer.id || edge.to === activeLayer.id;
+                    edge.from === focusLayer.id || edge.to === focusLayer.id;
                   strokeOpacity = isDirect
                     ? edge.strength === "primary" ? 0.66 : 0.44
                     : baseOpacity * 0.22;
@@ -1306,7 +1464,7 @@ export default function SovereignLayeredSystemMapCanvas({
                     y1={from.y}
                     x2={to.x}
                     y2={to.y}
-                    stroke={baseColor}
+                    stroke={`url(#sux-edge-gradient-${i})`}
                     strokeWidth={screenWidth}
                     strokeOpacity={strokeOpacity}
                     vectorEffect="non-scaling-stroke"
@@ -1329,6 +1487,7 @@ export default function SovereignLayeredSystemMapCanvas({
             >
               {/* Pulsing outer glow */}
               <div
+                data-central-pulse
                 style={{
                   position: "absolute",
                   left: "50%",
@@ -1411,17 +1570,29 @@ export default function SovereignLayeredSystemMapCanvas({
             {/* ── Layer nodes ── */}
             {LAYERS.map((layer) => {
               const isActive = activeLayer?.id === layer.id;
-              const isNeighbor = !isActive && (connectedIds?.has(layer.id) ?? false);
-              const isDimmed = activeLayer !== null && !isActive && !isNeighbor;
+              const isHovered = !activeLayer && hoverLayer?.id === layer.id;
+              const isNeighbor =
+                !isActive &&
+                !isHovered &&
+                (connectedIds?.has(layer.id) ?? false);
+              const isDimmed =
+                focusLayer !== null &&
+                focusLayer !== undefined &&
+                !isActive &&
+                !isHovered &&
+                !isNeighbor;
               return (
                 <LayerNode
                   key={layer.id}
                   layer={layer}
                   isActive={isActive}
+                  isHovered={isHovered}
                   isNeighbor={isNeighbor}
                   isDimmed={isDimmed}
+                  isVisited={visitedLayerIds.has(layer.id)}
                   viewScale={view.scale}
                   onActivate={handleActivateLayer}
+                  onPreview={handlePreviewLayer}
                 />
               );
             })}
