@@ -1340,9 +1340,9 @@ export default function SovereignLayeredSystemMapCanvas({
                   Opacity reduces at very close zoom when individual nodes are primary. */}
               <rect
                 x={1248}
-                y={112}
-                width={526}
-                height={630}
+                y={102}
+                width={536}
+                height={650}
                 rx={18}
                 fill={`rgba(225,195,92,${view.scale > 1.4 ? 0.012 : 0.022})`}
                 stroke="rgba(225,195,92,0.11)"
