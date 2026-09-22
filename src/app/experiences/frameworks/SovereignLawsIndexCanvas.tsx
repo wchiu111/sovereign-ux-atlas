@@ -191,6 +191,11 @@ export default function SovereignLawsIndexCanvas({
           box-shadow: 0 0 0 2px ${readerSemanticColor.identity.primary}33;
         }
 
+        #sovereign-laws-search::placeholder {
+          color: ${readerSemanticColor.text.metadata};
+          opacity: 1;
+        }
+
         @media (max-width: 1100px) {
           [data-laws-index-header] {
             padding: 18px 20px 16px !important;
@@ -510,7 +515,7 @@ function SearchAndFilterBar({
         position: "sticky",
         top: 0,
         zIndex: 6,
-        margin: "0 -28px 26px",
+        margin: "0 -28px 22px",
         padding: "18px 28px 16px",
         borderBottom: "1px solid rgba(200,180,130,0.08)",
         background:
@@ -580,7 +585,7 @@ function SearchAndFilterBar({
                 background: "transparent",
                 color: readerSemanticColor.text.primary,
                 fontFamily: "'DM Mono', monospace",
-                fontSize: 10.5,
+                fontSize: 11,
                 letterSpacing: "0.03em",
               }}
             />
@@ -791,7 +796,7 @@ function ProfessionalBoundary() {
     <aside
       aria-label="Professional boundary"
       style={{
-        marginTop: 38,
+        marginTop: 32,
         padding: "20px 22px",
         border: "1px solid rgba(200,180,130,0.14)",
         background:
@@ -869,14 +874,14 @@ function LawBand({
     <section
       aria-labelledby={`laws-band-${eyebrow.toLowerCase().replace(/\s+/g, "-")}`}
       style={{
-        paddingBottom: last ? 0 : 34,
-        marginBottom: last ? 0 : 32,
+        paddingBottom: last ? 0 : 28,
+        marginBottom: last ? 0 : 24,
         borderBottom: last
           ? "none"
           : "1px solid rgba(200,180,130,0.08)",
       }}
     >
-      <div style={{ marginBottom: 15 }}>
+      <div style={{ marginBottom: 18 }}>
         <div
           id={`laws-band-${eyebrow.toLowerCase().replace(/\s+/g, "-")}`}
           style={{
@@ -911,11 +916,11 @@ function LawBand({
           style={{
             maxWidth: 820,
             fontFamily: "'EB Garamond', serif",
-            fontSize: signal ? 15.5 : 15,
+            fontSize: 15,
             lineHeight: 1.5,
             color: signal
               ? readerSemanticColor.text.caption
-              : readerSemanticColor.text.metadata,
+              : readerSemanticColor.text.secondary,
           }}
         >
           {description}
@@ -926,7 +931,7 @@ function LawBand({
         style={{
           display: "grid",
           gridTemplateColumns: columns,
-          gap: 9,
+          gap: 10,
         }}
       >
         {laws.map((law) => (
@@ -969,21 +974,19 @@ function LawCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        minHeight: signal ? 108 : 94,
-        padding: signal ? "16px 17px" : "14px 15px",
-        border: `1px solid ${color}${selected ? "B8" : elevated ? "72" : signal ? "55" : "34"}`,
+        minHeight: 94,
+        padding: "14px 15px",
+        border: `1px solid ${color}${selected ? "B8" : elevated ? "72" : signal ? "44" : "34"}`,
         background: selected
           ? `linear-gradient(145deg, ${color}1A, rgba(8,10,18,0.92))`
-          : signal
-            ? `linear-gradient(145deg, ${color}0D, rgba(8,10,18,0.72))`
-            : elevated
-              ? `linear-gradient(145deg, ${color}0B, rgba(8,10,18,0.76))`
+          : elevated
+            ? `linear-gradient(145deg, ${color}0B, rgba(8,10,18,0.76))`
+            : signal
+              ? `linear-gradient(145deg, ${color}09, rgba(8,10,18,0.68))`
               : "rgba(8,10,18,0.58)",
         boxShadow: selected
           ? `inset 0 0 42px ${color}0C, 0 0 24px ${color}12`
-          : signal
-            ? `inset 0 0 36px ${color}08`
-            : "none",
+          : "none",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -1022,7 +1025,7 @@ function LawCard({
           style={{
             minWidth: 0,
             fontFamily: "'EB Garamond', serif",
-            fontSize: signal ? 18 : 17,
+            fontSize: 17,
             lineHeight: 1.16,
             fontWeight: 500,
             color: readerSemanticColor.text.primary,
@@ -1338,7 +1341,7 @@ function DetailSection({
       <div
         style={{
           fontFamily: "'EB Garamond', serif",
-          fontSize: 16.5,
+          fontSize: 16,
           lineHeight: 1.68,
           color: readerSemanticColor.text.secondary,
         }}
