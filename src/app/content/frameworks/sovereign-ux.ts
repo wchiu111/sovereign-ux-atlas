@@ -274,18 +274,57 @@ export default defineAtlasEntry({
       id: "laws",
       label: "Laws",
       accentStellarType: "judgment",
-      subtitle: "The constraints the system must hold under pressure.",
-      readingTime: 2,
+      subtitle:
+        "Diagnostic principles for understanding how systems affect trust, agency, and human judgment.",
+      readingTime: 3,
       semantics: {
-        keywords: ["laws", "constraints", "invariants", "guarantees"],
-        aliases: ["invariants", "rules"],
+        keywords: [
+          "laws",
+          "interface laws",
+          "diagnostic principles",
+          "trust",
+          "agency",
+          "decision framing",
+          "relational laws",
+          "alignment signals",
+          "signal fidelity",
+          "silent drift",
+          "right to disengage",
+        ],
+        aliases: [
+          "laws of the interface",
+          "interface principles",
+          "sovereign ux laws",
+        ],
         summary:
-          "The small set of non-negotiable constraints that translate the foundational commitments into behavior the system must always hold.",
+          "Diagnostic principles for understanding how systems preserve or erode trust, clarity, agency, and human judgment.",
       },
+      evidence: [
+        {
+          id: "laws-index",
+          number: "01",
+          title: "Laws of the Interface",
+          type: "DIAGNOSTIC REFERENCE",
+          description:
+            "22 laws and 3 alignment signals organized as a diagnostic reference for reading how system behavior affects trust, agency, and human judgment.",
+          caption:
+            "Core Laws establish foundational principles. Relational Laws address sensitive or high-pressure moments. Advanced Alignment Signals are conditions to observe and document — not goals to optimize.",
+          canvas: {
+            id: "sovereign-laws-index",
+            eyebrow: "SOVEREIGN UX · LAWS",
+            title: "Laws of the Interface",
+            description:
+              "A diagnostic reference for identifying where trust, agency, or behavioral integrity is being preserved — or beginning to break.",
+            boardLabel: "LAWS INDEX",
+            boardSubtitle: "22 laws · 3 alignment signals",
+            annotations: [],
+          },
+        },
+      ],
       content:
-        "Laws are the small set of constraints Sovereign UX refuses to trade away, no matter how much a feature, a metric, or a model would benefit. They translate the foundations from values into invariants: statements about behavior that must remain true even when it is inconvenient.\n\nA law is not a guideline. A guideline bends under pressure; a law is the thing that tells you the pressure has become a violation. Reversibility, legibility, and explicit consent are candidates for law precisely because they are the first things sacrificed when engagement becomes the goal.\n\nLaws are deliberately few. Their power comes from being non-negotiable, and a long list of non-negotiables is just a wish.",
+        "The Laws of the Interface describe how systems should behave when interacting with real humans. They are diagnostic principles — ways to understand why a product feels trustworthy, coercive, calm, or exhausting. When a system feels off, the Laws provide language for examining what changed and why trust may be breaking.\n\nThe Laws are observational, not blindly prescriptive. They apply across interface design, AI behavior, copy, pacing, defaults, and decision framing. Their role is not to hand teams a universal recipe, but to help distinguish what a system is doing: reflecting, suggesting, deciding, or quietly shaping the conditions around a choice.\n\nThe framework is organized into three bands. CORE LAWS are foundational principles that apply across interfaces. RELATIONAL LAWS address moments of stress, uncertainty, vulnerability, or heightened emotional load. ADVANCED ALIGNMENT SIGNALS are conditions that may indicate deep alignment or ethical overreach; they are signals to observe, document, and scrutinize — not goals to optimize.\n\nThe Laws govern UX and system behavior. They do not justify psychological interpretation, identity shaping, or therapeutic intervention. When emotional depth exceeds design scope, the appropriate response is pause, consent, or referral — not deeper automation.",
       insight:
-        "A law is the constraint that tells you the pressure to optimize has become a violation of the person's autonomy.",
+        "Is this system helping people act with clarity — or quietly shaping their decisions without their awareness?",
     },
     {
       id: "living-canon",
