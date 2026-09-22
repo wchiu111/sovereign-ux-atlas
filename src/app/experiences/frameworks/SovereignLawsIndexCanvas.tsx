@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import {
   CORE_SOVEREIGN_LAWS,
   RELATIONAL_SOVEREIGN_LAWS,
   SOVEREIGN_ALIGNMENT_SIGNALS,
   SOVEREIGN_LAW_COUNTS,
+  SOVEREIGN_LAWS_PROFESSIONAL_BOUNDARY,
   SOVEREIGN_LAWS_SIGNAL_CAUTION,
   type SovereignLaw,
 } from "../../content/frameworks/sovereign-ux-laws";
@@ -18,6 +19,7 @@ interface Props {
 }
 
 type TransitionPhase = "entering" | "open" | "exiting";
+type LawFilter = "all" | "core" | "relational" | "signal";
 
 const CORE_COLOR = STELLAR_PALETTE.judgment;
 const RELATIONAL_COLOR = STELLAR_PALETTE.relational;
@@ -31,6 +33,63 @@ export default function SovereignLawsIndexCanvas({
   const [transitionPhase, setTransitionPhase] =
     useState<TransitionPhase>("entering");
   const [selectedLaw, setSelectedLaw] = useState<SovereignLaw | null>(null);
+  const [query, setQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState<LawFilter>("all");
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const matchesLaw = useCallback(
+    (law: SovereignLaw) => {
+      if (activeFilter !== "all" && law.band !== activeFilter) return false;
+      if (!normalizedQuery) return true;
+
+      const searchable = [
+        law.number,
+        law.title,
+        law.shortDescription,
+        law.principle,
+        law.example,
+        law.broken,
+        law.band,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return searchable.includes(normalizedQuery);
+    },
+    [activeFilter, normalizedQuery],
+  );
+
+  const visibleCoreLaws = useMemo(
+    () => CORE_SOVEREIGN_LAWS.filter(matchesLaw),
+    [matchesLaw],
+  );
+  const visibleRelationalLaws = useMemo(
+    () => RELATIONAL_SOVEREIGN_LAWS.filter(matchesLaw),
+    [matchesLaw],
+  );
+  const visibleSignals = useMemo(
+    () => SOVEREIGN_ALIGNMENT_SIGNALS.filter(matchesLaw),
+    [matchesLaw],
+  );
+
+  const visibleLawIds = useMemo(
+    () =>
+      new Set(
+        [
+          ...visibleCoreLaws,
+          ...visibleRelationalLaws,
+          ...visibleSignals,
+        ].map((law) => law.id),
+      ),
+    [visibleCoreLaws, visibleRelationalLaws, visibleSignals],
+  );
+
+  const visibleCount =
+    visibleCoreLaws.length +
+    visibleRelationalLaws.length +
+    visibleSignals.length;
 
   const reducedMotion = useMemo(
     () =>
@@ -57,6 +116,12 @@ export default function SovereignLawsIndexCanvas({
     setTransitionPhase("exiting");
     window.setTimeout(onClose, 240);
   }, [onClose, reducedMotion, transitionPhase]);
+
+  useEffect(() => {
+    if (selectedLaw && !visibleLawIds.has(selectedLaw.id)) {
+      setSelectedLaw(null);
+    }
+  }, [selectedLaw, visibleLawIds]);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -121,6 +186,78 @@ export default function SovereignLawsIndexCanvas({
           outline-offset: 3px;
         }
 
+        [data-laws-search-field]:focus-within {
+          border-color: ${readerSemanticColor.identity.primary} !important;
+          box-shadow: 0 0 0 2px ${readerSemanticColor.identity.primary}33;
+        }
+
+        @media (max-width: 1100px) {
+          [data-laws-index-header] {
+            padding: 18px 20px 16px !important;
+          }
+
+          [data-laws-index-title] {
+            font-size: 34px !important;
+          }
+
+          [data-laws-index-main] {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+
+          [data-laws-search-toolbar] {
+            margin-left: -20px !important;
+            margin-right: -20px !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+
+          [data-laws-index-body] {
+            position: relative;
+          }
+
+          [data-laws-detail-panel] {
+            position: absolute !important;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: min(390px, calc(100% - 44px)) !important;
+            z-index: 30;
+            box-shadow: -24px 0 60px rgba(0,0,0,0.48);
+          }
+        }
+
+        @media (max-width: 760px) {
+          [data-laws-index-header] {
+            min-height: 0 !important;
+            gap: 18px !important;
+          }
+
+          [data-laws-index-title] {
+            font-size: 30px !important;
+          }
+
+          [data-laws-back-button] {
+            min-height: 36px !important;
+          }
+
+          [data-laws-index-main] {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+
+          [data-laws-search-toolbar] {
+            margin-left: -16px !important;
+            margin-right: -16px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+
+          [data-laws-detail-panel] {
+            width: min(390px, calc(100% - 24px)) !important;
+          }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           [data-laws-index-root],
           [data-laws-index-content],
@@ -148,6 +285,7 @@ export default function SovereignLawsIndexCanvas({
         }}
       >
         <header
+          data-laws-index-header
           style={{
             minHeight: 136,
             flexShrink: 0,
@@ -156,6 +294,7 @@ export default function SovereignLawsIndexCanvas({
             alignItems: "flex-start",
             justifyContent: "space-between",
             gap: 32,
+            flexWrap: "wrap",
             borderBottom: "1px solid rgba(200,180,130,0.10)",
             background:
               "linear-gradient(180deg, rgba(4,6,11,0.99), rgba(4,6,11,0.94))",
@@ -175,6 +314,7 @@ export default function SovereignLawsIndexCanvas({
             </div>
 
             <div
+              data-laws-index-title
               style={{
                 fontFamily: "'EB Garamond', serif",
                 fontSize: 38,
@@ -228,6 +368,7 @@ export default function SovereignLawsIndexCanvas({
           </div>
 
           <button
+            data-laws-back-button
             type="button"
             onClick={requestClose}
             style={{
@@ -252,6 +393,7 @@ export default function SovereignLawsIndexCanvas({
         </header>
 
         <div
+          data-laws-index-body
           style={{
             flex: 1,
             minHeight: 0,
@@ -260,48 +402,78 @@ export default function SovereignLawsIndexCanvas({
           }}
         >
           <main
+            data-laws-index-main
             style={{
               flex: 1,
               minWidth: 0,
               overflowY: "auto",
               scrollbarWidth: "none",
-              padding: "26px 28px 44px",
+              padding: "0 28px 44px",
             }}
           >
-            <LawBand
-              eyebrow="CORE LAWS"
-              count={SOVEREIGN_LAW_COUNTS.core}
-              description="Foundational principles that apply across interfaces, regardless of domain."
-              laws={CORE_SOVEREIGN_LAWS}
-              color={CORE_COLOR}
-              columns="repeat(auto-fit, minmax(210px, 1fr))"
-              selectedLawId={selectedLaw?.id ?? null}
-              onSelectLaw={setSelectedLaw}
+            <SearchAndFilterBar
+              query={query}
+              onQueryChange={setQuery}
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+              visibleCount={visibleCount}
             />
 
-            <LawBand
-              eyebrow="RELATIONAL LAWS"
-              count={SOVEREIGN_LAW_COUNTS.relational}
-              description="Principles for emotionally sensitive, uncertain, vulnerable, or high-pressure moments."
-              laws={RELATIONAL_SOVEREIGN_LAWS}
-              color={RELATIONAL_COLOR}
-              columns="repeat(auto-fit, minmax(196px, 1fr))"
-              selectedLawId={selectedLaw?.id ?? null}
-              onSelectLaw={setSelectedLaw}
-            />
+            {visibleCount === 0 ? (
+              <EmptySearchState
+                query={query}
+                activeFilter={activeFilter}
+                onReset={() => {
+                  setQuery("");
+                  setActiveFilter("all");
+                }}
+              />
+            ) : (
+              <>
+                {visibleCoreLaws.length > 0 && (
+                  <LawBand
+                    eyebrow="CORE LAWS"
+                    count={visibleCoreLaws.length}
+                    description="Foundational principles that apply across interfaces, regardless of domain."
+                    laws={visibleCoreLaws}
+                    color={CORE_COLOR}
+                    columns="repeat(auto-fit, minmax(210px, 1fr))"
+                    selectedLawId={selectedLaw?.id ?? null}
+                    onSelectLaw={setSelectedLaw}
+                  />
+                )}
 
-            <LawBand
-              eyebrow="ADVANCED ALIGNMENT SIGNALS"
-              count={SOVEREIGN_LAW_COUNTS.signals}
-              description={SOVEREIGN_LAWS_SIGNAL_CAUTION}
-              laws={SOVEREIGN_ALIGNMENT_SIGNALS}
-              color={SIGNAL_COLOR}
-              columns="repeat(3, minmax(0, 1fr))"
-              selectedLawId={selectedLaw?.id ?? null}
-              onSelectLaw={setSelectedLaw}
-              signal
-              last
-            />
+                {visibleRelationalLaws.length > 0 && (
+                  <LawBand
+                    eyebrow="RELATIONAL LAWS"
+                    count={visibleRelationalLaws.length}
+                    description="Principles for emotionally sensitive, uncertain, vulnerable, or high-pressure moments."
+                    laws={visibleRelationalLaws}
+                    color={RELATIONAL_COLOR}
+                    columns="repeat(auto-fit, minmax(196px, 1fr))"
+                    selectedLawId={selectedLaw?.id ?? null}
+                    onSelectLaw={setSelectedLaw}
+                  />
+                )}
+
+                {visibleSignals.length > 0 && (
+                  <LawBand
+                    eyebrow="ADVANCED ALIGNMENT SIGNALS"
+                    count={visibleSignals.length}
+                    description={SOVEREIGN_LAWS_SIGNAL_CAUTION}
+                    laws={visibleSignals}
+                    color={SIGNAL_COLOR}
+                    columns="repeat(auto-fit, minmax(210px, 1fr))"
+                    selectedLawId={selectedLaw?.id ?? null}
+                    onSelectLaw={setSelectedLaw}
+                    signal
+                    last
+                  />
+                )}
+              </>
+            )}
+
+            <ProfessionalBoundary />
           </main>
 
           {selectedLaw && (
@@ -314,6 +486,359 @@ export default function SovereignLawsIndexCanvas({
         </div>
       </div>
     </div>
+  );
+}
+
+
+function SearchAndFilterBar({
+  query,
+  onQueryChange,
+  activeFilter,
+  onFilterChange,
+  visibleCount,
+}: {
+  query: string;
+  onQueryChange: (value: string) => void;
+  activeFilter: LawFilter;
+  onFilterChange: (filter: LawFilter) => void;
+  visibleCount: number;
+}) {
+  return (
+    <div
+      data-laws-search-toolbar
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 6,
+        margin: "0 -28px 26px",
+        padding: "18px 28px 16px",
+        borderBottom: "1px solid rgba(200,180,130,0.08)",
+        background:
+          "linear-gradient(180deg, rgba(4,6,11,0.985), rgba(4,6,11,0.94))",
+        backdropFilter: "blur(12px)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          gap: 18,
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ width: "min(440px, 100%)" }}>
+          <label
+            htmlFor="sovereign-laws-search"
+            style={{
+              display: "block",
+              marginBottom: 8,
+              fontFamily: "'DM Mono', monospace",
+              fontSize: 9,
+              letterSpacing: "0.22em",
+              color: readerSemanticColor.text.metadata,
+            }}
+          >
+            FIND A PRINCIPLE
+          </label>
+
+          <div
+            data-laws-search-field
+            style={{
+              height: 40,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "0 11px",
+              border: "1px solid rgba(200,180,130,0.18)",
+              background: "rgba(8,10,18,0.72)",
+            }}
+          >
+            <Search
+              size={14}
+              aria-hidden="true"
+              style={{
+                flexShrink: 0,
+                color: readerSemanticColor.text.metadata,
+              }}
+            />
+
+            <input
+              id="sovereign-laws-search"
+              type="search"
+              value={query}
+              onChange={(event) => onQueryChange(event.target.value)}
+              placeholder="Search title, principle, example, or failure signal..."
+              autoComplete="off"
+              spellCheck={false}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                height: "100%",
+                border: "none",
+                outline: "none",
+                background: "transparent",
+                color: readerSemanticColor.text.primary,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 10.5,
+                letterSpacing: "0.03em",
+              }}
+            />
+
+            {query && (
+              <button
+                type="button"
+                aria-label="Clear Laws search"
+                onClick={() => onQueryChange("")}
+                style={{
+                  width: 28,
+                  height: 28,
+                  flexShrink: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "none",
+                  background: "transparent",
+                  color: readerSemanticColor.text.metadata,
+                  cursor: "pointer",
+                }}
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div
+          aria-live="polite"
+          style={{
+            paddingBottom: 10,
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 9,
+            letterSpacing: "0.16em",
+            color: readerSemanticColor.text.metadata,
+            textTransform: "uppercase",
+          }}
+        >
+          {visibleCount} {visibleCount === 1 ? "principle" : "principles"} shown
+        </div>
+      </div>
+
+      <div
+        role="group"
+        aria-label="Filter Laws by band"
+        style={{
+          marginTop: 13,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 8,
+        }}
+      >
+        <FilterButton
+          label={`ALL ${SOVEREIGN_LAW_COUNTS.total}`}
+          filter="all"
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+          color={readerSemanticColor.identity.primary}
+        />
+        <FilterButton
+          label={`CORE ${SOVEREIGN_LAW_COUNTS.core}`}
+          filter="core"
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+          color={CORE_COLOR}
+        />
+        <FilterButton
+          label={`RELATIONAL ${SOVEREIGN_LAW_COUNTS.relational}`}
+          filter="relational"
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+          color={RELATIONAL_COLOR}
+        />
+        <FilterButton
+          label={`SIGNALS ${SOVEREIGN_LAW_COUNTS.signals}`}
+          filter="signal"
+          activeFilter={activeFilter}
+          onFilterChange={onFilterChange}
+          color={SIGNAL_COLOR}
+        />
+      </div>
+    </div>
+  );
+}
+
+function FilterButton({
+  label,
+  filter,
+  activeFilter,
+  onFilterChange,
+  color,
+}: {
+  label: string;
+  filter: LawFilter;
+  activeFilter: LawFilter;
+  onFilterChange: (filter: LawFilter) => void;
+  color: string;
+}) {
+  const active = activeFilter === filter;
+
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={() => onFilterChange(filter)}
+      style={{
+        minHeight: 30,
+        padding: "0 10px",
+        border: `1px solid ${active ? color + "9A" : "rgba(200,180,130,0.14)"}`,
+        background: active ? `${color}12` : "rgba(8,10,18,0.40)",
+        color: active ? color : readerSemanticColor.text.metadata,
+        fontFamily: "'DM Mono', monospace",
+        fontSize: 9,
+        letterSpacing: "0.14em",
+        cursor: "pointer",
+        transition:
+          "border-color 160ms ease, background 160ms ease, color 160ms ease",
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+function EmptySearchState({
+  query,
+  activeFilter,
+  onReset,
+}: {
+  query: string;
+  activeFilter: LawFilter;
+  onReset: () => void;
+}) {
+  const hasQuery = query.trim().length > 0;
+  const filterLabel =
+    activeFilter === "all"
+      ? "all bands"
+      : activeFilter === "signal"
+        ? "Advanced Alignment Signals"
+        : `${activeFilter} laws`;
+
+  return (
+    <div
+      style={{
+        minHeight: 260,
+        border: "1px solid rgba(200,180,130,0.10)",
+        background: "rgba(8,10,18,0.46)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 32,
+        textAlign: "center",
+      }}
+    >
+      <div style={{ maxWidth: 520 }}>
+        <div
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 9,
+            letterSpacing: "0.22em",
+            color: readerSemanticColor.text.metadata,
+            marginBottom: 10,
+          }}
+        >
+          NO MATCHES
+        </div>
+
+        <div
+          style={{
+            fontFamily: "'EB Garamond', serif",
+            fontSize: 20,
+            lineHeight: 1.45,
+            color: readerSemanticColor.text.secondary,
+            marginBottom: 18,
+          }}
+        >
+          {hasQuery
+            ? `No principles in ${filterLabel} match “${query.trim()}”.`
+            : `No principles are available in ${filterLabel}.`}
+        </div>
+
+        <button
+          type="button"
+          onClick={onReset}
+          style={{
+            minHeight: 34,
+            padding: "0 12px",
+            border: "1px solid rgba(200,180,130,0.36)",
+            background: "rgba(8,10,18,0.72)",
+            color: readerSemanticColor.utility.primary,
+            fontFamily: "'DM Mono', monospace",
+            fontSize: 9,
+            letterSpacing: "0.16em",
+            cursor: "pointer",
+          }}
+        >
+          RESET INDEX
+        </button>
+      </div>
+    </div>
+  );
+}
+
+
+function ProfessionalBoundary() {
+  return (
+    <aside
+      aria-label="Professional boundary"
+      style={{
+        marginTop: 38,
+        padding: "20px 22px",
+        border: "1px solid rgba(200,180,130,0.14)",
+        background:
+          "linear-gradient(145deg, rgba(197,169,110,0.045), rgba(8,10,18,0.56))",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 9.5,
+          letterSpacing: "0.24em",
+          color: readerSemanticColor.utility.primary,
+          marginBottom: 10,
+        }}
+      >
+        PROFESSIONAL BOUNDARY
+      </div>
+
+      <div
+        style={{
+          maxWidth: 920,
+          fontFamily: "'EB Garamond', serif",
+          fontSize: 16,
+          lineHeight: 1.65,
+          color: readerSemanticColor.text.secondary,
+        }}
+      >
+        {SOVEREIGN_LAWS_PROFESSIONAL_BOUNDARY}
+      </div>
+
+      <div
+        style={{
+          marginTop: 14,
+          paddingTop: 13,
+          borderTop: "1px solid rgba(200,180,130,0.09)",
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 9.5,
+          letterSpacing: "0.18em",
+          color: readerSemanticColor.text.metadata,
+        }}
+      >
+        WHEN DESIGN SCOPE IS EXCEEDED ·{" "}
+        <span style={{ color: readerSemanticColor.utility.primary }}>
+          PAUSE · CONSENT · REFER
+        </span>
+      </div>
+    </aside>
   );
 }
 
