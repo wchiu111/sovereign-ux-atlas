@@ -52,16 +52,16 @@ export default defineAtlasEntry({
     starPrefix: "sux",
   },
   overviewStars: [
-    // Five main-cycle areas hold a tightened, non-uniform ring so the learning loop
-    // (foundations → laws → protocols → field signals → living canon → foundations)
-    // reads along the outside without crossing the central node. Positions are
-    // deliberately asymmetrical — not an even circle.
+    // Five main-cycle areas form an open arc across the upper and right side of
+    // the overview so the learning loop (foundations → laws → protocols → field
+    // signals → living canon → foundations) reads as a larger spatial system
+    // around the SOVEREIGN UX core rather than a compact ring.
     {
       id: "foundations",
       label: "FOUNDATIONS",
       angle: -144,
-      x: -0.7,
-      y: -0.5,
+      x: -0.74,
+      y: -0.84,
       scale: 1.22,
       stellarType: "purpose",
       intensity: "bright",
@@ -71,8 +71,8 @@ export default defineAtlasEntry({
       id: "laws",
       label: "LAWS",
       angle: -41,
-      x: 0.7,
-      y: -0.6,
+      x: -0.2,
+      y: -1.17,
       scale: 1,
       stellarType: "judgment",
       intensity: "balanced",
@@ -82,8 +82,8 @@ export default defineAtlasEntry({
       id: "protocols",
       label: "PROTOCOLS",
       angle: 28,
-      x: 0.8,
-      y: 0.42,
+      x: 0.51,
+      y: -1.07,
       scale: 0.96,
       stellarType: "relational",
       intensity: "balanced",
@@ -93,33 +93,33 @@ export default defineAtlasEntry({
       id: "field-signals",
       label: "FIELD SIGNALS",
       angle: 100,
-      x: -0.12,
-      y: 0.68,
+      x: 1.11,
+      y: -0.46,
       scale: 0.86,
       stellarType: "strategy",
       intensity: "dim",
-      labelPosition: { side: "bottom", offset: 26 },
+      labelPosition: { side: "left", offset: 28 },
     },
     {
       id: "living-canon",
       label: "LIVING CANON",
       angle: 180,
-      x: -0.82,
-      y: 0.0,
+      x: 1.32,
+      y: 0.21,
       scale: 0.98,
       stellarType: "strategy",
       intensity: "balanced",
       labelPosition: { side: "left", offset: 30 },
     },
-    // Layered System and Failure Patterns form the interior diagnostic / response
-    // branch (foundations → layered system → failure patterns → protocols), routed
-    // to the upper-right of center so it stays clear of the SOVEREIGN UX core.
+    // Layered System and Failure Patterns remain the interior diagnostic / response
+    // branch (foundations → layered system → failure patterns → protocols), with
+    // Layered System above-right of the core and Failure Patterns offset to the left.
     {
       id: "layered-system",
       label: "LAYERED SYSTEM",
       angle: -81,
-      x: 0.05,
-      y: -0.3,
+      x: 0.34,
+      y: -0.31,
       scale: 1.12,
       stellarType: "agentic",
       intensity: "balanced",
@@ -129,12 +129,12 @@ export default defineAtlasEntry({
       id: "failure-patterns",
       label: "FAILURE PATTERNS",
       angle: 33,
-      x: 0.34,
-      y: 0.22,
+      x: -0.42,
+      y: 0.1,
       scale: 0.9,
       stellarType: "risk",
       intensity: "dim",
-      labelPosition: { side: "bottom", offset: 26 },
+      labelPosition: { side: "left", offset: 28 },
     },
   ],
   constellation: {
