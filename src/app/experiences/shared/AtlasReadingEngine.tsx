@@ -14,6 +14,7 @@ import AtlasLineageLink from "../../atlas/components/AtlasLineageLink";
 import FrameworkEvidenceCanvas from "../frameworks/FrameworkEvidenceCanvas";
 import SovereignLayeredSystemMapCanvas from "../frameworks/SovereignLayeredSystemMapCanvas";
 import SovereignLawsIndexCanvas from "../frameworks/SovereignLawsIndexCanvas";
+import SovereignLivingCanonCanvas from "../frameworks/SovereignLivingCanonCanvas";
 import { readerSemanticColor } from "./readerSemanticPalette";
 
 function LeftNav({
@@ -1565,6 +1566,16 @@ export default function AtlasReadingEngine({
           <SovereignLawsIndexCanvas
             frameworkTitle={caseStudy.title}
             sectionTitle={activeEvidenceSection.title}
+            onClose={handleCloseEvidence}
+          />
+        ) : activeEvidence?.canvas?.id === "sovereign-living-canon" ? (
+          <SovereignLivingCanonCanvas
+            key={activeEvidence.id}
+            frameworkTitle={caseStudy.title}
+            sectionTitle={activeEvidenceSection.title}
+            initialView={
+              activeEvidence.id === "canon-revision-model" ? "revision" : "field"
+            }
             onClose={handleCloseEvidence}
           />
         ) : activeEvidence?.canvas ? (
