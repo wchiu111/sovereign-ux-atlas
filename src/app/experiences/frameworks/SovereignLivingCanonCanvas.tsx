@@ -40,6 +40,7 @@ type TransitionPhase = "entering" | "open" | "exiting";
 const WORLD_W = 1680;
 const WORLD_H = 980;
 const MIN_SCALE = 0.42;
+const MOBILE_FIT_MIN_SCALE = 0.14;
 const MAX_SCALE = 2.5;
 const VIEW_PADDING = 34;
 const DETAIL_PANEL_W = 390;
@@ -692,9 +693,11 @@ export default function SovereignLivingCanonCanvas({
       rect.width - VIEW_PADDING * 2 - detailAllowance,
     );
     const usableH = Math.max(320, rect.height - VIEW_PADDING * 2);
+    const fitMinimumScale =
+      rect.width <= 820 ? MOBILE_FIT_MIN_SCALE : MIN_SCALE;
     const nextScale = clamp(
       Math.min(usableW / WORLD_W, usableH / WORLD_H),
-      MIN_SCALE,
+      fitMinimumScale,
       1.08,
     );
 
@@ -744,6 +747,21 @@ export default function SovereignLivingCanonCanvas({
     window.setTimeout(onClose, 220);
   }, [onClose, reducedMotion, transitionPhase]);
 
+  const clearSelection = useCallback(
+    (restoreFocus = false) => {
+      const entryId = selectedEntryId;
+      setSelectedEntryId(null);
+      setHoveredEntryId(null);
+
+      if (restoreFocus && entryId) {
+        window.requestAnimationFrame(() => {
+          document.getElementById(`canon-node-${entryId}`)?.focus();
+        });
+      }
+    },
+    [selectedEntryId],
+  );
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
@@ -782,7 +800,13 @@ export default function SovereignLivingCanonCanvas({
         anchorY ?? rect.top + rect.height / 2;
 
       setView((current) => {
-        const nextScale = clamp(nextScaleInput, MIN_SCALE, MAX_SCALE);
+        const interactionMinimumScale =
+          current.scale < MIN_SCALE ? current.scale : MIN_SCALE;
+        const nextScale = clamp(
+          nextScaleInput,
+          interactionMinimumScale,
+          MAX_SCALE,
+        );
         const localAnchorX = anchorScreenX - rect.left;
         const localAnchorY = anchorScreenY - rect.top;
         const worldX = (localAnchorX - current.x) / current.scale;
@@ -867,21 +891,6 @@ export default function SovereignLivingCanonCanvas({
       }
     },
     [clearSelection, selectedEntryId],
-  );
-
-  const clearSelection = useCallback(
-    (restoreFocus = false) => {
-      const entryId = selectedEntryId;
-      setSelectedEntryId(null);
-      setHoveredEntryId(null);
-
-      if (restoreFocus && entryId) {
-        window.requestAnimationFrame(() => {
-          document.getElementById(`canon-node-${entryId}`)?.focus();
-        });
-      }
-    },
-    [selectedEntryId],
   );
 
   const handleSelectEntry = useCallback((entryId: string) => {

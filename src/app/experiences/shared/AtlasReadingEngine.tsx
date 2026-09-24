@@ -1403,7 +1403,14 @@ export default function AtlasReadingEngine({
 
   const handleCloseEvidence = useCallback(() => {
     setActiveEvidence(null);
-  }, []);
+    try {
+      history.replaceState(
+        {},
+        "",
+        `/${routeSegment}/${caseStudy.id}/${activeSection.slug}`,
+      );
+    } catch {}
+  }, [activeSection.slug, caseStudy.id, routeSegment]);
 
   const handleShare = useCallback(async () => {
     try {
