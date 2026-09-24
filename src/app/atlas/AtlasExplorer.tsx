@@ -25,6 +25,7 @@ import {
 } from "./hooks/useAtlasAnimation";
 import type { Planet, StarSystem, ViewLevel } from "../types/atlas";
 import { useAtlasState } from "../state";
+import { getAtlasEntry } from "../content";
 import { resolveStellarColor } from "./constellation/stellarPalette";
 
 interface AtlasExplorerProps {
@@ -63,7 +64,7 @@ export default function AtlasExplorer({
   cameraRef.current    = { scale, tx, ty };
   el.style.transition  = "transform 0.12s ease-out";
   el.style.transform   = `translate(${tx}px, ${ty}px) scale(${scale})`;}, []);
-  
+
   // State mirrors for animation loop (avoid closure stale refs)
   const levelRef         = useRef<ViewLevel>(0);
   const activeSysRef     = useRef<string|null>(null);
@@ -626,9 +627,30 @@ useEffect(() => {
           onEnterBehaviorAuthority={enterBehaviorAuthority}
           onOpenStar={(index, anchor) => {
             const selectedStar = activePlanet.stars[index];
+            const activeEntry = getAtlasEntry(activePlanet.id);
+            const starPrefix = activeEntry?.orbit.starPrefix;
+
+            const selectedSectionId =
+              selectedStar &&
+              starPrefix &&
+              selectedStar.id.startsWith(`${starPrefix}-`)
+                ? selectedStar.id.slice(starPrefix.length + 1)
+                : null;
+
+            const matchedSectionIndex =
+              selectedSectionId && activeEntry?.sections
+                ? activeEntry.sections.findIndex(
+                    (section) => section.id === selectedSectionId,
+                  )
+                : -1;
+
+            const targetSectionIndex =
+              matchedSectionIndex >= 0
+                ? matchedSectionIndex
+                : index;
 
             actions.beginFocusTransition({
-              index,
+              index: targetSectionIndex,
               label: selectedStar?.label ?? "Section",
               x: anchor.x,
               y: anchor.y,
@@ -639,7 +661,7 @@ useEffect(() => {
             });
 
             window.setTimeout(() => {
-              actions.enterFocusMode(index);
+              actions.enterFocusMode(targetSectionIndex);
             }, reduceFocusMotion
               ? REDUCED_FOCUS_TRANSITION_DURATION
               : FOCUS_TRANSITION_DURATION);
@@ -679,7 +701,7 @@ useEffect(() => {
             >
               The Sovereign Atlas
             </div>
-            
+
             <div style={{ fontFamily:"'EB Garamond',serif", fontSize:"14px",
               letterSpacing:"0.06em", color:"rgba(200,169,110,0.52)",
               marginTop:"3px", fontStyle:"regular" }}>

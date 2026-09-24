@@ -51,7 +51,7 @@ export default defineAtlasEntry({
       "Interactive evidence will appear here as the framework develops.",
   },
   orbit: {
-    angle: -90,
+    angle: -115,
     radius: 112,
     speed: 1.18e-4,
     starPrefix: "ag",
