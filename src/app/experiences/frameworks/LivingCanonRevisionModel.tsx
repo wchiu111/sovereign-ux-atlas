@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { ArrowLeft, History, X } from "lucide-react";
 import {
   LIVING_CANON_REVISION_STAGES,
@@ -54,9 +54,43 @@ export default function LivingCanonRevisionModel({
     );
   }, [selectedIndex]);
 
+  const selectStageAt = (index: number) => {
+    const nextStage = LIVING_CANON_REVISION_STAGES[index];
+    if (!nextStage) return;
+    setSelectedStageId(nextStage.id);
+    if (nextStage.id !== "revision") setHistoryOpen(false);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`canon-stage-${nextStage.id}`)?.focus();
+    });
+  };
+
+  const handleStageKeyDown = (
+    event: ReactKeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    const lastIndex = LIVING_CANON_REVISION_STAGES.length - 1;
+    let nextIndex: number | null = null;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      nextIndex = Math.min(lastIndex, index + 1);
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      nextIndex = Math.max(0, index - 1);
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = lastIndex;
+    }
+
+    if (nextIndex === null) return;
+    event.preventDefault();
+    selectStageAt(nextIndex);
+  };
+
   return (
     <div
       data-canon-revision-root
+      role="region"
+      aria-label="How the Canon Learns"
       style={{
         position: "absolute",
         inset: 0,
@@ -90,7 +124,10 @@ export default function LivingCanonRevisionModel({
 
         @media (max-width: 860px) {
           [data-canon-revision-header] {
-            padding: 17px 18px 15px !important;
+            padding:
+              calc(15px + env(safe-area-inset-top))
+              18px
+              14px !important;
           }
 
           [data-canon-revision-title] {
@@ -98,11 +135,41 @@ export default function LivingCanonRevisionModel({
           }
 
           [data-canon-revision-body] {
-            padding: 18px !important;
+            padding:
+              18px
+              18px
+              calc(26px + env(safe-area-inset-bottom)) !important;
           }
 
-          [data-canon-revision-detail-grid] {
+          [data-canon-revision-detail-grid],
+          [data-canon-precedent-grid] {
             grid-template-columns: 1fr !important;
+          }
+
+          [data-canon-stage-scroller] {
+            margin-left: -18px !important;
+            margin-right: -18px !important;
+            padding-left: 18px !important;
+            padding-right: 18px !important;
+            scroll-snap-type: x proximity;
+          }
+
+          [data-canon-stage-track] {
+            min-width: 780px !important;
+          }
+
+          [data-canon-stage-button] {
+            scroll-snap-align: center;
+          }
+        }
+
+        @media (max-width: 540px) {
+          [data-canon-revision-title] {
+            font-size: 27px !important;
+          }
+
+          [data-canon-stage-track] {
+            min-width: 720px !important;
           }
         }
 
@@ -217,7 +284,7 @@ export default function LivingCanonRevisionModel({
             type="button"
             onClick={onBack}
             style={{
-              minHeight: 40,
+              minHeight: 44,
               padding: "0 13px",
               display: "flex",
               alignItems: "center",
@@ -240,8 +307,8 @@ export default function LivingCanonRevisionModel({
             onClick={onClose}
             aria-label="Back to framework"
             style={{
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               display: "grid",
               placeItems: "center",
               border: "1px solid rgba(200,180,130,0.28)",
@@ -289,6 +356,7 @@ export default function LivingCanonRevisionModel({
         )}
 
         <section
+          data-canon-stage-scroller
           aria-label="Canon revision stages"
           style={{
             maxWidth: 1180,
@@ -299,6 +367,7 @@ export default function LivingCanonRevisionModel({
           }}
         >
           <div
+            data-canon-stage-track
             style={{
               position: "relative",
               minWidth: 940,
@@ -354,9 +423,14 @@ export default function LivingCanonRevisionModel({
 
                 return (
                   <button
+                    id={`canon-stage-${stage.id}`}
                     key={stage.id}
                     type="button"
+                    data-canon-stage-button
+                    aria-label={`${stage.number}. ${stage.label}`}
                     aria-pressed={active}
+                    aria-controls="canon-revision-stage-detail"
+                    onKeyDown={(event) => handleStageKeyDown(event, index)}
                     onClick={() => {
                       setSelectedStageId(stage.id);
                       if (stage.id !== "revision") setHistoryOpen(false);
@@ -422,8 +496,12 @@ export default function LivingCanonRevisionModel({
         </section>
 
         <section
+          id="canon-revision-stage-detail"
           key={selectedStage.id}
           data-canon-stage-detail
+          role="region"
+          aria-live="polite"
+          aria-label={`${selectedStage.number}. ${selectedStage.label}`}
           style={{
             maxWidth: 1180,
             margin: "14px auto 0",
@@ -526,6 +604,7 @@ export default function LivingCanonRevisionModel({
               {(selectedStage.id === "precedent" ||
                 selectedStage.id === "revision") && (
                 <div
+                  data-canon-precedent-grid
                   style={{
                     marginTop: 20,
                     display: "grid",
@@ -632,9 +711,10 @@ export default function LivingCanonRevisionModel({
                     type="button"
                     onClick={() => setHistoryOpen((open) => !open)}
                     aria-expanded={historyOpen}
+                    aria-controls="canon-revision-history"
                     style={{
                       marginTop: 12,
-                      minHeight: 38,
+                      minHeight: 44,
                       padding: "0 11px",
                       display: "flex",
                       alignItems: "center",
@@ -654,6 +734,9 @@ export default function LivingCanonRevisionModel({
 
                   {historyOpen && (
                     <div
+                      id="canon-revision-history"
+                      role="region"
+                      aria-label="Revision history"
                       style={{
                         marginTop: 12,
                         paddingLeft: 15,

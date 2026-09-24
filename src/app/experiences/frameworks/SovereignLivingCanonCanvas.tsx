@@ -190,7 +190,7 @@ function CanonNode({
   const { x, y } = worldPosition(entry);
   const isThreshold = entry.kind === "threshold";
   const isGuardrail = entry.kind === "guardrail";
-  const size = isThreshold ? 34 : isGuardrail ? 38 : 42;
+  const size = isThreshold ? 46 : isGuardrail ? 46 : 46;
   const screenStableLabel = clamp(10 / scale, 8.4, 14);
 
   return (
@@ -220,6 +220,7 @@ function CanonNode({
       }}
     >
       <button
+        id={`canon-node-${entry.id}`}
         type="button"
         data-canvas-control
         aria-label={`${entry.title}. ${entry.summary}`}
@@ -348,12 +349,20 @@ function CanonDetailPanel({
   onTrace: (entryId: string) => void;
 }) {
   const color = BAND_COLOR[entry.band];
+  const panelRef = useRef<HTMLElement>(null);
+  const headingId = `canon-detail-title-${entry.id}`;
+
+  useEffect(() => {
+    panelRef.current?.focus({ preventScroll: true });
+  }, [entry.id]);
 
   return (
     <aside
+      ref={panelRef}
+      tabIndex={-1}
       data-canon-detail-panel
       data-canvas-control
-      aria-label={`${entry.title} details`}
+      aria-labelledby={headingId}
       style={{
         position: "absolute",
         top: 0,
@@ -397,6 +406,7 @@ function CanonDetailPanel({
               {bandLabel(entry)}
             </div>
             <div
+              id={headingId}
               style={{
                 color: readerSemanticColor.text.primary,
                 fontFamily: "'EB Garamond', serif",
@@ -414,8 +424,8 @@ function CanonDetailPanel({
             onClick={onClose}
             aria-label="Close Canon entry"
             style={{
-              width: 36,
-              height: 36,
+              width: 44,
+              height: 44,
               flexShrink: 0,
               display: "grid",
               placeItems: "center",
@@ -550,7 +560,7 @@ function CanonDetailPanel({
                   data-canvas-control
                   onClick={() => onSelectRelated(relatedId)}
                   style={{
-                    minHeight: 34,
+                    minHeight: 48,
                     padding: "6px 9px",
                     border: "1px solid rgba(200,180,130,0.16)",
                     background: "rgba(255,255,255,0.025)",
@@ -675,7 +685,8 @@ export default function SovereignLivingCanonCanvas({
     if (!viewport) return;
 
     const rect = viewport.getBoundingClientRect();
-    const detailAllowance = selectedEntryId ? DETAIL_PANEL_W * 0.34 : 0;
+    const detailAllowance =
+      selectedEntryId && rect.width > 820 ? DETAIL_PANEL_W * 0.34 : 0;
     const usableW = Math.max(
       320,
       rect.width - VIEW_PADDING * 2 - detailAllowance,
@@ -744,8 +755,7 @@ export default function SovereignLivingCanonCanvas({
       }
 
       if (selectedEntryId) {
-        setSelectedEntryId(null);
-        setHoveredEntryId(null);
+        clearSelection(true);
         return;
       }
 
@@ -754,7 +764,7 @@ export default function SovereignLivingCanonCanvas({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [requestClose, selectedEntryId, viewMode]);
+  }, [clearSelection, requestClose, selectedEntryId, viewMode]);
 
   const zoomAt = useCallback(
     (
@@ -853,8 +863,22 @@ export default function SovereignLivingCanonCanvas({
       }
 
       if (!drag.moved && selectedEntryId) {
-        setSelectedEntryId(null);
-        setHoveredEntryId(null);
+        clearSelection(false);
+      }
+    },
+    [clearSelection, selectedEntryId],
+  );
+
+  const clearSelection = useCallback(
+    (restoreFocus = false) => {
+      const entryId = selectedEntryId;
+      setSelectedEntryId(null);
+      setHoveredEntryId(null);
+
+      if (restoreFocus && entryId) {
+        window.requestAnimationFrame(() => {
+          document.getElementById(`canon-node-${entryId}`)?.focus();
+        });
       }
     },
     [selectedEntryId],
@@ -950,10 +974,18 @@ export default function SovereignLivingCanonCanvas({
           outline-offset: 3px;
         }
 
+        @keyframes canonDetailMobileEnter {
+          from { opacity: 0; transform: translateY(18px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 820px) {
           [data-living-canon-header] {
             min-height: 0 !important;
-            padding: 17px 18px 15px !important;
+            padding:
+              calc(15px + env(safe-area-inset-top))
+              18px
+              14px !important;
           }
 
           [data-living-canon-title] {
@@ -969,7 +1001,33 @@ export default function SovereignLivingCanonCanvas({
           }
 
           [data-canon-detail-panel] {
-            width: min(390px, calc(100% - 22px)) !important;
+            top: auto !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            height: min(68vh, 580px) !important;
+            border-left: none !important;
+            border-top: 1px solid rgba(200,180,130,0.18) !important;
+            box-shadow: 0 -24px 70px rgba(0,0,0,0.48) !important;
+            padding-bottom: env(safe-area-inset-bottom);
+            animation: canonDetailMobileEnter 260ms cubic-bezier(.16,1,.3,1) both !important;
+          }
+
+          [data-canon-zoom-controls] {
+            left: 50% !important;
+            bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+          }
+        }
+
+        @media (max-width: 540px) {
+          [data-living-canon-title] {
+            font-size: 27px !important;
+          }
+
+          [data-living-canon-counts] {
+            font-size: 8px !important;
+            letter-spacing: 0.10em !important;
           }
         }
 
@@ -1374,10 +1432,7 @@ export default function SovereignLivingCanonCanvas({
             <CanonDetailPanel
               key={selectedEntry.id}
               entry={selectedEntry}
-              onClose={() => {
-                setSelectedEntryId(null);
-                setHoveredEntryId(null);
-              }}
+              onClose={() => clearSelection(true)}
               onSelectRelated={handleSelectRelated}
               onTrace={handleTraceEntry}
             />
@@ -1408,6 +1463,7 @@ export default function SovereignLivingCanonCanvas({
           </div>
 
           <div
+            data-canon-zoom-controls
             data-canvas-control
             aria-label="Living Canon zoom controls"
             style={{
@@ -1481,8 +1537,8 @@ export default function SovereignLivingCanonCanvas({
 }
 
 const zoomButtonStyle = {
-  height: 34,
-  width: 38,
+  height: 44,
+  width: 44,
   border: "1px solid rgba(200,180,130,0.16)",
   background: "rgba(255,255,255,0.025)",
   color: readerSemanticColor.text.secondary,
