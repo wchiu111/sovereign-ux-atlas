@@ -1,4 +1,5 @@
 import { defineAtlasEntry } from "../defineAtlasEntry";
+import { LIVING_CANON_COUNTS } from "./sovereign-ux-living-canon";
 
 export default defineAtlasEntry({
   id: "sovereign-ux",
@@ -328,18 +329,71 @@ export default defineAtlasEntry({
       id: "living-canon",
       label: "Living Canon",
       accentStellarType: "strategy",
-      subtitle: "How the system revises itself without losing itself.",
-      readingTime: 2,
+      subtitle: "How practice becomes precedent without becoming doctrine.",
+      readingTime: 5,
       semantics: {
-        keywords: ["canon", "revision", "precedent", "evolution"],
-        aliases: ["precedent", "codex"],
+        keywords: [
+          "canon",
+          "revision",
+          "precedent",
+          "evolution",
+          "practice patterns",
+          "integrity guardrails",
+          "threshold signals",
+          "field evidence",
+        ],
+        aliases: ["precedent", "codex", "living knowledge"],
         summary:
-          "The evolving record of how the laws are interpreted, argued, and revised as the field and the technology change.",
+          "The evolving record of observed practice, integrity guardrails, threshold signals, and revisable precedent that lets Sovereign UX learn without hardening into doctrine.",
       },
+      evidence: [
+        {
+          id: "canon-field",
+          number: "01",
+          title: "Living Canon Field",
+          type: "OBSERVATIONAL MAP",
+          description:
+            `${LIVING_CANON_COUNTS.total} observed practice patterns, integrity guardrails, and threshold signals organized as an explorable knowledge field.`,
+          caption:
+            "Scan the field to understand the three kinds of Canon knowledge, then select any entry to inspect what it means, what to observe, and where it connects.",
+          canvas: {
+            id: "sovereign-living-canon",
+            eyebrow: "SOVEREIGN UX · LIVING CANON",
+            title: "Living Canon Field",
+            description:
+              "Patterns observed in systems that preserve agency, plus the guardrails and threshold signals that keep those patterns from becoming doctrine.",
+            boardLabel: "CANON FIELD",
+            boardSubtitle:
+              `${LIVING_CANON_COUNTS.presence} patterns · ${LIVING_CANON_COUNTS.integrity} guardrails · ${LIVING_CANON_COUNTS.threshold} threshold signals`,
+            annotations: [],
+          },
+        },
+        {
+          id: "canon-revision-model",
+          number: "02",
+          title: "How the Canon Learns",
+          type: "REVISION MODEL",
+          description:
+            "A six-stage model showing how a field signal becomes observation, pattern, evidence, precedent, and eventually revision.",
+          caption:
+            "Trace a principle back through the reasoning that produced it. Precedent remains useful because its evidence, context, and revisions stay visible.",
+          canvas: {
+            id: "sovereign-living-canon",
+            eyebrow: "SOVEREIGN UX · LIVING CANON",
+            title: "How the Canon Learns",
+            description:
+              "Observation becomes precedent. Precedent remains revisable.",
+            boardLabel: "REVISION MODEL",
+            boardSubtitle:
+              "Field Signal → Observation → Pattern → Evidence → Precedent → Revision",
+            annotations: [],
+          },
+        },
+      ],
       content:
-        "A framework that cannot change becomes wrong the moment its assumptions do. The Living Canon is how Sovereign UX evolves without dissolving: an evolving record of how the laws have been interpreted, where they have been tested, and why they were revised.\n\nEach decision leaves a trace — the argument, the context, the tradeoff accepted. Over time this becomes precedent that later work can build on or overturn, but not ignore. The canon is what keeps revision honest, so the system changes through argument rather than through drift.\n\nThis is what makes the framework living rather than fixed. The commitments hold steady; their interpretation is allowed to grow.",
+        "The Living Canon is not a rulebook. It is the evolving record of what Sovereign UX learns when its principles encounter real products, real constraints, and real people. Some patterns repeat: certain design decisions consistently preserve clarity, consent, judgment, and agency, while others repeatedly weaken them. The Canon gives those observations somewhere to accumulate, be challenged, and become useful precedent without pretending they are universal truth.\n\nThese patterns are not invented in advance. They are noticed through practice. They become visible when teams stop asking only whether a system works and begin asking what the system is doing to the person using it — how it interprets information, frames choices, communicates uncertainty, remembers context, recommends actions, and decides when to step back.\n\nThe Canon contains three kinds of knowledge. PATTERNS OF PRESENCE describe recurring characteristics of systems that preserve human agency in everyday practice. INTEGRITY GUARDRAILS protect those commitments when scale, speed, automation, or organizational pressure begin pulling the system away from them. THRESHOLD SIGNALS mark conditions that deserve caution, documentation, and sometimes escalation; they are not capabilities to optimize for.\n\nA pattern earns a place in the Canon because it has become useful for understanding actual system behavior, not because it sounds philosophically correct. Canon entries should remain grounded in context, traceable to the reasoning that produced them, open to contradiction, and revisable when new evidence changes the interpretation.\n\nThe Canon therefore sits between principle and implementation. Foundations establish what the system protects. Laws help diagnose behavior. Protocols translate commitments into repeatable practice. Field Signals reveal what happens in reality. The Living Canon remembers what the system learned so later work can build on it, challenge it, or deliberately revise it instead of rediscovering the same tensions from scratch.\n\nThat learning follows a visible path: FIELD SIGNAL → OBSERVATION → PATTERN → EVIDENCE → PRECEDENT → REVISION. Revision does not erase the earlier interpretation. It preserves what changed, why it changed, what evidence mattered, and which tradeoff was accepted. That record is what distinguishes evolution from drift.\n\nThe Living Canon lets Sovereign UX change without dissolving. The underlying commitments remain steady; their interpretation is allowed to grow.",
       insight:
-        "The canon keeps the system changing through argument rather than through drift.",
+        "The Canon stays living by making every principle answerable to the question: why are you here?",
     },
     {
       id: "protocols",
