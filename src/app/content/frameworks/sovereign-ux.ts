@@ -115,132 +115,31 @@ export default defineAtlasEntry({
     // branch, kept close to the core while the larger system areas spread outward.
     {
       id: "layered-system",
-      label: "LAYERED SYSTEM",
-      angle: -81,
-      x: 0.40,
-      y: -0.08,
-      scale: 1.12,
-      stellarType: "agentic",
-      intensity: "balanced",
-      labelPosition: { side: "top", offset: 28 },
-    },
-    {
-      id: "failure-patterns",
-      label: "FAILURE PATTERNS",
-      angle: 33,
-      x: -0.60,
-      y: 0.14,
-      scale: 0.9,
-      stellarType: "risk",
-      intensity: "dim",
-      labelPosition: { side: "left", offset: 28 },
-    },
-  ],
-  constellation: {
-    showCenterConnections: false,
-    connections: [
-      {
-        from: "foundations",
-        to: "laws",
-        strength: "primary",
-        type: "applies",
-        rationale:
-          "Beliefs become principles: the foundational commitments are translated into the laws the system must hold.",
-      },
-      {
-        from: "foundations",
-        to: "layered-system",
-        strength: "secondary",
-        type: "extends",
-        rationale:
-          "Beliefs become diagnostics: the foundations become an operating structure the layered system can read.",
-      },
-      {
-        from: "layered-system",
-        to: "failure-patterns",
-        strength: "secondary",
-        type: "evidences",
-        rationale:
-          "Diagnostics surface the recurring ways autonomy erodes, naming them as failure patterns.",
-      },
-      {
-        from: "laws",
-        to: "protocols",
-        strength: "primary",
-        type: "applies",
-        rationale:
-          "Principles become responses: the laws are carried into the repeatable moves teams actually practice.",
-      },
-      {
-        from: "failure-patterns",
-        to: "protocols",
-        strength: "secondary",
-        type: "guards",
-        rationale:
-          "Named failure patterns shape protocols so the system guards against the erosions it has already seen.",
-      },
-      {
-        from: "protocols",
-        to: "field-signals",
-        strength: "primary",
-        type: "evidences",
-        rationale:
-          "Responses become observation: protocols in real use generate the field signals the system learns from.",
-      },
-      {
-        from: "field-signals",
-        to: "living-canon",
-        strength: "primary",
-        type: "extends",
-        rationale:
-          "Observation becomes learning: signals feed the living canon with the material for honest revision.",
-      },
-      {
-        from: "living-canon",
-        to: "foundations",
-        strength: "primary",
-        type: "applies",
-        rationale:
-          "Learning refines beliefs: the canon feeds revised understanding back into the foundations, closing the loop.",
-      },
-    ],
-  },
-  sections: [
-    {
-      id: "foundations",
-      label: "Foundations",
-      accentStellarType: "purpose",
-      subtitle: "The commitments the rest of the system defends.",
-      readingTime: 2,
-      semantics: {
-        keywords: ["clarity", "consent", "judgment", "agency", "autonomy"],
-        aliases: ["first principles", "commitments"],
-        summary:
-          "The four commitments — clarity, consent, judgment, agency — that every other area of Sovereign UX exists to protect.",
-      },
-      content:
-        "Sovereign UX begins from a single question: how should intelligent systems behave so people retain clarity, consent, judgment, and agency over time? These four are not features to add. They are commitments the rest of the system exists to defend.\n\nClarity means a person can tell what the system is doing and why. Consent means the system's behavior is explicitly chosen rather than quietly assumed. Judgment means the person's own reasoning is strengthened rather than replaced. Agency means the person can still change direction, including changing the system itself.\n\nEverything downstream — the layers, the laws, the protocols — is an attempt to hold these four commitments under real conditions, as the product grows and the model underneath it changes.",
-      insight:
-        "Autonomy is not preserved by limiting AI capability — it is preserved by making AI behavior legible, reversible, and explicitly chosen.",
-    },
-    {
-      id: "layered-system",
       label: "Layered System",
       accentStellarType: "agentic",
-      subtitle: "A diagnostic model for reading where a system shapes experience.",
-      readingTime: 4,
+      subtitle: "A diagnostic map for designing beyond the interface.",
+      readingTime: 5,
       semantics: {
         keywords: [
           "layers",
+          "layered design system",
           "diagnostic model",
+          "general practice layers",
+          "threshold layers",
           "reflection",
           "echo",
-          "threshold signals",
-          "codex",
+          "trust",
+          "decision framing",
+          "professional boundary",
         ],
-        aliases: ["system layers", "reflection layer", "echo layer"],
+        aliases: [
+          "system layers",
+          "layered system",
+          "reflection layer",
+          "echo layer",
+        ],
         summary:
-          "The diagnostic model that reads a product as layers — general practice lenses plus threshold signals — with Reflection · Echo among them.",
+          "A diagnostic model for finding where trust, interpretation, decision framing, or agency is breaking across the experience — including conditions that require pause rather than deeper intervention.",
       },
       evidence: [
         {
@@ -265,9 +164,9 @@ export default defineAtlasEntry({
         },
       ],
       content:
-        "The Layered System is a diagnostic model. It helps designers examine where an intelligent system is shaping a person's experience, interpretation, behavior, or authority — and whether that person keeps clarity, consent, judgment, and agency at each of those points.\n\nThe layers are not product features, implementation requirements, a maturity ladder, or a checklist every product must contain. They are lenses for investigation. You hold a layer up to a product and ask a question: what is the system doing here, and who does it serve?\n\nThe current model is organized into two groups. General Practice Layers are the ordinary lenses used during design and evaluation. Threshold Signals mark conditions that deserve additional attention, caution, or escalation.\n\nGENERAL PRACTICE LAYERS — everyday diagnostic lenses\n\n01 Interface · 02 Emotion · 03 Memory · 04 Reflection · Echo\n\n05 Reciprocity · 06 Friction · 07 Imprint · 08 Future Signal\n\n09 Relational Field · 10 Cultural Context · 11 Transformation\n\n12 Sustainability · 13 Pattern Mirror · 14 Atmosphere\n\nTHRESHOLD SIGNALS — conditions to watch, not capabilities to build toward\n\n15 Distortion Detection · 16 Hidden Influence · 17 Longitudinal Reflection\n\n18 Flow State · 19 Coherence Alignment\n\nA Threshold Signal is not a desirable feature to optimize for. When one appears it is a prompt to slow down and look closer — a sign the system may be shaping the person in ways that need scrutiny rather than acceleration.\n\nREFLECTION · ECHO\n\nReflection examines whether the system gives the person enough space to recognize their own intent, interpretation, or change in perspective before the system pushes toward action.\n\nEcho is the historical name of this concept. The original Sovereign Atlas began as an attempt to find Echo inside the growing Sovereign UX Codex — to locate and make navigable the reflective layer the rest of the framework had always assumed. Echo is preserved here as one layer within the larger system, not yet a top-level area of its own.",
+        "The Layered Design System starts from a simple premise: interfaces do not end at screens. Every product interaction unfolds across multiple layers at once — what a person sees, how the experience feels, what the system remembers, how meaning and trust form, and whether agency is preserved or quietly reduced. The model gives teams a way to design and diagnose those layers deliberately instead of treating the visible interface as the whole experience.\n\nA product can be visually polished, fast, and technically correct and still feel wrong. Many failures are not caused by an incorrect output, but by how that output is interpreted: what the system highlights, what it omits, how confident it appears, how a choice is framed, or how prior context changes the meaning of the moment. Layer misalignment is often where trust actually breaks.\n\nHOW TO USE THE MODEL\n\nThis is not a maturity ladder and it is not a checklist. You do not progress through the layers. Some layers are always active, some become more relevant under pressure, and some function as warning signals rather than design tools. The practical distinction is simple: design primarily within the General Practice Layers; monitor the Threshold Layers for risk, escalation, or pause.\n\nGENERAL PRACTICE LAYERS — where teams design and diagnose everyday experience\n\n01 Interface · 02 Emotion · 03 Memory · 04 Reflection\n\n05 Reciprocity · 06 Friction · 07 Imprint · 08 Future Signal\n\n09 Relational Field · 10 Cultural Context · 11 Transformation\n\n12 Sustainability · 13 Pattern Mirror · 14 Atmosphere\n\nThese layers govern more than usability. They shape how options are framed, how trade-offs become visible, how memory changes interpretation, how pacing affects judgment, and whether a recommendation supports a decision or quietly narrows it.\n\nTHRESHOLD LAYERS — diagnostic signals, not design tools\n\n15 Distortion Detection · 16 Hidden Influence · 17 Longitudinal Reflection\n\n18 Flow State · 19 Coherence Alignment\n\nThreshold Layers are hazard lights. If one becomes active, the response is not to optimize or amplify it. Pause. Document what is happening. Clarify consent and scope. Escalate when necessary. Their purpose is to make risk visible before depth, fluency, trust, or influence becomes leverage.\n\nREFLECTION · ECHO LINEAGE\n\nReflection is the current name of Layer 04. It examines how the system acknowledges intent, confusion, and context before action — including how outputs are framed, what is highlighted or omitted, how certainty is communicated, and how recommendations or choices are positioned. Echo is the historical name associated with this reflective layer and the concept the Atlas was originally built to find inside the Sovereign UX Codex. It remains part of the lineage, not a separate layer.\n\nHOW TEAMS APPLY THIS\n\nIn design reviews, use the model to identify which layer is actually breaking instead of stopping at the screen. In AI systems, separate reflection from authority by making it clear when the system is interpreting, suggesting, or deciding. In measurement, pair quantitative outcomes with experiential signals. In escalation, know when the right design move is to stop designing and start safeguarding.\n\nPROFESSIONAL BOUNDARY\n\nThreshold Layers can signal ethical risk, emotional vulnerability, or the edge of professional scope. They require pause, consent, or referral — not deeper intervention. Sovereign UX explicitly rejects using depth as leverage.",
       insight:
-        "Reflection · Echo asks whether a person can still recognize their own intent before the system moves them to act — the reflective layer Atlas was first built to find.",
+        "Where is this experience actually breaking trust — and how is that influencing the user's decisions?",
     },
     {
       id: "laws",
