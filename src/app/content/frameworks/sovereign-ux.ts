@@ -115,6 +115,116 @@ export default defineAtlasEntry({
     // branch, kept close to the core while the larger system areas spread outward.
     {
       id: "layered-system",
+      label: "LAYERED SYSTEM",
+      angle: -81,
+      x: 0.40,
+      y: -0.08,
+      scale: 1.12,
+      stellarType: "agentic",
+      intensity: "balanced",
+      labelPosition: { side: "top", offset: 28 },
+    },
+    {
+      id: "failure-patterns",
+      label: "FAILURE PATTERNS",
+      angle: 33,
+      x: -0.60,
+      y: 0.14,
+      scale: 0.9,
+      stellarType: "risk",
+      intensity: "dim",
+      labelPosition: { side: "left", offset: 28 },
+    },
+  ],
+  constellation: {
+    showCenterConnections: false,
+    connections: [
+      {
+        from: "foundations",
+        to: "laws",
+        strength: "primary",
+        type: "applies",
+        rationale:
+          "Beliefs become principles: the foundational commitments are translated into the laws the system must hold.",
+      },
+      {
+        from: "foundations",
+        to: "layered-system",
+        strength: "secondary",
+        type: "extends",
+        rationale:
+          "Beliefs become diagnostics: the foundations become an operating structure the layered system can read.",
+      },
+      {
+        from: "layered-system",
+        to: "failure-patterns",
+        strength: "secondary",
+        type: "evidences",
+        rationale:
+          "Diagnostics surface the recurring ways autonomy erodes, naming them as failure patterns.",
+      },
+      {
+        from: "laws",
+        to: "protocols",
+        strength: "primary",
+        type: "applies",
+        rationale:
+          "Principles become responses: the laws are carried into the repeatable moves teams actually practice.",
+      },
+      {
+        from: "failure-patterns",
+        to: "protocols",
+        strength: "secondary",
+        type: "guards",
+        rationale:
+          "Named failure patterns shape protocols so the system guards against the erosions it has already seen.",
+      },
+      {
+        from: "protocols",
+        to: "field-signals",
+        strength: "primary",
+        type: "evidences",
+        rationale:
+          "Responses become observation: protocols in real use generate the field signals the system learns from.",
+      },
+      {
+        from: "field-signals",
+        to: "living-canon",
+        strength: "primary",
+        type: "extends",
+        rationale:
+          "Observation becomes learning: signals feed the living canon with the material for honest revision.",
+      },
+      {
+        from: "living-canon",
+        to: "foundations",
+        strength: "primary",
+        type: "applies",
+        rationale:
+          "Learning refines beliefs: the canon feeds revised understanding back into the foundations, closing the loop.",
+      },
+    ],
+  },
+  sections: [
+    {
+      id: "foundations",
+      label: "Foundations",
+      accentStellarType: "purpose",
+      subtitle: "The commitments the rest of the system defends.",
+      readingTime: 2,
+      semantics: {
+        keywords: ["clarity", "consent", "judgment", "agency", "autonomy"],
+        aliases: ["first principles", "commitments"],
+        summary:
+          "The four commitments — clarity, consent, judgment, agency — that every other area of Sovereign UX exists to protect.",
+      },
+      content:
+        "Sovereign UX begins from a single question: how should intelligent systems behave so people retain clarity, consent, judgment, and agency over time? These four are not features to add. They are commitments the rest of the system exists to defend.\n\nClarity means a person can tell what the system is doing and why. Consent means the system's behavior is explicitly chosen rather than quietly assumed. Judgment means the person's own reasoning is strengthened rather than replaced. Agency means the person can still change direction, including changing the system itself.\n\nEverything downstream — the layers, the laws, the protocols — is an attempt to hold these four commitments under real conditions, as the product grows and the model underneath it changes.",
+      insight:
+        "Autonomy is not preserved by limiting AI capability — it is preserved by making AI behavior legible, reversible, and explicitly chosen.",
+    },
+    {
+      id: "layered-system",
       label: "Layered System",
       accentStellarType: "agentic",
       subtitle: "A diagnostic map for designing beyond the interface.",
