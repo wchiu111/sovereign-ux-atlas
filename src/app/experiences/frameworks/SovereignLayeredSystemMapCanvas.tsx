@@ -7,7 +7,7 @@ import React, {
   type PointerEvent as ReactPointerEvent,
   type WheelEvent as ReactWheelEvent,
 } from "react";
-import { Minus, Plus, Scan, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, Scan, X } from "lucide-react";
 import {
   SOVEREIGN_UX_LAYERS,
   SOVEREIGN_UX_LAYER_PROFESSIONAL_BOUNDARY,
@@ -282,25 +282,6 @@ function LayerNode({
         filter: isActive || isHovered ? "brightness(1.08)" : "none",
       }}
     >
-      {isActive && (
-        <span
-          aria-hidden
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: 0,
-            width: size + 44,
-            height: size + 44,
-            transform: "translate(-50%, calc(-50% + 3px))",
-            borderRadius: "50%",
-            border: `1px solid ${color}54`,
-            background: `${color}0C`,
-            boxShadow: `0 0 56px ${color}38, 0 0 110px ${color}15`,
-            pointerEvents: "none",
-          }}
-        />
-      )}
-
       <button
         type="button"
         data-canvas-control
@@ -420,16 +401,28 @@ function LayerNode({
 
 function LayerDetailPanel({
   layer,
+  previousLayer,
+  nextLayer,
+  onNavigate,
   onClose,
 }: {
   layer: LayerDef;
+  previousLayer: LayerDef | null;
+  nextLayer: LayerDef | null;
+  onNavigate: (layer: LayerDef) => void;
   onClose: () => void;
 }) {
   const color = GROUP_COLOR[layer.group];
   const isThreshold = layer.band === "threshold";
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    panelRef.current?.scrollTo({ top: 0, behavior: "auto" });
+  }, [layer.id]);
 
   return (
     <div
+      ref={panelRef}
       data-canvas-control
       style={{
         position: "absolute",
@@ -561,8 +554,200 @@ function LayerDetailPanel({
             color={readerSemanticColor.text.secondary}
           />
         </div>
+
+        <LayerTraversal
+          currentLayer={layer}
+          previousLayer={previousLayer}
+          nextLayer={nextLayer}
+          onNavigate={onNavigate}
+          onReturnToMap={onClose}
+        />
       </div>
     </div>
+  );
+}
+
+function LayerTraversal({
+  currentLayer,
+  previousLayer,
+  nextLayer,
+  onNavigate,
+  onReturnToMap,
+}: {
+  currentLayer: LayerDef;
+  previousLayer: LayerDef | null;
+  nextLayer: LayerDef | null;
+  onNavigate: (layer: LayerDef) => void;
+  onReturnToMap: () => void;
+}) {
+  const crossingIntoThreshold =
+    currentLayer.band === "general-practice" &&
+    nextLayer?.band === "threshold";
+
+  return (
+    <nav
+      aria-label="Layer traversal"
+      style={{
+        marginTop: 28,
+        paddingTop: 18,
+        borderTop: "1px solid rgba(200,180,130,0.10)",
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 10,
+      }}
+    >
+      {previousLayer ? (
+        <button
+          type="button"
+          data-canvas-control
+          onClick={() => onNavigate(previousLayer)}
+          aria-label={`Previous layer: ${previousLayer.number} ${previousLayer.label}`}
+          style={{
+            minHeight: 62,
+            padding: "10px 11px",
+            border: "1px solid rgba(200,180,130,0.16)",
+            background: "rgba(255,255,255,0.018)",
+            color: readerSemanticColor.text.secondary,
+            cursor: "pointer",
+            textAlign: "left",
+            display: "grid",
+            gridTemplateColumns: "16px 1fr",
+            gap: 8,
+            alignItems: "center",
+          }}
+        >
+          <ChevronLeft size={13} aria-hidden />
+          <span>
+            <span
+              style={{
+                display: "block",
+                marginBottom: 5,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 8,
+                letterSpacing: "0.16em",
+                color: readerSemanticColor.text.metadata,
+              }}
+            >
+              PREVIOUS
+            </span>
+            <span
+              style={{
+                display: "block",
+                fontFamily: "'EB Garamond', serif",
+                fontSize: 14.5,
+                lineHeight: 1.2,
+              }}
+            >
+              {previousLayer.number} · {previousLayer.label}
+            </span>
+          </span>
+        </button>
+      ) : (
+        <div aria-hidden />
+      )}
+
+      {nextLayer ? (
+        <button
+          type="button"
+          data-canvas-control
+          onClick={() => onNavigate(nextLayer)}
+          aria-label={`Next layer: ${nextLayer.number} ${nextLayer.label}`}
+          style={{
+            minHeight: 62,
+            padding: "10px 11px",
+            border: crossingIntoThreshold
+              ? "1px solid rgba(225,195,92,0.34)"
+              : "1px solid rgba(200,180,130,0.16)",
+            background: crossingIntoThreshold
+              ? "rgba(225,195,92,0.045)"
+              : "rgba(255,255,255,0.018)",
+            color: crossingIntoThreshold
+              ? readerSemanticColor.utility.primary
+              : readerSemanticColor.text.secondary,
+            cursor: "pointer",
+            textAlign: "right",
+            display: "grid",
+            gridTemplateColumns: "1fr 16px",
+            gap: 8,
+            alignItems: "center",
+          }}
+        >
+          <span>
+            <span
+              style={{
+                display: "block",
+                marginBottom: 5,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 8,
+                letterSpacing: "0.14em",
+                color: crossingIntoThreshold
+                  ? readerSemanticColor.utility.primary
+                  : readerSemanticColor.text.metadata,
+              }}
+            >
+              {crossingIntoThreshold ? "NEXT · ENTER THRESHOLD" : "NEXT"}
+            </span>
+            <span
+              style={{
+                display: "block",
+                fontFamily: "'EB Garamond', serif",
+                fontSize: 14.5,
+                lineHeight: 1.2,
+              }}
+            >
+              {nextLayer.number} · {nextLayer.label}
+            </span>
+          </span>
+          <ChevronRight size={13} aria-hidden />
+        </button>
+      ) : (
+        <button
+          type="button"
+          data-canvas-control
+          onClick={onReturnToMap}
+          aria-label="Return to Layered System map"
+          style={{
+            minHeight: 62,
+            padding: "10px 11px",
+            border: "1px solid rgba(200,180,130,0.22)",
+            background: "rgba(255,255,255,0.018)",
+            color: readerSemanticColor.utility.primary,
+            cursor: "pointer",
+            textAlign: "right",
+            display: "grid",
+            gridTemplateColumns: "1fr 16px",
+            gap: 8,
+            alignItems: "center",
+          }}
+        >
+          <span>
+            <span
+              style={{
+                display: "block",
+                marginBottom: 5,
+                fontFamily: "'DM Mono', monospace",
+                fontSize: 8,
+                letterSpacing: "0.14em",
+                color: readerSemanticColor.text.metadata,
+              }}
+            >
+              END OF LAYERED SYSTEM
+            </span>
+            <span
+              style={{
+                display: "block",
+                fontFamily: "'EB Garamond', serif",
+                fontSize: 14.5,
+                lineHeight: 1.2,
+              }}
+            >
+              Return to map
+            </span>
+          </span>
+          <ChevronRight size={13} aria-hidden />
+        </button>
+      )}
+    </nav>
   );
 }
 
@@ -851,6 +1036,16 @@ export default function SovereignLayeredSystemMapCanvas({
   // Hover previews the local neighborhood; a locked selection takes priority.
   const focusLayer = activeLayer ?? hoverLayer;
 
+  const activeLayerIndex = activeLayer
+    ? LAYERS.findIndex((layer) => layer.id === activeLayer.id)
+    : -1;
+  const previousLayer =
+    activeLayerIndex > 0 ? LAYERS[activeLayerIndex - 1] : null;
+  const nextLayer =
+    activeLayerIndex >= 0 && activeLayerIndex < LAYERS.length - 1
+      ? LAYERS[activeLayerIndex + 1]
+      : null;
+
   const connectedIds = useMemo(() => {
     if (!focusLayer) return null;
     const ids = new Set<string>();
@@ -1121,9 +1316,10 @@ export default function SovereignLayeredSystemMapCanvas({
         [data-lsc-root][data-transition-phase="exiting"] [data-portal-content] {
           animation: lscRecede 560ms cubic-bezier(.4,0,.7,.2) both;
         }
-        [data-layer-node]:focus-visible {
+        [data-layer-node]:focus-visible,
+        [data-canvas-control]:focus-visible {
           outline: 1px solid rgba(255,248,230,0.86);
-          outline-offset: 5px;
+          outline-offset: 4px;
         }
         @media (prefers-reduced-motion:reduce) {
           [data-lsc-root],[data-portal-content] {
@@ -1395,7 +1591,7 @@ export default function SovereignLayeredSystemMapCanvas({
                 stroke="rgba(200,169,110,0.12)"
                 strokeWidth={1}
                 vectorEffect="non-scaling-stroke"
-                opacity={focusLayer ? 0.18 : zoomTier === "close" ? 0.22 : 0.42}
+                opacity={focusLayer ? 0.06 : zoomTier === "close" ? 0.08 : 0.16}
                 style={{ transition: "opacity 280ms ease" }}
               >
                 <circle cx={CENTER_X} cy={CENTER_Y} r={190} strokeDasharray="2 10" />
@@ -1513,21 +1709,25 @@ export default function SovereignLayeredSystemMapCanvas({
               {EDGES.map((edge, i) => {
                 const from = edgePos(edge.from);
                 const to = edgePos(edge.to);
+                // Relationships stay intentionally quiet on entry. The graph
+                // becomes legible through interaction: hover or selection reveals
+                // the active node's local neighborhood instead of exposing the
+                // entire relationship mesh at equal weight.
                 const baseOpacity =
-                  edge.strength === "primary" ? 0.28 : 0.10;
+                  edge.strength === "primary" ? 0.09 : 0.025;
 
                 let strokeOpacity: number;
                 if (focusLayer) {
                   const isDirect =
                     edge.from === focusLayer.id || edge.to === focusLayer.id;
                   strokeOpacity = isDirect
-                    ? edge.strength === "primary" ? 0.66 : 0.44
-                    : baseOpacity * 0.22;
+                    ? edge.strength === "primary" ? 0.52 : 0.30
+                    : baseOpacity * 0.12;
                 } else {
                   strokeOpacity = baseOpacity * zoomOpacity.edgeMult;
                 }
 
-                const screenWidth = edge.strength === "primary" ? 1.2 : 0.7;
+                const screenWidth = edge.strength === "primary" ? 1.05 : 0.65;
 
                 return (
                   <line
@@ -1691,6 +1891,9 @@ export default function SovereignLayeredSystemMapCanvas({
         {activeLayer && (
           <LayerDetailPanel
             layer={activeLayer}
+            previousLayer={previousLayer}
+            nextLayer={nextLayer}
+            onNavigate={handleActivateLayer}
             onClose={() => setActiveLayer(null)}
           />
         )}
