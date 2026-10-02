@@ -8,6 +8,13 @@ import React, {
   type WheelEvent as ReactWheelEvent,
 } from "react";
 import { Minus, Plus, Scan, X } from "lucide-react";
+import {
+  SOVEREIGN_UX_LAYERS,
+  SOVEREIGN_UX_LAYER_PROFESSIONAL_BOUNDARY,
+  type SovereignLayer,
+  type SovereignLayerId,
+  type SovereignThresholdLayer,
+} from "../../content/frameworks/sovereign-ux-layers";
 import { readerSemanticColor } from "../shared/readerSemanticPalette";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -31,21 +38,18 @@ type LayerGroup =
   | "systemic"
   | "threshold";
 
-interface LayerDef {
-  id: string;
-  number: string;
-  label: string;
+interface LayerVisualDef {
+  id: SovereignLayerId;
   group: LayerGroup;
   x: number;
   y: number;
-  what: string;
-  why: string;
-  takeaway: string;
 }
 
+type LayerDef = SovereignLayer & LayerVisualDef & { label: string };
+
 interface EdgeDef {
-  from: string;
-  to: string;
+  from: "center" | SovereignLayerId;
+  to: SovereignLayerId;
   strength: "primary" | "secondary";
 }
 
@@ -57,7 +61,9 @@ interface ViewState {
 
 type TransitionPhase = "entering" | "open" | "exiting";
 
-// ─── Group palette ────────────────────────────────────────────────────────────
+// ─── Visual map regions ───────────────────────────────────────────────────────
+// These groups organize the spatial field. They are not the framework taxonomy.
+// Canonical taxonomy lives in sovereign-ux-layers.ts as General Practice / Threshold.
 
 const GROUP_COLOR: Record<LayerGroup, string> = {
   surface:     "#7CB4D5",
@@ -68,189 +74,103 @@ const GROUP_COLOR: Record<LayerGroup, string> = {
   threshold:   "#E1C35C",
 };
 
-const GROUP_LABEL: Record<LayerGroup, string> = {
-  surface:     "SURFACE LAYER",
-  reflective:  "REFLECTIVE CORE",
-  interaction: "INTERACTION LAYER",
-  temporal:    "TEMPORAL LAYER",
-  systemic:    "SYSTEMIC LAYER",
-  threshold:   "THRESHOLD SIGNAL",
+const MAP_REGION_LABEL: Record<LayerGroup, string> = {
+  surface:     "Surface",
+  reflective:  "Reflective",
+  interaction: "Interaction",
+  temporal:    "Temporal",
+  systemic:    "Systemic",
+  threshold:   "Threshold",
 };
 
-// ─── Layer definitions ────────────────────────────────────────────────────────
+// Spatial coordinates remain intentionally separate from canonical layer content.
+const LAYER_VISUALS: readonly LayerVisualDef[] = [
+  { id: "interface",               group: "surface",     x: 648,  y: 354 },
+  { id: "emotion",                 group: "surface",     x: 868,  y: 268 },
+  { id: "memory",                  group: "surface",     x: 1098, y: 268 },
+  { id: "reflection",              group: "reflective",  x: 694,  y: 534 },
+  { id: "reciprocity",             group: "interaction", x: 1238, y: 444 },
+  { id: "friction",                group: "interaction", x: 542,  y: 658 },
+  { id: "imprint",                 group: "interaction", x: 1338, y: 590 },
+  { id: "future-signal",           group: "temporal",    x: 754,  y: 874 },
+  { id: "relational-field",        group: "temporal",    x: 1138, y: 898 },
+  { id: "cultural-context",        group: "systemic",    x: 418,  y: 468 },
+  { id: "transformation",          group: "systemic",    x: 1528, y: 378 },
+  { id: "sustainability",          group: "systemic",    x: 448,  y: 798 },
+  { id: "pattern-mirror",          group: "systemic",    x: 1468, y: 592 },
+  { id: "atmosphere",              group: "systemic",    x: 954,  y: 1028 },
+  { id: "distortion-detection",    group: "threshold",   x: 1328, y: 254 },
+  { id: "hidden-influence",        group: "threshold",   x: 1538, y: 290 },
+  { id: "longitudinal-reflection", group: "threshold",   x: 1688, y: 418 },
+  { id: "flow-state",              group: "threshold",   x: 1678, y: 568 },
+  { id: "coherence-alignment",     group: "threshold",   x: 1568, y: 688 },
+] as const;
 
-const LAYERS: LayerDef[] = [
-  {
-    id: "interface", number: "01", label: "Interface", group: "surface",
-    x: 648, y: 354,
-    what: "The entry layer. Where affordance, control, and visibility first meet the person — the surface of legibility.",
-    why: "If the interface is opaque, every other layer is harder to defend. Reversibility and consent begin here.",
-    takeaway: "What can the person see, change, and undo at this moment?",
-  },
-  {
-    id: "emotion", number: "02", label: "Emotion", group: "surface",
-    x: 868, y: 268,
-    what: "How the system shapes how a person feels about themselves and their choices.",
-    why: "Emotional design can optimize for positive affect in ways that undermine honest self-assessment. Emotion is a layer to read, not a target to optimize.",
-    takeaway: "Is the emotional response aligned with what actually happened, or designed to mask it?",
-  },
-  {
-    id: "memory", number: "03", label: "Memory", group: "surface",
-    x: 1098, y: 268,
-    what: "How the system persists and represents the person's history — to themselves and to itself.",
-    why: "Memory is the substrate of personalization. What the system remembers, and how it represents that memory, shapes identity over time.",
-    takeaway: "Who controls the record, and can the person correct, hide, or delete it?",
-  },
-  {
-    id: "reflection-echo", number: "04", label: "Reflection · Echo", group: "reflective",
-    x: 694, y: 534,
-    what: "Whether the system gives space for the person to recognize their own intent before the system acts. Echo is the historical name of this concept — the first layer Atlas was built to find inside the Sovereign UX Codex.",
-    why: "A system that moves faster than the person can reflect is a system that replaces judgment rather than supporting it.",
-    takeaway: "Can the person still recognize their own intent before the system moves them toward action?",
-  },
-  {
-    id: "reciprocity", number: "05", label: "Reciprocity", group: "interaction",
-    x: 1238, y: 444,
-    what: "Whether adaptation between system and person flows in both directions — not only the system learning the user.",
-    why: "Asymmetric learning creates dependency. The system accumulates leverage; the person accumulates reliance.",
-    takeaway: "What does the person learn about the system in return for what the system learns about them?",
-  },
-  {
-    id: "friction", number: "06", label: "Friction", group: "interaction",
-    x: 542, y: 658,
-    what: "Intentional resistance that preserves deliberateness and prevents automatic compliance.",
-    why: "Frictionlessness is not neutral. Removing all resistance is a design choice that shapes behavior invisibly.",
-    takeaway: "Is the friction present here serving the person's deliberateness, or removing it?",
-  },
-  {
-    id: "imprint", number: "07", label: "Imprint", group: "interaction",
-    x: 1338, y: 590,
-    what: "How the system shapes long-term patterns in the person's behavior, thinking, and identity.",
-    why: "Imprints accumulate invisibly. Each nudge, default, or recommendation creates the conditions for the next one.",
-    takeaway: "What behavioral patterns is this system likely to create or reinforce across months of use?",
-  },
-  {
-    id: "future-signal", number: "08", label: "Future Signal", group: "temporal",
-    x: 754, y: 874,
-    what: "How the system represents or acts on anticipatory capability — predicting, pre-filling, suggesting trajectories.",
-    why: "Prediction collapses the future into the present. When a system acts on predictions, it shapes what it predicts.",
-    takeaway: "Is the system's prediction serving exploration, or foreclosing it?",
-  },
-  {
-    id: "relational-field", number: "09", label: "Relational Field", group: "temporal",
-    x: 1138, y: 898,
-    what: "The layer in which the person exists within relationships — how the system handles multiple users and social contexts.",
-    why: "Autonomy is relational. A person's capacity to act depends on conditions others create and the system enables.",
-    takeaway: "Does the system affect the person's relationships, and are those effects visible and chosen?",
-  },
-  {
-    id: "cultural-context", number: "10", label: "Cultural Context", group: "systemic",
-    x: 418, y: 468,
-    what: "The embedding of the experience within cultural norms, values, and assumptions.",
-    why: "What is natural, neutral, or default in one cultural frame is invisible design in another.",
-    takeaway: "Whose assumptions about normal behavior are baked into this system?",
-  },
-  {
-    id: "transformation", number: "11", label: "Transformation", group: "systemic",
-    x: 1528, y: 378,
-    what: "Whether the system supports genuine change and growth, or merely simulates it.",
-    why: "A system that rewards transformation signals without enabling transformation creates the appearance of progress without the substance.",
-    takeaway: "Is there evidence that people using this system actually change in ways they value?",
-  },
-  {
-    id: "sustainability", number: "12", label: "Sustainability", group: "systemic",
-    x: 448, y: 798,
-    what: "The long-term capacity of the system-person relationship to remain healthy.",
-    why: "Engagement and sustainability are not the same. Many high-engagement systems are extractive over time.",
-    takeaway: "Will a person who uses this system for two years be better positioned than someone who stopped?",
-  },
-  {
-    id: "pattern-mirror", number: "13", label: "Pattern Mirror", group: "systemic",
-    x: 1468, y: 592,
-    what: "How the system surfaces and reflects patterns from the person's history back to them.",
-    why: "Reflection is powerful — and manipulable. A distorted mirror is worse than no mirror.",
-    takeaway: "Is the pattern the system reflects accurate, and does it serve the person's self-understanding or the system's engagement goals?",
-  },
-  {
-    id: "atmosphere", number: "14", label: "Atmosphere", group: "systemic",
-    x: 954, y: 1028,
-    what: "The ambient, environmental shaping of experience — texture, timing, tone, and pervasive mood.",
-    why: "Atmosphere shapes interpretation below the threshold of conscious decision. It is design's most subtle — and least audited — layer.",
-    takeaway: "What emotional and cognitive state is the system's ambient design producing, and who chose it?",
-  },
-  // Threshold Signals
-  {
-    id: "distortion-detection", number: "15", label: "Distortion Detection", group: "threshold",
-    x: 1328, y: 254,
-    what: "When the system may be shaping the person's sense of what is real, normal, or possible.",
-    why: "This is a threshold signal: a condition to examine carefully, not a capability to optimize for.",
-    takeaway: "Slow down when the system's representation of reality diverges from external evidence.",
-  },
-  {
-    id: "hidden-influence", number: "16", label: "Hidden Influence", group: "threshold",
-    x: 1538, y: 290,
-    what: "When the system is influencing behavior or belief in ways the person cannot see or evaluate.",
-    why: "Hidden influence cannot be consented to. When it appears, the first obligation is to make it visible.",
-    takeaway: "Examine any system behavior that changes outcomes without appearing in the person's decision frame.",
-  },
-  {
-    id: "longitudinal-reflection", number: "17", label: "Longitudinal Reflection", group: "threshold",
-    x: 1688, y: 418,
-    what: "When the cumulative effect of the system across time deserves deliberate examination.",
-    why: "Individual interactions can be benign; their cumulative pattern can be extractive. This signal marks when the timeline needs review.",
-    takeaway: "Ask whether this system looks different across six months of use than it does in a single session.",
-  },
-  {
-    id: "flow-state", number: "18", label: "Flow State", group: "threshold",
-    x: 1678, y: 568,
-    what: "When the system appears to be creating or exploiting states of suspended critical awareness.",
-    why: "Flow can be genuine and valuable. It can also be engineered to suppress judgment. The threshold is when these cannot be distinguished.",
-    takeaway: "Ask whether the state the system creates allows exit when the person decides to exit.",
-  },
-  {
-    id: "coherence-alignment", number: "19", label: "Coherence Alignment", group: "threshold",
-    x: 1568, y: 688,
-    what: "When the system's model of the person may be diverging from how the person actually understands themselves.",
-    why: "A model that diverges from self-understanding without correction becomes the authoritative account — replacing the person rather than serving them.",
-    takeaway: "Ask whether the person can correct the system's model, and whether doing so changes the system's behavior.",
-  },
-];
+const VISUAL_BY_ID = new Map(LAYER_VISUALS.map((layer) => [layer.id, layer] as const));
 
-const LAYER_BY_ID = Object.fromEntries(LAYERS.map((l) => [l.id, l]));
+const LAYERS: LayerDef[] = SOVEREIGN_UX_LAYERS.map((layer) => {
+  const visual = VISUAL_BY_ID.get(layer.id);
+  if (!visual) throw new Error(`Missing visual definition for Sovereign UX layer: ${layer.id}`);
+  return { ...layer, ...visual, label: layer.title };
+});
 
+const LAYER_BY_ID = Object.fromEntries(
+  LAYERS.map((layer) => [layer.id, layer]),
+) as Partial<Record<SovereignLayerId, LayerDef>>;
+
+// Relationships indicate diagnostically meaningful adjacency, not causal progression.
+// Threshold Layers connect to the General Practice conditions that may surface them;
+// they do not form an implied maturity or escalation ladder.
 const EDGES: EdgeDef[] = [
-  { from: "interface",     to: "emotion",               strength: "secondary" },
-  { from: "emotion",       to: "memory",                strength: "secondary" },
-  { from: "memory",        to: "reflection-echo",       strength: "primary"   },
-  { from: "interface",     to: "friction",              strength: "secondary" },
-  { from: "friction",      to: "reflection-echo",       strength: "primary"   },
-  { from: "center",        to: "reflection-echo",       strength: "primary"   },
-  { from: "center",        to: "interface",             strength: "secondary" },
-  { from: "center",        to: "reciprocity",           strength: "secondary" },
-  { from: "center",        to: "future-signal",         strength: "secondary" },
-  { from: "center",        to: "atmosphere",            strength: "secondary" },
-  { from: "reflection-echo", to: "imprint",             strength: "primary"   },
-  { from: "reciprocity",   to: "imprint",               strength: "secondary" },
-  { from: "imprint",       to: "pattern-mirror",        strength: "secondary" },
-  { from: "reflection-echo", to: "pattern-mirror",      strength: "primary"   },
-  { from: "memory",        to: "future-signal",         strength: "secondary" },
-  { from: "future-signal", to: "relational-field",      strength: "secondary" },
-  { from: "relational-field", to: "cultural-context",   strength: "secondary" },
-  { from: "transformation", to: "sustainability",       strength: "secondary" },
-  { from: "cultural-context", to: "atmosphere",         strength: "secondary" },
-  { from: "pattern-mirror", to: "atmosphere",           strength: "secondary" },
-  // Into threshold cluster
-  { from: "memory",        to: "longitudinal-reflection", strength: "secondary" },
-  { from: "future-signal", to: "distortion-detection",  strength: "secondary" },
-  { from: "imprint",       to: "hidden-influence",       strength: "primary"   },
-  { from: "imprint",       to: "coherence-alignment",    strength: "secondary" },
-  { from: "friction",      to: "flow-state",             strength: "secondary" },
-  { from: "pattern-mirror", to: "distortion-detection",  strength: "secondary" },
-  // Within threshold cluster
-  { from: "distortion-detection", to: "hidden-influence",      strength: "secondary" },
-  { from: "hidden-influence",     to: "longitudinal-reflection", strength: "secondary" },
-  { from: "longitudinal-reflection", to: "flow-state",         strength: "secondary" },
-  { from: "flow-state",            to: "coherence-alignment",  strength: "secondary" },
+  { from: "center", to: "reflection", strength: "primary" },
+  { from: "center", to: "interface", strength: "secondary" },
+  { from: "center", to: "reciprocity", strength: "secondary" },
+  { from: "center", to: "future-signal", strength: "secondary" },
+  { from: "center", to: "atmosphere", strength: "secondary" },
+
+  { from: "interface", to: "emotion", strength: "secondary" },
+  { from: "interface", to: "friction", strength: "secondary" },
+  { from: "interface", to: "pattern-mirror", strength: "secondary" },
+  { from: "emotion", to: "imprint", strength: "primary" },
+  { from: "emotion", to: "atmosphere", strength: "secondary" },
+  { from: "memory", to: "reflection", strength: "primary" },
+  { from: "memory", to: "future-signal", strength: "secondary" },
+  { from: "reflection", to: "reciprocity", strength: "primary" },
+  { from: "reflection", to: "future-signal", strength: "secondary" },
+  { from: "reciprocity", to: "relational-field", strength: "primary" },
+  { from: "friction", to: "imprint", strength: "secondary" },
+  { from: "future-signal", to: "relational-field", strength: "secondary" },
+  { from: "cultural-context", to: "interface", strength: "secondary" },
+  { from: "cultural-context", to: "relational-field", strength: "secondary" },
+  { from: "cultural-context", to: "atmosphere", strength: "secondary" },
+  { from: "transformation", to: "imprint", strength: "secondary" },
+  { from: "transformation", to: "sustainability", strength: "primary" },
+  { from: "pattern-mirror", to: "atmosphere", strength: "secondary" },
+
+  // Threshold activations — independent diagnostic hazard lights.
+  { from: "emotion", to: "distortion-detection", strength: "secondary" },
+  { from: "reflection", to: "distortion-detection", strength: "primary" },
+  { from: "friction", to: "distortion-detection", strength: "secondary" },
+  { from: "future-signal", to: "distortion-detection", strength: "secondary" },
+
+  { from: "interface", to: "hidden-influence", strength: "secondary" },
+  { from: "future-signal", to: "hidden-influence", strength: "primary" },
+  { from: "relational-field", to: "hidden-influence", strength: "secondary" },
+  { from: "pattern-mirror", to: "hidden-influence", strength: "secondary" },
+
+  { from: "memory", to: "longitudinal-reflection", strength: "primary" },
+  { from: "imprint", to: "longitudinal-reflection", strength: "primary" },
+  { from: "transformation", to: "longitudinal-reflection", strength: "secondary" },
+  { from: "sustainability", to: "longitudinal-reflection", strength: "secondary" },
+
+  { from: "friction", to: "flow-state", strength: "secondary" },
+  { from: "atmosphere", to: "flow-state", strength: "primary" },
+  { from: "emotion", to: "flow-state", strength: "secondary" },
+
+  { from: "reflection", to: "coherence-alignment", strength: "primary" },
+  { from: "reciprocity", to: "coherence-alignment", strength: "secondary" },
+  { from: "relational-field", to: "coherence-alignment", strength: "secondary" },
+  { from: "atmosphere", to: "coherence-alignment", strength: "secondary" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -266,20 +186,20 @@ function ssFontSize(target: number, scale: number, lo: number, hi: number): numb
   return clamp(target / scale, lo, hi);
 }
 
-function edgePos(id: string): { x: number; y: number } {
+function edgePos(id: "center" | SovereignLayerId): { x: number; y: number } {
   if (id === "center") return { x: CENTER_X, y: CENTER_Y };
-  const l = LAYER_BY_ID[id];
-  return l ? { x: l.x, y: l.y } : { x: CENTER_X, y: CENTER_Y };
+  const layer = LAYER_BY_ID[id];
+  return layer ? { x: layer.x, y: layer.y } : { x: CENTER_X, y: CENTER_Y };
 }
 
-function edgeColor(id: string): string {
+function edgeColor(id: "center" | SovereignLayerId): string {
   if (id === "center") return "#C8A96E";
   return GROUP_COLOR[LAYER_BY_ID[id]?.group ?? "surface"];
 }
 
 const LAYER_CONNECTION_DEGREE = EDGES.reduce<Record<string, number>>((degree, edge) => {
   if (edge.from !== "center") degree[edge.from] = (degree[edge.from] ?? 0) + 1;
-  if (edge.to !== "center") degree[edge.to] = (degree[edge.to] ?? 0) + 1;
+  degree[edge.to] = (degree[edge.to] ?? 0) + 1;
   return degree;
 }, {});
 
@@ -290,7 +210,10 @@ function resolveLayerNodeSize(layer: LayerDef): number {
     2: 44,
     3: 52,
     4: 62,
-    5: 74,
+    5: 72,
+    6: 80,
+    7: 82,
+    8: 82,
   };
 
   const groupAdjustment: Record<LayerGroup, number> = {
@@ -302,7 +225,7 @@ function resolveLayerNodeSize(layer: LayerDef): number {
     threshold: -4,
   };
 
-  return clamp((sizeByDegree[degree] ?? 44) + groupAdjustment[layer.group], 34, 82);
+  return clamp((sizeByDegree[degree] ?? 82) + groupAdjustment[layer.group], 34, 82);
 }
 
 // ─── LayerNode ────────────────────────────────────────────────────────────────
@@ -323,18 +246,24 @@ function LayerNode({
   isNeighbor: boolean;
   isDimmed: boolean;
   viewScale: number;
-  onActivate: (l: LayerDef) => void;
-  onPreview: (l: LayerDef | null) => void;
+  onActivate: (layer: LayerDef) => void;
+  onPreview: (layer: LayerDef | null) => void;
 }) {
   const color = GROUP_COLOR[layer.group];
-  const isEcho = layer.group === "reflective";
-  const isThreshold = layer.group === "threshold";
+  const isReflection = layer.id === "reflection";
+  const isThreshold = layer.band === "threshold";
   const size = resolveLayerNodeSize(layer);
-  const nodeNumberFontSize = clamp(size * (isThreshold ? 0.34 : 0.24), 11, isThreshold ? 18 : 17);
-
-  // Match the desktop constellation label scale while allowing the node itself
-  // to carry stronger topology-based hierarchy.
-  const labelFontSize = ssFontSize(isEcho ? 10 : 9.5, viewScale, 7.5, isEcho ? 14 : 13);
+  const nodeNumberFontSize = clamp(
+    size * (isThreshold ? 0.34 : 0.24),
+    11,
+    isThreshold ? 18 : 17,
+  );
+  const labelFontSize = ssFontSize(
+    isReflection ? 10 : 9.5,
+    viewScale,
+    7.5,
+    isReflection ? 14 : 13,
+  );
 
   return (
     <div
@@ -353,8 +282,6 @@ function LayerNode({
         filter: isActive || isHovered ? "brightness(1.08)" : "none",
       }}
     >
-
-      {/* Selection halo */}
       {isActive && (
         <span
           aria-hidden
@@ -392,20 +319,28 @@ function LayerNode({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          border: `${isEcho ? 2 : 1.5}px solid ${isActive ? color : isNeighbor ? color + "B0" : color + "90"}`,
+          border: `${isReflection ? 2 : 1.5}px solid ${
+            isActive ? color : isNeighbor ? color + "B0" : color + "90"
+          }`,
           background: isActive
             ? `radial-gradient(circle at 38% 32%, ${color}2C, ${color}12 48%, ${color}06 72%)`
             : isHovered || isNeighbor
-            ? `radial-gradient(circle at 38% 32%, ${color}1F, ${color}0D 50%, ${color}05 74%)`
-            : `radial-gradient(circle at 38% 32%, ${color}15, ${color}08 52%, ${color}03 76%)`,
+              ? `radial-gradient(circle at 38% 32%, ${color}1F, ${color}0D 50%, ${color}05 74%)`
+              : `radial-gradient(circle at 38% 32%, ${color}15, ${color}08 52%, ${color}03 76%)`,
           boxShadow: isActive
             ? `0 0 0 6px ${color}1E, 0 0 34px ${color}50, 0 0 72px ${color}1D, 0 14px 32px rgba(0,0,0,0.4)`
             : isHovered
-            ? `0 0 0 4px ${color}13, 0 0 28px ${color}3D, 0 10px 24px rgba(0,0,0,0.30)`
-            : isEcho
-            ? `0 0 22px ${color}2E, 0 8px 20px rgba(0,0,0,0.28)`
-            : `0 0 18px ${color}16, 0 6px 14px rgba(0,0,0,0.22)`,
-          color: isActive ? color : isHovered ? color : isNeighbor ? color + "D4" : color + "C0",
+              ? `0 0 0 4px ${color}13, 0 0 28px ${color}3D, 0 10px 24px rgba(0,0,0,0.30)`
+              : isReflection
+                ? `0 0 22px ${color}2E, 0 8px 20px rgba(0,0,0,0.28)`
+                : `0 0 18px ${color}16, 0 6px 14px rgba(0,0,0,0.22)`,
+          color: isActive
+            ? color
+            : isHovered
+              ? color
+              : isNeighbor
+                ? color + "D4"
+                : color + "C0",
           fontFamily: "'DM Mono', monospace",
           fontSize: nodeNumberFontSize,
           fontWeight: 500,
@@ -429,18 +364,18 @@ function LayerNode({
         <span style={{ position: "relative", zIndex: 1 }}>
           {isThreshold ? "◆" : layer.number}
         </span>
-        {isEcho && (
+        {isReflection && (
           <span
             aria-hidden
+            data-echo-ring
             style={{
               position: "absolute",
-              inset: -5,
+              inset: -10,
               borderRadius: "50%",
               border: `1px solid ${color}38`,
               animation: "echoRingPulse 3.2s ease-in-out infinite",
               pointerEvents: "none",
             }}
-            data-echo-ring
           />
         )}
       </button>
@@ -453,23 +388,28 @@ function LayerNode({
           color: isActive
             ? readerSemanticColor.text.primary
             : isHovered || isNeighbor
-            ? readerSemanticColor.text.secondary
-            : readerSemanticColor.text.inactive,
+              ? readerSemanticColor.text.secondary
+              : readerSemanticColor.text.inactive,
           textAlign: "center",
           lineHeight: 1.35,
-          maxWidth: isEcho ? 100 : 82,
+          maxWidth: isReflection ? 104 : 92,
           transition: "color 200ms ease",
           pointerEvents: "none",
           userSelect: "none",
         }}
       >
-        {isEcho ? (
-          <>
-            <div>REFLECTION</div>
-            <div style={{ color: color, marginTop: 1 }}>· ECHO</div>
-          </>
-        ) : (
-          layer.label.toUpperCase()
+        {layer.label.toUpperCase()}
+        {isReflection && (
+          <div
+            style={{
+              marginTop: 2,
+              color,
+              fontSize: ssFontSize(7.5, viewScale, 6.5, 10),
+              letterSpacing: "0.12em",
+            }}
+          >
+            HISTORICAL · ECHO
+          </div>
         )}
       </div>
     </div>
@@ -486,6 +426,7 @@ function LayerDetailPanel({
   onClose: () => void;
 }) {
   const color = GROUP_COLOR[layer.group];
+  const isThreshold = layer.band === "threshold";
 
   return (
     <div
@@ -507,7 +448,6 @@ function LayerDetailPanel({
         animation: "detailSlideIn 240ms cubic-bezier(0.16,1,0.3,1) both",
       }}
     >
-      {/* Header */}
       <div
         style={{
           padding: "22px 22px 18px",
@@ -531,26 +471,27 @@ function LayerDetailPanel({
               alignItems: "center",
               justifyContent: "center",
               fontFamily: "'DM Mono', monospace",
-              fontSize: layer.group === "threshold" ? 18 : 13,
-              color: color,
+              fontSize: isThreshold ? 18 : 13,
+              color,
               flexShrink: 0,
               boxShadow: `0 0 18px ${color}28`,
             }}
           >
-            {layer.group === "threshold" ? "◆" : layer.number}
+            {isThreshold ? "◆" : layer.number}
           </div>
+
           <div style={{ minWidth: 0 }}>
             <div
               style={{
                 fontFamily: "'DM Mono', monospace",
                 fontSize: 9,
                 letterSpacing: "0.24em",
-                color: color,
+                color,
                 marginBottom: 5,
                 opacity: 0.82,
               }}
             >
-              {GROUP_LABEL[layer.group]}
+              {isThreshold ? "THRESHOLD LAYER" : "GENERAL PRACTICE LAYER"}
             </div>
             <div
               style={{
@@ -588,90 +529,203 @@ function LayerDetailPanel({
         </button>
       </div>
 
-      {/* Body */}
       <div style={{ flex: 1, padding: "20px 22px 32px" }}>
-        <Section label="WHAT IT IS" color={color}>
-          {layer.what}
-        </Section>
-
-        <Divider />
-
-        <Section label="WHY IT MATTERS" color={color}>
-          {layer.why}
-        </Section>
-
-        <Divider />
-
-        <div style={{ marginBottom: 24 }}>
-          <SectionLabel color={readerSemanticColor.text.metadata}>DESIGN TAKEAWAY</SectionLabel>
-          <div
-            style={{
-              padding: "13px 15px",
-              border: `1px solid ${color}24`,
-              background: `${color}06`,
-              fontFamily: "'EB Garamond', serif",
-              fontSize: 16,
-              lineHeight: 1.68,
-              color: readerSemanticColor.text.secondary,
-            }}
-          >
-            <span style={{ color: color, marginRight: 6, fontStyle: "normal" }}>Ask:</span>
-            {layer.takeaway}
-          </div>
-        </div>
-
-        {layer.id === "reflection-echo" && (
-          <>
-            <Divider />
-            <div>
-              <SectionLabel color={readerSemanticColor.text.metadata}>CODEX LINEAGE</SectionLabel>
-              <div
-                style={{
-                  fontFamily: "'EB Garamond', serif",
-                  fontSize: 15,
-                  lineHeight: 1.7,
-                  color: readerSemanticColor.text.caption,
-                  fontStyle: "italic",
-                }}
-              >
-                Echo is the historical name of this concept. The original Sovereign Atlas began as an attempt to find Echo inside the growing Sovereign UX Codex — to locate and make navigable the reflective layer the rest of the framework had always assumed. Echo is preserved here as one layer within the larger system, not yet a top-level area of its own.
-              </div>
-            </div>
-          </>
+        {layer.band === "threshold" ? (
+          <ThresholdLayerDetail layer={layer} color={color} />
+        ) : (
+          <GeneralPracticeLayerDetail layer={layer} color={color} />
         )}
 
-        {/* Footer meta */}
         <div
           style={{
             marginTop: 32,
             paddingTop: 16,
             borderTop: "1px solid rgba(200,180,130,0.08)",
-            display: "flex",
-            gap: 28,
+            display: "grid",
+            gridTemplateColumns: "1.15fr .72fr 1fr",
+            gap: 18,
             fontFamily: "'DM Mono', monospace",
             fontSize: 9,
-            letterSpacing: "0.18em",
+            letterSpacing: "0.16em",
           }}
         >
-          <div>
-            <div style={{ color: readerSemanticColor.text.metadata, marginBottom: 5 }}>TYPE</div>
-            <div style={{ color: readerSemanticColor.text.secondary, fontSize: 10 }}>
-              {layer.group === "threshold" ? "Threshold Signal" : "General Practice"}
-            </div>
-          </div>
-          <div>
-            <div style={{ color: readerSemanticColor.text.metadata, marginBottom: 5 }}>LAYER</div>
-            <div style={{ color, fontSize: 10 }}>{layer.number} of 19</div>
-          </div>
-          <div>
-            <div style={{ color: readerSemanticColor.text.metadata, marginBottom: 5 }}>GROUP</div>
-            <div style={{ color: readerSemanticColor.text.secondary, fontSize: 10, textTransform: "capitalize" }}>
-              {layer.group}
-            </div>
-          </div>
+          <MetaValue
+            label="TYPE"
+            value={isThreshold ? "Threshold Layer" : "General Practice"}
+            color={isThreshold ? color : readerSemanticColor.text.secondary}
+          />
+          <MetaValue label="LAYER" value={`${layer.number} of 19`} color={color} />
+          <MetaValue
+            label="MAP REGION"
+            value={MAP_REGION_LABEL[layer.group]}
+            color={readerSemanticColor.text.secondary}
+          />
         </div>
       </div>
     </div>
+  );
+}
+
+function GeneralPracticeLayerDetail({
+  layer,
+  color,
+}: {
+  layer: Extract<LayerDef, { band: "general-practice" }>;
+  color: string;
+}) {
+  return (
+    <>
+      <Section label="WHAT IT IS" color={color}>
+        {layer.definition}
+      </Section>
+
+      <Divider />
+
+      <Section label="IN PRACTICE" color={color}>
+        {layer.inPractice}
+      </Section>
+
+      <Divider />
+
+      <div style={{ marginBottom: 24 }}>
+        <SectionLabel color={readerSemanticColor.text.metadata}>
+          DIAGNOSTIC QUESTION
+        </SectionLabel>
+        <div
+          style={{
+            padding: "13px 15px",
+            border: `1px solid ${color}24`,
+            background: `${color}06`,
+            fontFamily: "'EB Garamond', serif",
+            fontSize: 16,
+            lineHeight: 1.68,
+            color: readerSemanticColor.text.secondary,
+          }}
+        >
+          {layer.diagnosticQuestion}
+        </div>
+      </div>
+
+      {layer.historicalAlias && layer.lineage && (
+        <>
+          <Divider />
+          <div>
+            <SectionLabel color={readerSemanticColor.text.metadata}>
+              HISTORICAL NAME · {layer.historicalAlias.toUpperCase()}
+            </SectionLabel>
+            <div
+              style={{
+                fontFamily: "'EB Garamond', serif",
+                fontSize: 15,
+                lineHeight: 1.7,
+                color: readerSemanticColor.text.caption,
+                fontStyle: "italic",
+              }}
+            >
+              {layer.lineage}
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+function ThresholdLayerDetail({
+  layer,
+  color,
+}: {
+  layer: SovereignThresholdLayer & LayerVisualDef & { label: string };
+  color: string;
+}) {
+  return (
+    <>
+      <div
+        style={{
+          marginBottom: 22,
+          padding: "12px 13px",
+          border: `1px solid ${color}48`,
+          background: `${color}0A`,
+          color,
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 9,
+          lineHeight: 1.45,
+          letterSpacing: "0.18em",
+        }}
+      >
+        DIAGNOSTIC SIGNAL · NOT A DESIGN TOOL
+      </div>
+
+      <Section label="SIGNAL" color={color}>
+        {layer.signal}
+      </Section>
+
+      <Divider />
+
+      <Section label="WHY IT MATTERS" color={color}>
+        {layer.whyItMatters}
+      </Section>
+
+      <Divider />
+
+      <div style={{ marginBottom: 24 }}>
+        <SectionLabel color={color}>RESPONSE</SectionLabel>
+        <div style={{ display: "grid", gap: 8 }}>
+          {layer.response.map((item) => (
+            <div
+              key={item}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "12px 1fr",
+                gap: 8,
+                alignItems: "start",
+                color: readerSemanticColor.text.secondary,
+                fontFamily: "'EB Garamond', serif",
+                fontSize: 15.5,
+                lineHeight: 1.48,
+              }}
+            >
+              <span aria-hidden style={{ color, transform: "translateY(1px)" }}>·</span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Divider />
+
+      <div style={{ marginBottom: 24 }}>
+        <SectionLabel color={readerSemanticColor.text.metadata}>DO NOT</SectionLabel>
+        <div
+          style={{
+            padding: "13px 15px",
+            border: "1px solid rgba(216,108,97,0.18)",
+            background: "rgba(216,108,97,0.035)",
+            color: readerSemanticColor.text.secondary,
+            fontFamily: "'EB Garamond', serif",
+            fontSize: 15.5,
+            lineHeight: 1.6,
+          }}
+        >
+          {layer.doNot}
+        </div>
+      </div>
+
+      <div
+        style={{
+          marginTop: 26,
+          paddingTop: 14,
+          borderTop: `1px solid ${color}1A`,
+          color: color,
+          fontFamily: "'DM Mono', monospace",
+          fontSize: 9,
+          lineHeight: 1.6,
+          letterSpacing: "0.16em",
+        }}
+      >
+        PAUSE · DOCUMENT · ESCALATE
+      </div>
+    </>
   );
 }
 
@@ -719,6 +773,25 @@ function Section({
       >
         {children}
       </div>
+    </div>
+  );
+}
+
+function MetaValue({
+  label,
+  value,
+  color,
+}: {
+  label: string;
+  value: string;
+  color: string;
+}) {
+  return (
+    <div>
+      <div style={{ color: readerSemanticColor.text.metadata, marginBottom: 5 }}>
+        {label}
+      </div>
+      <div style={{ color, fontSize: 10, lineHeight: 1.45 }}>{value}</div>
     </div>
   );
 }
@@ -781,9 +854,9 @@ export default function SovereignLayeredSystemMapCanvas({
   const connectedIds = useMemo(() => {
     if (!focusLayer) return null;
     const ids = new Set<string>();
-    EDGES.forEach((e) => {
-      if (e.from === focusLayer.id) ids.add(e.to);
-      if (e.to === focusLayer.id) ids.add(e.from);
+    EDGES.forEach((edge) => {
+      if (edge.from === focusLayer.id) ids.add(edge.to);
+      if (edge.to === focusLayer.id) ids.add(edge.from);
     });
     return ids;
   }, [focusLayer]);
@@ -807,9 +880,8 @@ export default function SovereignLayeredSystemMapCanvas({
     if (!vp) return;
     const rect = vp.getBoundingClientRect();
 
-    // Enter at a true 1:1 world scale with the Sovereign UX core exactly
-    // centered in the available viewport. The wider system intentionally
-    // extends beyond the frame and can be explored by panning or Fit All.
+    // Enter at 1:1 with the Sovereign UX core centered. The wider diagnostic
+    // field intentionally extends beyond the frame and remains explorable.
     setView({
       scale: OPENING_SCALE,
       x: rect.width / 2 - CENTER_X * OPENING_SCALE,
@@ -1134,7 +1206,7 @@ export default function SovereignLayeredSystemMapCanvas({
                 transition: "opacity 1000ms ease",
               }}
             >
-              14 General Practice Layers · 5 Threshold Signals · Click any node to read
+              14 General Practice Layers · 5 Threshold Layers · Click any node to read
             </div>
           </div>
 
@@ -1200,7 +1272,7 @@ export default function SovereignLayeredSystemMapCanvas({
               willChange: "transform",
             }}
           >
-            {/* ── Territorial atmosphere — inherited from the original Codex, softened for Atlas ── */}
+            {/* ── Territorial atmosphere — spatial organization, not taxonomy ── */}
             <div aria-hidden style={{
               position: "absolute", left: 430, top: 118, width: 820, height: 470,
               borderRadius: "50%", transform: "rotate(-7deg)",
@@ -1335,7 +1407,7 @@ export default function SovereignLayeredSystemMapCanvas({
                 <line x1={CENTER_X} y1={CENTER_Y} x2={1510} y2={430} opacity="0.26" />
               </g>
 
-              {/* Threshold Signals boundary.
+              {/* Threshold Layers boundary.
                   vectorEffect keeps stroke at 1px screen-space regardless of zoom.
                   Opacity reduces at very close zoom when individual nodes are primary. */}
               <rect
@@ -1355,7 +1427,7 @@ export default function SovereignLayeredSystemMapCanvas({
                 }}
               />
 
-              {/* Region / group labels — screen-stable font size, semantic opacity */}
+              {/* Region labels describe spatial neighborhoods, not canonical bands. */}
               <text
                 x={520}
                 y={260}
@@ -1367,7 +1439,7 @@ export default function SovereignLayeredSystemMapCanvas({
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
-                SURFACE LAYERS
+                SURFACE
               </text>
               <text
                 x={320}
@@ -1406,7 +1478,7 @@ export default function SovereignLayeredSystemMapCanvas({
                 opacity={zoomOpacity.regionLabel}
                 style={{ transition: "opacity 300ms ease" }}
               >
-                THRESHOLD SIGNALS
+                THRESHOLD LAYERS
               </text>
               <text
                 x={1278}
@@ -1418,7 +1490,19 @@ export default function SovereignLayeredSystemMapCanvas({
                 opacity={view.scale > 1.6 ? 0.68 : 0.92}
                 style={{ transition: "opacity 300ms ease" }}
               >
-                conditions to watch, not goals to optimize for
+                DIAGNOSTIC SIGNALS · NOT DESIGN TOOLS
+              </text>
+              <text
+                x={1278}
+                y={730}
+                fontFamily="'DM Mono', monospace"
+                fontSize={regionFsSub}
+                letterSpacing="0.08em"
+                fill={readerSemanticColor.utility.primary}
+                opacity={view.scale > 1.6 ? 0.54 : 0.82}
+                style={{ transition: "opacity 300ms ease" }}
+              >
+                PROFESSIONAL BOUNDARY · PAUSE · CONSENT · REFER
               </text>
 
               {/* Connections.
@@ -1584,6 +1668,23 @@ export default function SovereignLayeredSystemMapCanvas({
               );
             })}
           </div>
+        </div>
+
+        <div
+          aria-live="off"
+          style={{
+            position: "absolute",
+            width: 1,
+            height: 1,
+            padding: 0,
+            margin: -1,
+            overflow: "hidden",
+            clip: "rect(0,0,0,0)",
+            whiteSpace: "nowrap",
+            border: 0,
+          }}
+        >
+          {SOVEREIGN_UX_LAYER_PROFESSIONAL_BOUNDARY}
         </div>
 
         {/* ── Detail panel ── */}

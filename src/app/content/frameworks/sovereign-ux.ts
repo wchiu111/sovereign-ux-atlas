@@ -258,17 +258,17 @@ export default defineAtlasEntry({
           title: "Layered System Diagnostic Map",
           type: "DIAGNOSTIC MAP",
           description:
-            "All 19 diagnostic layers mapped as a free-roaming spatial field — 14 General Practice Layers and 5 Threshold Signals, with their connections visible.",
+            "All 19 diagnostic layers mapped as a free-roaming spatial field — 14 General Practice Layers and 5 Threshold Layers, with diagnostically meaningful relationships visible.",
           caption:
-            "Each node is a lens for investigation, not a feature requirement. The Threshold Signals mark conditions deserving additional scrutiny, not goals to build toward. Drag to explore, scroll to zoom, click any layer to read.",
+            "General Practice Layers are used to design and diagnose everyday experience. Threshold Layers function as diagnostic signals — conditions to pause, document, and escalate rather than optimize. Drag to explore, scroll to zoom, click any layer to read.",
           canvas: {
             id: "sovereign-layered-system-map",
             eyebrow: "SOVEREIGN UX · LAYERED SYSTEM",
             title: "Layered System Diagnostic Map",
             description:
-              "A spatial map of the 19 diagnostic layers with connections between them.",
+              "A spatial diagnostic model for locating where trust, interpretation, or agency is being shaped across an experience.",
             boardLabel: "LAYERED SYSTEM",
-            boardSubtitle: "19 diagnostic lenses",
+            boardSubtitle: "14 General Practice · 5 Threshold Layers",
             annotations: [],
           },
         },
