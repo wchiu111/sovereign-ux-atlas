@@ -496,18 +496,44 @@ export default defineAtlasEntry({
       id: "field-signals",
       label: "Field Signals",
       accentStellarType: "strategy",
-      subtitle: "What real use tells the system about itself.",
-      readingTime: 2,
+      subtitle: "What practice reveals — and what remains uncertain.",
+      readingTime: 6,
       semantics: {
-        keywords: ["signals", "feedback", "observation", "evidence"],
-        aliases: ["telemetry", "field evidence"],
+        keywords: [
+          "field signals", "real-world signals", "signals in the field", "observation",
+          "reflection", "design practice", "simulation", "evidence integrity",
+          "source provenance", "decision framing", "authority", "living canon",
+        ],
+        aliases: ["field observations", "observation record", "observational evidence"],
         summary:
-          "Observations gathered from real use that feed the canon and surface failure patterns before they harden.",
+          "Eleven authored signals from design practice, reflection, exploration, and modeling. Each record distinguishes what changed, what it suggests, and what its evidence does not establish.",
       },
+      evidence: [
+        {
+          id: "signals-in-the-field-ledger",
+          number: "01",
+          title: "Signals in the Field",
+          type: "OBSERVATIONAL EVIDENCE LEDGER",
+          description:
+            "An 11-record observational archive that separates the author's account, interpretation, evidence source, and limitations. Search by situation and inspect what would strengthen each finding.",
+          caption:
+            "Browse eleven signals without a prescribed sequence. Source types are descriptive, not credibility scores. Related Atlas work is contextual and is not presented as empirical proof; the Evidence Trace navigates sections rather than promoting observations into Canon precedent.",
+          canvas: {
+            id: "sovereign-field-signals",
+            eyebrow: "SOVEREIGN UX · FIELD SIGNALS",
+            title: "Signals in the Field",
+            description:
+              "An observational archive of practice, reflective accounts, exploratory design, and simulation — with each interpretation's evidence boundary visible.",
+            boardLabel: "SIGNALS IN THE FIELD",
+            boardSubtitle: "11 observations · source and interpretation remain distinct",
+            annotations: [],
+          },
+        },
+      ],
       content:
-        "Field Signals are what the system learns from real use. They are the observations — behaviors, confusions, workarounds, moments of lost trust — that reveal how the framework is actually holding up outside the studio.\n\nSignals are the earliest evidence that a failure pattern is forming, often long before it is nameable. They feed the Living Canon with the material for honest revision, and they tell the protocols where they are being skipped or subverted.\n\nWithout field signals the framework would only ever argue with itself. With them, the living system stays accountable to the people it claims to serve.",
+        "Sovereign UX becomes accountable when its ideas are examined against experiences that arose through real work, reflective writing, exploratory design, and modeled scenarios. The eleven Field Signals record moments where clarity, consent, pacing, or authority became visible in practice. They are descriptions, not repeatable templates or automatic proof that the framework works.\n\nThese observations do not all have the same evidentiary status. A first-person reflection about AI dialogue is different from a documented interface change, an insurance journey exercise, or a financial AI scenario. Those differences matter. An authored observation can identify a valuable design question without independently verifying a broader user-behavior claim.\n\nReflection in AI dialogue and long-form interaction raised questions about tone, uncertainty, and continuity. Inviting copy highlighted the difference between readiness and urgency. Reflective writing after automated rejection showed how naming an experience can restore personal clarity, even when an external outcome remains unchanged.\n\nInsurance, property management, and healthcare explorations made pacing, exits, consent, and asymmetric authority newly visible. Investigations into interpretation breakdowns, financial AI framing, modeled user research, and authority boundaries shifted attention from whether a system can produce an answer to how its framing influences judgment. These remain hypotheses or situated accounts wherever independent validation is missing.\n\nRead each signal by asking what happened, what the author inferred, what source actually supports the interpretation, and what further observation could change it. Source material is not silently invented. A related Atlas case study offers context, not proof; a simulation can stress-test a hypothesis, not substitute for live-user evidence when a claim is about real people.\n\nAcross the accounts, the recurring aspiration is quieter systems in which pressure recedes, clarity becomes easier to find, and people remain able to choose. These are not performance claims without measurement. They are reasons to keep observing, questioning, and revising the framework as evidence accumulates.",
       insight:
-        "Field signals are how a living framework stays accountable to real people rather than only to its own principles.",
+        "A field signal is a reason to examine an interpretation, not permission to treat it as proven. Sovereign UX stays accountable when observations remain traceable, bounded, and revisable.",
     },
   ],
 });
