@@ -452,18 +452,45 @@ export default defineAtlasEntry({
       id: "failure-patterns",
       label: "Failure Patterns",
       accentStellarType: "risk",
-      subtitle: "The recurring ways autonomy quietly erodes.",
-      readingTime: 2,
+      subtitle: "Recognize how trust breaks — and what repair changes.",
+      readingTime: 6,
       semantics: {
-        keywords: ["failure", "drift", "dark patterns", "erosion"],
-        aliases: ["anti-patterns", "erosion"],
+        keywords: [
+          "when reflection fails", "failure patterns", "trust failures", "repair loop",
+          "pressure", "coercion", "dark patterns", "authority creep", "structured confidence",
+          "framed outcome bias", "uncertainty", "integrity leak", "user agency",
+          "90-second team check", "diagnostic and repair field",
+        ],
+        aliases: ["anti-patterns", "trust erosion", "failure diagnostics", "design repair"],
         summary:
-          "The recurring, often well-intentioned ways intelligent systems quietly strip clarity, consent, judgment, or agency.",
+          "Seventeen recurring failure patterns reveal when an interface stops responding to people and quietly shapes interpretation, decisions, or consent. Illustrative before-and-after comparisons make repair discussable and testable.",
       },
+      evidence: [
+        {
+          id: "reflection-failure-diagnostic-field",
+          number: "01",
+          title: "When Reflection Fails",
+          type: "DIAGNOSTIC & REPAIR FIELD",
+          description:
+            "Explore 17 recurring trust failures through situational filters, illustrated failure/repair comparisons, validation questions, and a 90-second team diagnostic.",
+          caption:
+            "Select any pattern to inspect the failure and a possible repair side by side. These examples are illustrative, not validated findings. The quick team check and Pause · Name · Restore reference support discussion, not automated certification.",
+          canvas: {
+            id: "sovereign-failure-patterns",
+            eyebrow: "SOVEREIGN UX · FAILURE PATTERNS",
+            title: "When Reflection Fails",
+            description:
+              "An interactive field for identifying why trust breaks, examining a proposed repair, and deciding what needs validation.",
+            boardLabel: "DIAGNOSTIC & REPAIR",
+            boardSubtitle: "17 failure patterns · illustrative comparisons · repair loop",
+            annotations: [],
+          },
+        },
+      ],
       content:
-        "Autonomy is rarely lost in one obvious move. It erodes through recurring patterns that usually look reasonable in the moment: a default that quietly decides, a summary that replaces the source, an assistant that grows from helping to deciding, a reversible action that becomes hard to undo.\n\nNaming these patterns is what makes them defensible against. A failure pattern is not a single bug; it is a shape the system keeps drifting toward under the pull of engagement, convenience, or speed. Once named, it can be watched for in protocols and guarded against in the laws.\n\nMost failure patterns begin as small, well-intentioned optimizations. That is exactly why they need names — so a helpful change can be recognized as an erosion before it becomes the norm.",
+        "Even well-intentioned systems drift. Sometimes it happens through a small tone mismatch or an interruption. Sometimes it is systemic: an assistant gradually assumes authority, a polished recommendation obscures weak evidence, or a privacy promise is contradicted by default behavior. When reflection fails, the system stops responding to the person and begins shaping interpretation or decisions without sufficient visibility.\n\nFailure Patterns names seventeen recurring forms of this misalignment. They are not a catalogue intended to shame design teams. They give teams language for recognizing pressure, ignored context, constrained exits, uninvited emotional interpretation, hidden influence, and loss of agency before those failures become accepted product behavior.\n\nFailure often looks reasonable at first. A modal is described as helpful, a reminder as motivating, a default as convenient, or an AI recommendation as efficient. The question is not whether that feature has a benign intention. The question is whether its actual mechanics preserve clarity, consent, judgment, and the ability to leave or change direction.\n\nSome trust failures appear within an ordinary interaction: The Pushy Pop-Up, The Cheerful System That Doesn’t Listen, The Vanishing Form, or The Locked Path. Others emerge when systems interpret, frame, or act with increasingly opaque authority. The Silent System continues despite missing or outdated information. Structured Confidence wraps weak assumptions in polished presentation. Authority Creep quietly moves from informing toward deciding. Framed Outcome Bias shapes a choice through ordering, defaults, or unexplained recommendations.\n\nA proposed repair should change behavior, not merely soften the wording. Real intent should guide interruptions; departures should have a recoverable path; confusion should interrupt unsafe progression; uncertainty and missing context should be visible; and consequential decisions should remain within authority the person knowingly granted. Even apparent confidence should be traceable to evidence rather than presentation alone.\n\nThe 90-Second Team Check asks whether the interface acknowledges before acting, preserves exits, matches the context offered, fits the moment, embodies its stated values, and makes decision framing visible. These questions are discussion prompts, not a numerical compliance score. If a material trust issue remains, the team should not optimize through it.\n\nThe Repair Loop is deliberately simple: Pause to stop optimizing, Name the misalignment, and Restore the person's agency. That may require clearer controls, changed defaults, less intervention, permission to pause, or an escalation beyond ordinary design practice. The repair is a hypothesis until it is tested with the relevant people and circumstances.\n\nThe evidence artifact pairs each failure with an illustrative contrasting design and a validation question. The comparisons are constructed examples, not observed usability findings or proof of improvement. Their role is to make the behavioral trade-off inspectable and support better decisions about what to test.\n\nBroken reflection is not proof of a failed team. Ignoring it is how a manageable problem becomes systemic. Design integrity is visible in how promptly and openly a system identifies misalignment, offers a way back, and lets the person retain control.",
       insight:
-        "Autonomy is rarely taken; it is optimized away one reasonable-looking default at a time.",
+        "The repair isn't the reassuring message. It's the change in system behavior that restores a person's agency — and the evidence that the change actually works.",
     },
     {
       id: "field-signals",
