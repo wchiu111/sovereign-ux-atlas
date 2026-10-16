@@ -408,18 +408,45 @@ export default defineAtlasEntry({
       id: "protocols",
       label: "Protocols",
       accentStellarType: "relational",
-      subtitle: "The repeatable moves teams use in practice.",
-      readingTime: 2,
+      subtitle: "Situational patterns for emotionally aware interaction.",
+      readingTime: 5,
       semantics: {
-        keywords: ["protocols", "practices", "methods", "rituals"],
-        aliases: ["practices", "playbook"],
+        keywords: [
+          "protocols for presence", "presence before output", "mirror first then move",
+          "unresolved weight", "offer an exit", "match the depth", "reflection",
+          "system bias", "signal fidelity", "interpret before acting",
+          "frame then confirm", "consent", "human agency", "situational response",
+        ],
+        aliases: ["protocols", "presence protocols", "situational practices", "response reference"],
         summary:
-          "The concrete, repeatable moves that turn the framework's commitments into everyday design and engineering practice.",
+          "Twelve situational practices that help teams recognize when to pause, acknowledge intent, clarify interpretation, preserve exit, or stop — without assuming psychological authority.",
       },
+      evidence: [
+        {
+          id: "protocols-for-presence-reference",
+          number: "01",
+          title: "Protocols for Presence",
+          type: "SITUATIONAL RESPONSE REFERENCE",
+          description:
+            "An interactive reference for 12 practical protocols. Search or filter by situation, inspect the meaning and response, and explore contextual connections without a prescribed sequence.",
+          caption:
+            "Choose a protocol based on what is happening in the experience. Situational filters help you find relevant practices; they are not stages, requirements, or scores. Select any protocol to inspect its meaning, examples, boundaries, and related practices.",
+          canvas: {
+            id: "sovereign-protocols-reference",
+            eyebrow: "SOVEREIGN UX · PROTOCOLS",
+            title: "Protocols for Presence",
+            description:
+              "Practical patterns for responding with clarity, consent, and agency when human attention or trust is under pressure.",
+            boardLabel: "PROTOCOLS FOR PRESENCE",
+            boardSubtitle: "12 situational protocols · no fixed sequence",
+            annotations: [],
+          },
+        },
+      ],
       content:
-        "Protocols are where Sovereign UX becomes something a team can actually do. They are the repeatable moves — reviews, checks, framing questions, default patterns — that carry the commitments into everyday design and engineering.\n\nA protocol turns a value into a habit. Instead of hoping a team remembers to preserve reversibility, a protocol makes the reversible path the one that is easiest to ship. Instead of debating legibility case by case, a protocol establishes what the system must always be able to explain.\n\nProtocols are the connective tissue between the layered system and the people building on top of it. They are also where failure patterns are first caught, because a protocol that keeps getting skipped is usually pointing at a pattern worth naming.",
+        "Sovereign UX is not a checklist. It is a way of designing systems that respond appropriately to human state, especially when automation or AI is involved. The Protocols for Presence help teams pause, sense, and respond with integrity rather than script every interaction.\n\nThey are most useful when people are stressed, uncertain, or overloaded; when systems adapt dynamically through AI, automation, or recommendations; and when trust matters more than speed. Protocols are situational, not mandatory. They guide how a system responds, not just what it outputs. You will rarely use all twelve at once. Often the missing protocol becomes apparent when something feels off.\n\nPRESENCE BEFORE OUTPUT\n\nBefore responding, pay attention to the context the person has expressed. Speed without awareness can feel dismissive. But presence does not require artificial delays or pretending to detect emotions the person has not shared.\n\nMIRROR FIRST, THEN MOVE\n\nAcknowledge the person's intent and how the system understands the situation before guiding or correcting. This helps a person evaluate the direction of the response rather than being pushed into it.\n\nPRESERVE AN EXIT AND MATCH THE DEPTH\n\nUnresolved friction deserves attention. A person should always be able to pause, restart, save work, or leave a loop. Respond to the depth of context actually offered, never to an uninvited psychological interpretation. When someone is reflecting, suspend conversion pressure and unnecessary next-step prompts.\n\nPAUSE AND EXAMINE SYSTEM BEHAVIOR\n\nWhen confusion or misalignment appears, do not optimize through it. Investigate defaults, assumptions, and tone before attributing the difficulty to the person. Make the entry intent of a feature explicit, and verify that claims such as privacy or consent actually match behavior.\n\nINTERPRET BEFORE ACTING · FRAME, THEN CONFIRM\n\nFor AI and agentic experiences, the system should make its operative interpretation, assumptions, proposed action, and uncertainty legible before execution. When options or recommendations are presented, disclose how they are framed and what makes one recommended. Seek confirmation appropriate to the decision's consequence. Do not mistake explanation for exposing hidden internal reasoning.\n\nHOW TO USE THE REFERENCE\n\nOpen the evidence to inspect the twelve numbered protocols. Search or filter by a situation, then choose any protocol to read its meaning, real examples, why it matters, and relevant cautions. Related practices are optional routes through the material; the numbers are identifiers, not stages of a process.\n\nPROFESSIONAL BOUNDARY\n\nThese protocols are not scripts, personality layers, emotional manipulation techniques, or substitutes for human judgment. Emotional awareness does not authorize profiling, simulated intimacy, psychological interpretation, or assuming decision-making authority. If emotional vulnerability or risk exceeds product-design scope, pause, seek appropriate consent, and refer or escalate rather than intensifying automated intervention.\n\nThe purpose is not to act faster, louder, or more persuasively. It is to prevent systems from acting on people without sufficient clarity, consent, or agency.",
       insight:
-        "A protocol turns a commitment into the path of least resistance, so autonomy survives contact with a deadline.",
+        "What should the system notice before responding — and what must remain under the person's control?",
     },
     {
       id: "failure-patterns",

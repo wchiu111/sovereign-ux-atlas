@@ -15,6 +15,7 @@ import FrameworkEvidenceCanvas from "../frameworks/FrameworkEvidenceCanvas";
 import SovereignLayeredSystemMapCanvas from "../frameworks/SovereignLayeredSystemMapCanvas";
 import SovereignLawsIndexCanvas from "../frameworks/SovereignLawsIndexCanvas";
 import SovereignLivingCanonCanvas from "../frameworks/SovereignLivingCanonCanvas";
+import SovereignProtocolsCanvas from "../frameworks/SovereignProtocolsCanvas";
 import { readerSemanticColor } from "./readerSemanticPalette";
 
 function LeftNav({
@@ -1571,6 +1572,12 @@ export default function AtlasReadingEngine({
           />
         ) : activeEvidence?.canvas?.id === "sovereign-laws-index" ? (
           <SovereignLawsIndexCanvas
+            frameworkTitle={caseStudy.title}
+            sectionTitle={activeEvidenceSection.title}
+            onClose={handleCloseEvidence}
+          />
+        ) : activeEvidence?.canvas?.id === "sovereign-protocols-reference" ? (
+          <SovereignProtocolsCanvas
             frameworkTitle={caseStudy.title}
             sectionTitle={activeEvidenceSection.title}
             onClose={handleCloseEvidence}
