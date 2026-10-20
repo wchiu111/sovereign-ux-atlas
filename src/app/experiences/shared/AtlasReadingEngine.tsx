@@ -18,6 +18,7 @@ import SovereignLivingCanonCanvas from "../frameworks/SovereignLivingCanonCanvas
 import SovereignProtocolsCanvas from "../frameworks/SovereignProtocolsCanvas";
 import SovereignFailurePatternsCanvas from "../frameworks/SovereignFailurePatternsCanvas";
 import SovereignFieldSignalsCanvas from "../frameworks/SovereignFieldSignalsCanvas";
+import SovereignFoundationsCanvas from "../frameworks/SovereignFoundationsCanvas";
 import { readerSemanticColor } from "./readerSemanticPalette";
 
 function LeftNav({
@@ -1566,7 +1567,13 @@ export default function AtlasReadingEngine({
           />
         </aside>
 
-        {activeEvidence?.canvas?.id === "sovereign-layered-system-map" ? (
+        {activeEvidence?.canvas?.id === "sovereign-foundations" ? (
+          <SovereignFoundationsCanvas
+            frameworkTitle={caseStudy.title}
+            sectionTitle={activeEvidenceSection.title}
+            onClose={handleCloseEvidence}
+          />
+        ) : activeEvidence?.canvas?.id === "sovereign-layered-system-map" ? (
           <SovereignLayeredSystemMapCanvas
             frameworkTitle={caseStudy.title}
             sectionTitle={activeEvidenceSection.title}

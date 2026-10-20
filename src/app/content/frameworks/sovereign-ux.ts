@@ -210,16 +210,43 @@ export default defineAtlasEntry({
       id: "foundations",
       label: "Foundations",
       accentStellarType: "purpose",
-      subtitle: "The commitments the rest of the system defends.",
-      readingTime: 2,
+      subtitle: "The beliefs behind the interface — and what they demand of design.",
+      readingTime: 5,
       semantics: {
-        keywords: ["clarity", "consent", "judgment", "agency", "autonomy"],
-        aliases: ["first principles", "commitments"],
+        keywords: [
+          "sovereign ux foundations", "core principles", "ten principles",
+          "clarity", "consent", "judgment", "agency", "autonomy", "awareness",
+          "attunement", "presence", "persuasion", "integrity", "interpretation",
+          "decision framing", "choice", "realignment", "pause name restore",
+        ],
+        aliases: ["foundations", "first principles", "foundational commitments", "belief to behavior"],
         summary:
-          "The four commitments — clarity, consent, judgment, agency — that every other area of Sovereign UX exists to protect.",
+          "Four foundational commitments and ten core principles explain how the beliefs behind a system influence interaction, interpretation, consent, and human agency.",
       },
+      evidence: [
+        {
+          id: "sovereign-foundations-from-belief-to-behavior",
+          number: "01",
+          title: "From Belief to Behavior",
+          type: "FOUNDATIONS · PRINCIPLE FIELD",
+          description:
+            "Explore the four commitments and ten authored core principles, then inspect how each belief shapes design responsibilities and preserves human agency.",
+          caption:
+            "Choose any principle to examine the original statement, its design implications, and an illustrative application. The five reflection questions support discussion without scoring or certifying the system.",
+          canvas: {
+            id: "sovereign-foundations",
+            eyebrow: "SOVEREIGN UX · FOUNDATIONS",
+            title: "From Belief to Behavior",
+            description:
+              "A reflective index of ten core principles grounded in clarity, consent, judgment, and agency.",
+            boardLabel: "FOUNDATIONS — FROM BELIEF TO BEHAVIOR",
+            boardSubtitle: "4 foundational commitments · 10 core principles · no mandatory sequence",
+            annotations: [],
+          },
+        },
+      ],
       content:
-        "Sovereign UX begins from a single question: how should intelligent systems behave so people retain clarity, consent, judgment, and agency over time? These four are not features to add. They are commitments the rest of the system exists to defend.\n\nClarity means a person can tell what the system is doing and why. Consent means the system's behavior is explicitly chosen rather than quietly assumed. Judgment means the person's own reasoning is strengthened rather than replaced. Agency means the person can still change direction, including changing the system itself.\n\nEverything downstream — the layers, the laws, the protocols — is an attempt to hold these four commitments under real conditions, as the product grows and the model underneath it changes.",
+        "Sovereign UX isn’t a trend, a tactic, or a UI style. It begins with a simple premise: people don't just interact with systems. Systems make decisions, too — what to show, prioritize, recommend, or leave out. Design is responsible for how those decisions are framed, interpreted, and acted upon. Sovereign UX asks how that responsibility can preserve clarity, consent, judgment, and agency, especially in high-stakes or decision-heavy moments.\n\nClarity makes system behavior legible. Consent ensures consequential behavior is genuinely chosen rather than quietly presumed. Judgment means intelligent systems strengthen the person's reasoning instead of taking its place. Agency means people can change their minds, choose alternatives, pause, or leave. These four commitments are the foundation that the rest of Sovereign UX exists to defend.\n\nThe ten core principles explain the beliefs behind those commitments. Interaction includes awareness because people interpret meaning, not simply click. The user is not a target: support informed choice instead of manipulation. Attunement matters alongside speed, and presence is more respectful than persuasion. An interface reveals what its designers believe about people's competence and intent through every label, default, and exit.\n\nTechnology should amplify choice rather than override it. What people remember about an interaction is shaped as much by support, timing, and recovery as by task completion. Integrity holds these decisions together: systems must behave as they claim, stay within their role, and respect meaningful limits. Finally, interpretation and decision framing are design responsibilities in their own right. How a recommendation is ordered, labeled, and explained influences what people believe and do next.\n\nThese are not ten requirements to complete in order. They are questions to keep alive as the design changes. When a system starts pushing through confusion or discomfort, pause rather than optimize harder; name the specific misalignment; then restore the person's intent, choices, and right to disengage. The five Foundations self-check questions make that reflection concrete without turning care into a score.\n\nSovereign UX focuses on interface behavior, system behavior, and decision framing. It does not claim authority over a person's psychology, identity, financial decisions, or legal circumstances. When this framework stops producing clarity, return to fundamentals: the person's ability to choose, the designer's responsibility, and respect for the human being on the other side.",
       insight:
         "Autonomy is not preserved by limiting AI capability — it is preserved by making AI behavior legible, reversible, and explicitly chosen.",
     },
