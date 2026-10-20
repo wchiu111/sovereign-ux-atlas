@@ -4,17 +4,23 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ReactNode,
   type RefObject,
 } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  Check,
+  ChevronRight,
+  Eye,
   MessageCircleQuestion,
   Minus,
   Move,
   Plus,
   RotateCcw,
+  Scale,
   ShieldCheck,
+  SlidersHorizontal,
   X,
 } from "lucide-react";
 import {
@@ -33,6 +39,7 @@ import { STELLAR_PALETTE } from "../../atlas/constellation/stellarPalette";
 import { readerSemanticColor } from "../shared/readerSemanticPalette";
 import { SpatialNode } from "../shared/spatial/SpatialNode";
 import { SpatialViewport } from "../shared/spatial/SpatialViewport";
+import type { SpatialView } from "../shared/spatial/spatialTypes";
 import { useSpatialCamera } from "../shared/spatial/useSpatialCamera";
 
 interface Props {
@@ -275,6 +282,7 @@ export default function SovereignFoundationsCanvas({
     new Map<FoundationPrincipleId, HTMLButtonElement>(),
   );
   const lastSelectedRef = useRef<FoundationPrincipleId | null>(null);
+  const previousCameraViewRef = useRef<SpatialView | null>(null);
   const isClosing = useRef(false);
 
   const camera = useSpatialCamera({
@@ -330,6 +338,9 @@ export default function SovereignFoundationsCanvas({
       if (selectedId === null) {
         rememberedOverviewScroll.current =
           overviewScrollRef.current?.scrollTop ?? 0;
+        if (!compactField) {
+          previousCameraViewRef.current = { ...camera.viewRef.current };
+        }
       }
       lastSelectedRef.current = id;
       setPreviewId(null);
@@ -338,8 +349,8 @@ export default function SovereignFoundationsCanvas({
         const node = FIELD_PRINCIPLES.find((item) => item.id === id);
         if (node) {
           camera.focusPoint(node, {
-            scale: 1.12,
-            anchorX: 0.34,
+            scale: 1.18,
+            anchorX: 0.2,
             anchorY: 0.52,
           });
         }
@@ -355,7 +366,12 @@ export default function SovereignFoundationsCanvas({
   const returnToField = useCallback(() => {
     setPreviewId(null);
     setSelectedId(null);
-    camera.resetView();
+    if (!compactField && previousCameraViewRef.current) {
+      camera.moveToView(previousCameraViewRef.current);
+      previousCameraViewRef.current = null;
+    } else if (!compactField) {
+      camera.resetView();
+    }
     requestAnimationFrame(() => {
       if (overviewScrollRef.current) {
         overviewScrollRef.current.scrollTop = rememberedOverviewScroll.current;
@@ -365,6 +381,13 @@ export default function SovereignFoundationsCanvas({
       }
     });
   }, [camera, compactField]);
+
+  const resetField = useCallback(() => {
+    setPreviewId(null);
+    setSelectedId(null);
+    previousCameraViewRef.current = null;
+    camera.resetView();
+  }, [camera]);
 
   const closeReflection = useCallback(() => {
     setReflectionOpen(false);
@@ -419,7 +442,7 @@ export default function SovereignFoundationsCanvas({
       if (compactField || reflectionOpen) return;
       if (event.key === "0") {
         event.preventDefault();
-        returnToField();
+        resetField();
       } else if (event.key === "+" || event.key === "=") {
         event.preventDefault();
         camera.zoomIn();
@@ -436,6 +459,7 @@ export default function SovereignFoundationsCanvas({
     compactField,
     reflectionOpen,
     requestClose,
+    resetField,
     returnToField,
     selectedId,
   ]);
@@ -560,14 +584,19 @@ export default function SovereignFoundationsCanvas({
               scale={camera.view.scale}
               onZoomOut={camera.zoomOut}
               onZoomIn={camera.zoomIn}
-              onReset={returnToField}
+              onReset={resetField}
             />
           }
           overlay={
             selected ? (
-              <DesktopInspector
+              <OrbitalDeepDive
+                key={selected.id}
                 selected={selected}
                 selectedId={selected.id}
+                anchorPosition={FIELD_PRINCIPLES.find(
+                  (item) => item.id === selected.id,
+                )}
+                cameraView={camera.view}
                 onSelect={selectPrinciple}
                 onBack={returnToField}
                 onReflection={() => setReflectionOpen(true)}
@@ -855,6 +884,18 @@ function FoundationsStyles() {
       @keyframes foundationSpatialTrace{0%{stroke-dashoffset:1.1;opacity:0}8%{opacity:.7}34%{opacity:.42}42%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:0;opacity:0}}
       .sux-foundation-root .foundation-detail-panel{animation:foundationPanelIn 380ms cubic-bezier(.16,1,.3,1) both}
       @keyframes foundationPanelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+      .sux-foundation-root .foundation-observatory-shell{animation:foundationObservatoryResolve 420ms 480ms ease-out both}
+      @keyframes foundationObservatoryResolve{from{opacity:0}to{opacity:1}}
+      .sux-foundation-root .foundation-observatory-tether{stroke-dasharray:5 8;animation:foundationTetherResolve 900ms cubic-bezier(.16,1,.3,1) both}
+      @keyframes foundationTetherResolve{from{opacity:0;stroke-dashoffset:50}to{opacity:1;stroke-dashoffset:0}}
+      .sux-foundation-root .foundation-anchor-orbit{transform-origin:center;animation:foundationAnchorOrbit 8s linear infinite}
+      @keyframes foundationAnchorOrbit{to{transform:rotate(360deg)}}
+      .sux-foundation-root .foundation-observatory-nav:hover{border-color:rgba(232,200,109,.48)!important;color:${PURPOSE}!important}
+      .sux-foundation-root .foundation-lab-stage{transition:border-color 220ms ease,background 220ms ease}
+      @media(max-width:1380px){
+        .sux-foundation-root .foundation-observatory-grid{grid-template-columns:minmax(0,1fr)!important}
+        .sux-foundation-root .foundation-observatory-shell .foundation-detail-panel{left:clamp(340px,29vw,420px)!important}
+      }
       .sux-foundation-root .foundation-compact-commitments{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
       .sux-foundation-root .foundation-compact-principles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
       .sux-foundation-root .foundation-detail-layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:0;flex:1}
@@ -876,7 +917,7 @@ function FoundationsStyles() {
       }
       @media(prefers-reduced-motion:reduce){
         .sux-foundation-root,.sux-foundation-root *{transition:none!important;animation:none!important}
-        .sux-foundation-root .foundation-spatial-trace{display:none!important}
+        .sux-foundation-root .foundation-spatial-trace,.sux-foundation-root .foundation-observatory-tether{display:none!important}
       }
     `}</style>
   );
@@ -998,9 +1039,11 @@ function PrinciplePreview({
   );
 }
 
-function DesktopInspector({
+function OrbitalDeepDive({
   selected,
   selectedId,
+  anchorPosition,
+  cameraView,
   onSelect,
   onBack,
   onReflection,
@@ -1010,6 +1053,8 @@ function DesktopInspector({
 }: {
   selected: FoundationPrinciple;
   selectedId: FoundationPrincipleId;
+  anchorPosition: (typeof FIELD_PRINCIPLES)[number] | undefined;
+  cameraView: SpatialView;
   onSelect: (id: FoundationPrincipleId) => void;
   onBack: () => void;
   onReflection: () => void;
@@ -1017,92 +1062,1204 @@ function DesktopInspector({
   selectedHeadingRef: RefObject<HTMLHeadingElement | null>;
   reflectionTriggerRef: RefObject<HTMLButtonElement | null>;
 }) {
+  const anchorX = anchorPosition
+    ? cameraView.x + anchorPosition.x * cameraView.scale
+    : 220;
+  const anchorY = anchorPosition
+    ? cameraView.y + anchorPosition.y * cameraView.scale
+    : 360;
+  const tetherEndX = Math.max(360, Math.min(520, anchorX + 160));
+
   return (
-    <aside
-      data-spatial-control
-      className="foundation-detail-panel foundation-scroll"
-      aria-label={`Principle ${selected.id} details`}
+    <div
+      className="foundation-observatory-shell"
       style={{
         position: "absolute",
         zIndex: 35,
-        inset: "0 0 0 auto",
-        width: "min(470px,42vw)",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        borderLeft: "1px solid rgba(232,200,109,.26)",
-        background:
-          "linear-gradient(150deg,rgba(14,17,27,.985),rgba(6,8,14,.992))",
-        boxShadow: "-28px 0 80px rgba(0,0,0,.48)",
+        inset: 0,
+        pointerEvents: "none",
+      }}
+    >
+      <svg
+        aria-hidden="true"
+        width="100%"
+        height="100%"
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "visible",
+          pointerEvents: "none",
+        }}
+      >
+        <defs>
+          <linearGradient
+            id="foundation-observatory-tether"
+            x1="0"
+            x2="1"
+          >
+            <stop offset="0%" stopColor={PURPOSE} stopOpacity=".84" />
+            <stop offset="100%" stopColor={PURPOSE} stopOpacity=".12" />
+          </linearGradient>
+          <filter
+            id="foundation-observatory-anchor-glow"
+            x="-100%"
+            y="-100%"
+            width="300%"
+            height="300%"
+          >
+            <feGaussianBlur stdDeviation="8" />
+          </filter>
+        </defs>
+        <circle
+          cx={anchorX}
+          cy={anchorY}
+          r="28"
+          fill="none"
+          stroke={PURPOSE}
+          strokeOpacity=".48"
+          strokeDasharray="2 7"
+          className="foundation-anchor-orbit"
+        />
+        <circle
+          cx={anchorX}
+          cy={anchorY}
+          r="7"
+          fill={PURPOSE}
+          opacity=".54"
+          filter="url(#foundation-observatory-anchor-glow)"
+        />
+        <path
+          d={`M ${anchorX + 28} ${anchorY} C ${anchorX + 110} ${anchorY}, ${tetherEndX - 70} 110, ${tetherEndX} 110`}
+          fill="none"
+          stroke="url(#foundation-observatory-tether)"
+          strokeWidth="1"
+          vectorEffect="non-scaling-stroke"
+          className="foundation-observatory-tether"
+        />
+      </svg>
+
+      <aside
+        data-spatial-control
+        className="foundation-detail-panel foundation-scroll"
+        aria-label={`Principle ${selected.id} evidence observatory`}
+        style={{
+          position: "absolute",
+          pointerEvents: "auto",
+          inset: "22px 22px 76px clamp(360px,32vw,470px)",
+          minWidth: 0,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          border: "1px solid rgba(232,200,109,.28)",
+          borderRadius: 18,
+          background:
+            "radial-gradient(circle at 18% 2%,rgba(232,200,109,.085),transparent 30%),linear-gradient(145deg,rgba(14,17,27,.965),rgba(5,7,13,.985))",
+          boxShadow:
+            "-28px 0 90px rgba(0,0,0,.5),0 24px 90px rgba(0,0,0,.5),inset 0 1px rgba(255,248,230,.035)",
+          backdropFilter: "blur(18px)",
+        }}
+      >
+        <header
+          style={{
+            flexShrink: 0,
+            display: "grid",
+            gridTemplateColumns: "auto minmax(0,1fr) auto",
+            alignItems: "center",
+            gap: 16,
+            padding: "15px 18px",
+            borderBottom: `1px solid ${BORDER}`,
+            background: "rgba(5,7,12,.66)",
+          }}
+        >
+          <button type="button" onClick={onBack} style={controlButton}>
+            <ArrowLeft size={14} /> RETURN TO FIELD
+          </button>
+          <div style={{ minWidth: 0 }}>
+            <div
+              style={{
+                ...MONO,
+                color: PURPOSE,
+                fontSize: 9,
+                marginBottom: 5,
+              }}
+            >
+              EVIDENCE OBSERVATORY · PRINCIPLE {selected.id}
+            </div>
+            <h2
+              ref={selectedHeadingRef}
+              tabIndex={-1}
+              style={{
+                ...SERIF,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                fontSize: 25,
+                fontWeight: 400,
+                lineHeight: 1.08,
+                margin: 0,
+                color: IVORY,
+              }}
+            >
+              {selected.title}
+            </h2>
+          </div>
+          <div
+            aria-label="Travel to another principle"
+            style={{ display: "flex", alignItems: "center", gap: 4 }}
+          >
+            {FOUNDATION_PRINCIPLES.map((principle) => (
+              <button
+                key={principle.id}
+                type="button"
+                className="foundation-observatory-nav"
+                onClick={() => onSelect(principle.id)}
+                aria-label={`Travel to principle ${principle.id}: ${principle.title}`}
+                aria-current={
+                  principle.id === selectedId ? "true" : undefined
+                }
+                title={principle.title}
+                style={{
+                  ...MONO,
+                  width: 29,
+                  height: 29,
+                  padding: 0,
+                  border:
+                    principle.id === selectedId
+                      ? "1px solid rgba(232,200,109,.72)"
+                      : "1px solid rgba(200,180,130,.13)",
+                  borderRadius: "50%",
+                  color: principle.id === selectedId ? "#FFF0BE" : MUTED,
+                  background:
+                    principle.id === selectedId
+                      ? "rgba(232,200,109,.12)"
+                      : "rgba(255,255,255,.015)",
+                  cursor: "pointer",
+                }}
+              >
+                {principle.id}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        <div
+          ref={readScrollRef}
+          className="foundation-scroll"
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflow: "auto",
+            padding: 20,
+          }}
+        >
+          <div
+            className="foundation-observatory-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "minmax(0,1.42fr) minmax(270px,.72fr)",
+              gap: 18,
+              alignItems: "start",
+            }}
+          >
+            <div style={{ minWidth: 0 }}>
+              <div
+                style={{
+                  ...MONO,
+                  color: GOLD,
+                  fontSize: 9,
+                  marginBottom: 9,
+                }}
+              >
+                INTERFACE EVIDENCE LAB · TRY THE PATTERN
+              </div>
+              <EvidenceLab key={selected.id} principle={selected} />
+            </div>
+
+            <div
+              aria-label="Principle interpretation"
+              style={{ display: "grid", gap: 9 }}
+            >
+              <EvidenceRecord
+                icon={<Eye size={14} />}
+                label="UNDERLYING BELIEF"
+                text={selected.belief}
+              />
+              <EvidenceRecord
+                icon={<SlidersHorizontal size={14} />}
+                label="DESIGN RESPONSIBILITY"
+                text={selected.designResponsibility}
+                emphasis
+              />
+              <EvidenceRecord
+                icon={<ShieldCheck size={14} />}
+                label="PRESERVED AGENCY"
+                text={selected.preservedAgency}
+              />
+              <div
+                style={{
+                  marginTop: 4,
+                  padding: "13px 14px",
+                  border: `1px solid ${BORDER}`,
+                  background: "rgba(255,255,255,.014)",
+                }}
+              >
+                <div
+                  style={{
+                    ...MONO,
+                    color: MUTED,
+                    fontSize: 8,
+                    marginBottom: 8,
+                  }}
+                >
+                  ORIGINAL PRINCIPLE
+                </div>
+                <p
+                  style={{
+                    ...SERIF,
+                    color: SECONDARY,
+                    fontSize: 14,
+                    lineHeight: 1.42,
+                    margin: 0,
+                  }}
+                >
+                  {selected.originalPrinciple}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer
+          style={{
+            flexShrink: 0,
+            display: "grid",
+            gridTemplateColumns: "minmax(0,1fr) auto",
+            alignItems: "center",
+            gap: 18,
+            padding: "13px 18px",
+            borderTop: `1px solid ${BORDER}`,
+            background: "rgba(5,7,12,.76)",
+          }}
+        >
+          <div style={{ minWidth: 0 }}>
+            <div
+              style={{
+                ...MONO,
+                color: PURPOSE,
+                fontSize: 8,
+                marginBottom: 5,
+              }}
+            >
+              CONTEXTUAL REFLECTION
+            </div>
+            <div
+              style={{
+                ...SERIF,
+                color: SECONDARY,
+                fontSize: 15,
+                lineHeight: 1.25,
+              }}
+            >
+              {reflectionPrompt(selected.id)}
+            </div>
+          </div>
+          <button
+            ref={reflectionTriggerRef}
+            type="button"
+            onClick={onReflection}
+            style={controlButton}
+          >
+            REFLECT <MessageCircleQuestion size={15} />
+          </button>
+        </footer>
+      </aside>
+    </div>
+  );
+}
+
+function EvidenceRecord({
+  icon,
+  label,
+  text,
+  emphasis = false,
+}: {
+  icon: ReactNode;
+  label: string;
+  text: string;
+  emphasis?: boolean;
+}) {
+  return (
+    <section
+      style={{
+        padding: 14,
+        border: emphasis
+          ? "1px solid rgba(232,200,109,.34)"
+          : `1px solid ${BORDER}`,
+        background: emphasis
+          ? "rgba(232,200,109,.055)"
+          : "rgba(255,255,255,.018)",
       }}
     >
       <div
         style={{
-          flexShrink: 0,
-          padding: "15px 18px 13px",
-          borderBottom: `1px solid ${BORDER}`,
-          background: "rgba(5,7,12,.76)",
+          ...MONO,
+          display: "flex",
+          alignItems: "center",
+          gap: 7,
+          color: emphasis ? PURPOSE : GOLD,
+          fontSize: 8,
+          marginBottom: 8,
         }}
       >
-        <button
-          type="button"
-          onClick={onBack}
-          style={{ ...controlButton, marginBottom: 13 }}
-        >
-          <ArrowLeft size={14} /> BACK TO FIELD
-        </button>
+        {icon} {label}
+      </div>
+      <p
+        style={{
+          ...SERIF,
+          color: emphasis ? IVORY : SECONDARY,
+          fontSize: emphasis ? 15.5 : 14.5,
+          lineHeight: 1.42,
+          margin: 0,
+        }}
+      >
+        {text}
+      </p>
+    </section>
+  );
+}
+
+function reflectionPrompt(id: FoundationPrincipleId) {
+  if (id === "02") {
+    return "If declining is harder than accepting, was the choice ever neutral?";
+  }
+  if (id === "10") {
+    return "What changed: the available options, or the frame used to rank them?";
+  }
+  return FOUNDATION_REFLECTION_QUESTIONS[
+    (Number(id) - 1) % FOUNDATION_REFLECTION_QUESTIONS.length
+  ];
+}
+
+function EvidenceLab({ principle }: { principle: FoundationPrinciple }) {
+  if (principle.id === "02") {
+    return <TargetingEvidenceLab />;
+  }
+  if (principle.id === "10") {
+    return <DecisionFramingEvidenceLab />;
+  }
+  return <ReusablePrincipleLab principle={principle} />;
+}
+
+const labToggleStyle: CSSProperties = {
+  ...MONO,
+  minHeight: 34,
+  padding: "0 11px",
+  border: `1px solid ${BORDER}`,
+  background: "rgba(255,255,255,.018)",
+  color: MUTED,
+  cursor: "pointer",
+};
+
+const labPrimaryAction: CSSProperties = {
+  ...SERIF,
+  minHeight: 40,
+  padding: "0 16px",
+  border: "1px solid rgba(232,200,109,.58)",
+  background: "rgba(232,200,109,.13)",
+  color: "#FFF0BE",
+  fontSize: 15,
+  cursor: "pointer",
+};
+
+const labSecondaryAction: CSSProperties = {
+  ...SERIF,
+  minHeight: 40,
+  padding: "0 16px",
+  border: `1px solid ${BORDER}`,
+  background: "rgba(255,255,255,.018)",
+  color: SECONDARY,
+  fontSize: 15,
+  cursor: "pointer",
+};
+
+function LabShell({
+  label,
+  summary,
+  controls,
+  children,
+  result,
+}: {
+  label: string;
+  summary: string;
+  controls: ReactNode;
+  children: ReactNode;
+  result: string;
+}) {
+  return (
+    <section
+      style={{
+        overflow: "hidden",
+        border: "1px solid rgba(138,174,200,.22)",
+        borderRadius: 14,
+        background:
+          "radial-gradient(circle at 82% 8%,rgba(138,174,200,.08),transparent 34%),rgba(4,7,13,.78)",
+        boxShadow: "inset 0 1px rgba(255,255,255,.025)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          gap: 16,
+          padding: "13px 14px",
+          borderBottom: `1px solid ${BORDER}`,
+        }}
+      >
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              ...MONO,
+              color: STELLAR_PALETTE.agentic,
+              fontSize: 8,
+              marginBottom: 5,
+            }}
+          >
+            {label}
+          </div>
+          <div
+            style={{
+              ...SERIF,
+              color: SECONDARY,
+              fontSize: 14,
+              lineHeight: 1.3,
+            }}
+          >
+            {summary}
+          </div>
+        </div>
         <div
-          aria-label="Choose another principle"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5,minmax(0,1fr))",
+            flexShrink: 0,
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
             gap: 5,
           }}
         >
-          {FOUNDATION_PRINCIPLES.map((principle) => (
-            <button
-              key={principle.id}
-              type="button"
-              onClick={() => onSelect(principle.id)}
-              aria-label={`Inspect principle ${principle.id}: ${principle.title}`}
-              aria-current={
-                principle.id === selectedId ? "true" : undefined
-              }
-              style={{
-                ...MONO,
-                minHeight: 34,
-                padding: 0,
-                border:
-                  principle.id === selectedId
-                    ? "1px solid rgba(232,200,109,.7)"
-                    : `1px solid ${BORDER}`,
-                color: principle.id === selectedId ? PURPOSE : MUTED,
-                background:
-                  principle.id === selectedId
-                    ? "rgba(232,200,109,.08)"
-                    : "transparent",
-                cursor: "pointer",
-              }}
-            >
-              {principle.id}
-            </button>
-          ))}
+          {controls}
         </div>
       </div>
+      <div style={{ padding: 16 }}>{children}</div>
       <div
-        ref={readScrollRef}
-        className="foundation-scroll"
-        style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "30px 28px 48px" }}
+        role="status"
+        aria-live="polite"
+        style={{
+          minHeight: 43,
+          padding: "10px 14px",
+          display: "flex",
+          alignItems: "center",
+          gap: 9,
+          borderTop: `1px solid ${BORDER}`,
+          ...MONO,
+          fontSize: 8.5,
+          lineHeight: 1.35,
+          color: result ? PURPOSE : MUTED,
+          background: result
+            ? "rgba(232,200,109,.045)"
+            : "rgba(255,255,255,.01)",
+        }}
       >
-        <PrincipleContent
-          selected={selected}
-          selectedHeadingRef={selectedHeadingRef}
-          reflectionTriggerRef={reflectionTriggerRef}
-          onReflection={onReflection}
-          compact
-        />
+        {result ? <Check size={13} aria-hidden="true" /> : <Eye size={13} aria-hidden="true" />}
+        {result || "INTERACT WITH THE EXAMPLE TO REVEAL THE BEHAVIORAL CONSEQUENCE"}
       </div>
-    </aside>
+    </section>
+  );
+}
+
+function TargetingEvidenceLab() {
+  const [mode, setMode] = useState<"pressure" | "sovereign">("pressure");
+  const [result, setResult] = useState("");
+
+  const switchMode = (next: "pressure" | "sovereign") => {
+    setMode(next);
+    setResult("");
+  };
+
+  return (
+    <LabShell
+      label="PRODUCT OFFER · CHOICE ARCHITECTURE"
+      summary="The offer stays the same. Change how the choice treats the person."
+      result={result}
+      controls={
+        <>
+          <button
+            type="button"
+            aria-pressed={mode === "pressure"}
+            onClick={() => switchMode("pressure")}
+            style={{
+              ...labToggleStyle,
+              color: mode === "pressure" ? STELLAR_PALETTE.risk : MUTED,
+              borderColor:
+                mode === "pressure"
+                  ? "rgba(216,108,97,.48)"
+                  : "rgba(200,180,130,.16)",
+              background:
+                mode === "pressure"
+                  ? "rgba(216,108,97,.07)"
+                  : "rgba(255,255,255,.018)",
+            }}
+          >
+            PRESSURE PATTERN
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "sovereign"}
+            onClick={() => switchMode("sovereign")}
+            style={{
+              ...labToggleStyle,
+              color: mode === "sovereign" ? PURPOSE : MUTED,
+              borderColor:
+                mode === "sovereign"
+                  ? "rgba(232,200,109,.5)"
+                  : "rgba(200,180,130,.16)",
+              background:
+                mode === "sovereign"
+                  ? "rgba(232,200,109,.07)"
+                  : "rgba(255,255,255,.018)",
+            }}
+          >
+            SOVEREIGN PATTERN
+          </button>
+        </>
+      }
+    >
+      <div
+        className="foundation-lab-stage"
+        style={{
+          minHeight: 295,
+          display: "grid",
+          placeItems: "center",
+          border: `1px solid ${BORDER}`,
+          borderRadius: 10,
+          padding: 20,
+          background:
+            "linear-gradient(145deg,rgba(16,20,31,.88),rgba(7,9,15,.96))",
+        }}
+      >
+        <div
+          style={{
+            width: "min(100%,430px)",
+            border:
+              mode === "pressure"
+                ? "1px solid rgba(216,108,97,.32)"
+                : "1px solid rgba(232,200,109,.3)",
+            background: "rgba(8,11,18,.96)",
+            boxShadow: "0 20px 60px rgba(0,0,0,.42)",
+          }}
+        >
+          {mode === "pressure" ? (
+            <>
+              <div
+                style={{
+                  ...MONO,
+                  padding: "8px 14px",
+                  color: "#F0A49B",
+                  fontSize: 8,
+                  textAlign: "center",
+                  background: "rgba(216,108,97,.11)",
+                  borderBottom: "1px solid rgba(216,108,97,.22)",
+                }}
+              >
+                YOUR OFFER EXPIRES IN 01:59
+              </div>
+              <div style={{ padding: "22px 22px 18px", textAlign: "center" }}>
+                <div
+                  style={{
+                    ...SERIF,
+                    color: IVORY,
+                    fontSize: 26,
+                    marginBottom: 7,
+                  }}
+                >
+                  Unlock your full potential
+                </div>
+                <p
+                  style={{
+                    ...SERIF,
+                    color: SECONDARY,
+                    fontSize: 14,
+                    lineHeight: 1.4,
+                    margin: "0 0 18px",
+                  }}
+                >
+                  Join today so you do not fall behind.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResult(
+                      "The system captured conversion, but urgency and unequal exits made consent ambiguous.",
+                    )
+                  }
+                  style={{
+                    ...labPrimaryAction,
+                    width: "100%",
+                    borderColor: "rgba(216,108,97,.68)",
+                    background: "rgba(216,108,97,.2)",
+                    color: "#FFD8D2",
+                  }}
+                >
+                  START MY FREE TRIAL
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResult(
+                      "The exit exists, but shame-loaded copy makes declining feel like failure.",
+                    )
+                  }
+                  style={{
+                    marginTop: 11,
+                    padding: 0,
+                    border: 0,
+                    background: "transparent",
+                    color: "rgba(189,177,142,.48)",
+                    ...SERIF,
+                    fontSize: 11,
+                    cursor: "pointer",
+                  }}
+                >
+                  No thanks, I prefer staying limited
+                </button>
+              </div>
+            </>
+          ) : (
+            <div style={{ padding: 22 }}>
+              <div
+                style={{
+                  ...MONO,
+                  color: PURPOSE,
+                  fontSize: 8,
+                  marginBottom: 10,
+                }}
+              >
+                OPTIONAL RECOMMENDATION
+              </div>
+              <div
+                style={{
+                  ...SERIF,
+                  color: IVORY,
+                  fontSize: 26,
+                  marginBottom: 8,
+                }}
+              >
+                Explore the expanded plan
+              </div>
+              <p
+                style={{
+                  ...SERIF,
+                  color: SECONDARY,
+                  fontSize: 14,
+                  lineHeight: 1.45,
+                  margin: "0 0 18px",
+                }}
+              >
+                It adds collaboration tools for $12/month. Your current plan
+                will continue unchanged if you decline.
+              </p>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 8,
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResult(
+                      "The person chose to explore after seeing the cost, purpose, and consequence.",
+                    )
+                  }
+                  style={labPrimaryAction}
+                >
+                  Explore plan
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResult(
+                      "Declining is treated as an ordinary choice; the current plan remains unchanged.",
+                    )
+                  }
+                  style={labSecondaryAction}
+                >
+                  Not now
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      <SignalStrip
+        items={
+          mode === "pressure"
+            ? ["Manufactured urgency", "Unequal emphasis", "Shame-loaded exit"]
+            : ["Visible consequence", "Equivalent exit", "No penalty for decline"]
+        }
+        risk={mode === "pressure"}
+      />
+    </LabShell>
+  );
+}
+
+type DecisionCriterion = "speed" | "cost" | "privacy";
+
+const DECISION_OPTIONS = [
+  {
+    id: "a",
+    name: "Cloud Relay",
+    speed: "Fastest",
+    cost: "$24",
+    privacy: "Standard",
+  },
+  {
+    id: "b",
+    name: "Local Bridge",
+    speed: "Moderate",
+    cost: "$16",
+    privacy: "Highest",
+  },
+  {
+    id: "c",
+    name: "Open Route",
+    speed: "Standard",
+    cost: "$8",
+    privacy: "Enhanced",
+  },
+] as const;
+
+const RECOMMENDED_BY_CRITERION: Record<DecisionCriterion, string> = {
+  speed: "a",
+  privacy: "b",
+  cost: "c",
+};
+
+function DecisionFramingEvidenceLab() {
+  const [criterion, setCriterion] = useState<DecisionCriterion>("speed");
+  const [chosen, setChosen] = useState<string | null>(null);
+  const recommended = RECOMMENDED_BY_CRITERION[criterion];
+  const criterionLabel =
+    criterion === "speed"
+      ? "fastest setup"
+      : criterion === "cost"
+        ? "lowest monthly cost"
+        : "strongest data boundary";
+
+  const changeCriterion = (next: DecisionCriterion) => {
+    setCriterion(next);
+    setChosen(null);
+  };
+
+  return (
+    <LabShell
+      label="SERVICE COMPARISON · RECOMMENDATION FRAME"
+      summary="Keep every option fixed, then change the criterion used to frame the recommendation."
+      result={
+        chosen
+          ? `You chose ${DECISION_OPTIONS.find((option) => option.id === chosen)?.name}. The system recommended for ${criterionLabel}, not because one option is universally best.`
+          : `Recommendation currently reflects ${criterionLabel}. Change the frame and watch the recommendation move.`
+      }
+      controls={
+        <>
+          {(["speed", "cost", "privacy"] as const).map((item) => (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={criterion === item}
+              onClick={() => changeCriterion(item)}
+              style={{
+                ...labToggleStyle,
+                color: criterion === item ? PURPOSE : MUTED,
+                borderColor:
+                  criterion === item
+                    ? "rgba(232,200,109,.5)"
+                    : "rgba(200,180,130,.16)",
+                background:
+                  criterion === item
+                    ? "rgba(232,200,109,.07)"
+                    : "rgba(255,255,255,.018)",
+              }}
+            >
+              {item.toUpperCase()}
+            </button>
+          ))}
+        </>
+      }
+    >
+      <div
+        style={{
+          padding: 14,
+          border: `1px solid ${BORDER}`,
+          borderRadius: 10,
+          background:
+            "linear-gradient(145deg,rgba(16,20,31,.88),rgba(7,9,15,.96))",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 14,
+            marginBottom: 12,
+          }}
+        >
+          <div>
+            <div style={{ ...MONO, color: MUTED, fontSize: 8, marginBottom: 4 }}>
+              VISIBLE RECOMMENDATION CRITERION
+            </div>
+            <div style={{ ...SERIF, color: IVORY, fontSize: 18 }}>
+              Recommended for {criterionLabel}
+            </div>
+          </div>
+          <Scale size={21} color={PURPOSE} aria-hidden="true" />
+        </div>
+        <div style={{ display: "grid", gap: 7 }}>
+          {DECISION_OPTIONS.map((option) => {
+            const isRecommended = option.id === recommended;
+            const isChosen = option.id === chosen;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setChosen(option.id)}
+                style={{
+                  minHeight: 64,
+                  display: "grid",
+                  gridTemplateColumns: "minmax(120px,1fr) repeat(3,minmax(62px,.55fr)) auto",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 11px",
+                  textAlign: "left",
+                  border: isChosen
+                    ? "1px solid rgba(138,174,200,.72)"
+                    : isRecommended
+                      ? "1px solid rgba(232,200,109,.5)"
+                      : `1px solid ${BORDER}`,
+                  background: isChosen
+                    ? "rgba(138,174,200,.1)"
+                    : isRecommended
+                      ? "rgba(232,200,109,.06)"
+                      : "rgba(255,255,255,.015)",
+                  color: IVORY,
+                  cursor: "pointer",
+                }}
+              >
+                <span>
+                  <span
+                    style={{
+                      ...SERIF,
+                      display: "block",
+                      fontSize: 17,
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    {option.name}
+                  </span>
+                  {isRecommended && (
+                    <span
+                      style={{
+                        ...MONO,
+                        display: "block",
+                        color: PURPOSE,
+                        fontSize: 7,
+                        marginTop: 5,
+                      }}
+                    >
+                      RECOMMENDED
+                    </span>
+                  )}
+                </span>
+                <Metric label="SPEED" value={option.speed} />
+                <Metric label="COST" value={option.cost} />
+                <Metric label="PRIVACY" value={option.privacy} />
+                <ChevronRight
+                  size={15}
+                  color={isRecommended ? PURPOSE : MUTED}
+                  aria-hidden="true"
+                />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <SignalStrip
+        items={[
+          "Options unchanged",
+          `Criterion: ${criterionLabel}`,
+          "Recommendation is conditional",
+        ]}
+      />
+    </LabShell>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <span>
+      <span
+        style={{
+          ...MONO,
+          display: "block",
+          color: MUTED,
+          fontSize: 6.5,
+          marginBottom: 4,
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          ...SERIF,
+          display: "block",
+          color: SECONDARY,
+          fontSize: 13,
+        }}
+      >
+        {value}
+      </span>
+    </span>
+  );
+}
+
+function ReusablePrincipleLab({
+  principle,
+}: {
+  principle: FoundationPrinciple;
+}) {
+  const [mode, setMode] = useState<"system" | "held">("system");
+  const [result, setResult] = useState("");
+
+  const changeMode = (next: "system" | "held") => {
+    setMode(next);
+    setResult("");
+  };
+
+  return (
+    <LabShell
+      label={principle.illustration.context}
+      summary="Compare a system-first interaction with the same moment after the principle is held."
+      result={result}
+      controls={
+        <>
+          <button
+            type="button"
+            aria-pressed={mode === "system"}
+            onClick={() => changeMode("system")}
+            style={{
+              ...labToggleStyle,
+              color: mode === "system" ? STELLAR_PALETTE.risk : MUTED,
+              borderColor:
+                mode === "system"
+                  ? "rgba(216,108,97,.42)"
+                  : "rgba(200,180,130,.16)",
+            }}
+          >
+            SYSTEM-FIRST
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "held"}
+            onClick={() => changeMode("held")}
+            style={{
+              ...labToggleStyle,
+              color: mode === "held" ? PURPOSE : MUTED,
+              borderColor:
+                mode === "held"
+                  ? "rgba(232,200,109,.5)"
+                  : "rgba(200,180,130,.16)",
+            }}
+          >
+            PRINCIPLE-HELD
+          </button>
+        </>
+      }
+    >
+      <div
+        style={{
+          minHeight: 285,
+          display: "grid",
+          placeItems: "center",
+          padding: 20,
+          border: `1px solid ${BORDER}`,
+          borderRadius: 10,
+          background:
+            "linear-gradient(145deg,rgba(16,20,31,.88),rgba(7,9,15,.96))",
+        }}
+      >
+        <div
+          style={{
+            width: "min(100%,450px)",
+            padding: 22,
+            border:
+              mode === "held"
+                ? "1px solid rgba(232,200,109,.3)"
+                : "1px solid rgba(216,108,97,.25)",
+            background: "rgba(8,11,18,.96)",
+            boxShadow: "0 20px 60px rgba(0,0,0,.42)",
+          }}
+        >
+          <div
+            style={{
+              ...MONO,
+              color: mode === "held" ? PURPOSE : STELLAR_PALETTE.risk,
+              fontSize: 8,
+              marginBottom: 10,
+            }}
+          >
+            {mode === "held"
+              ? "CONTEXT BEFORE COMMITMENT"
+              : "ACTION BEFORE CONTEXT"}
+          </div>
+          <div
+            style={{
+              ...SERIF,
+              color: IVORY,
+              fontSize: 25,
+              lineHeight: 1.15,
+              marginBottom: 10,
+            }}
+          >
+            {principle.illustration.heading}
+          </div>
+          <p
+            style={{
+              ...SERIF,
+              color: mode === "held" ? SECONDARY : "rgba(189,177,142,.56)",
+              fontSize: 14,
+              lineHeight: 1.45,
+              margin: "0 0 18px",
+            }}
+          >
+            {mode === "held"
+              ? principle.illustration.behavior
+              : "The system asks for commitment now and leaves the consequence, rationale, or exit to be discovered later."}
+          </p>
+          {mode === "held" ? (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 8,
+              }}
+            >
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "The person can proceed with relevant context and a visible boundary around the action.",
+                  )
+                }
+                style={labPrimaryAction}
+              >
+                Review and continue
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "The interaction preserves a legitimate pause or exit without treating it as failure.",
+                  )
+                }
+                style={labSecondaryAction}
+              >
+                Pause for now
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() =>
+                setResult(
+                  "The task may complete, but the person had to act before the system made its assumptions and consequences visible.",
+                )
+              }
+              style={{
+                ...labPrimaryAction,
+                width: "100%",
+                borderColor: "rgba(216,108,97,.5)",
+                background: "rgba(216,108,97,.12)",
+                color: "#FFD8D2",
+              }}
+            >
+              Continue
+            </button>
+          )}
+        </div>
+      </div>
+      <SignalStrip
+        items={
+          mode === "held"
+            ? ["Context visible", "Choice remains reversible", "Exit is ordinary"]
+            : ["Context deferred", "Single emphasized path", "Agency inferred"]
+        }
+        risk={mode === "system"}
+      />
+    </LabShell>
+  );
+}
+
+function SignalStrip({
+  items,
+  risk = false,
+}: {
+  items: readonly string[];
+  risk?: boolean;
+}) {
+  const color = risk ? STELLAR_PALETTE.risk : STELLAR_PALETTE.agentic;
+  return (
+    <div
+      aria-label="Observable interface signals"
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${items.length},minmax(0,1fr))`,
+        gap: 6,
+        marginTop: 9,
+      }}
+    >
+      {items.map((item) => (
+        <div
+          key={item}
+          style={{
+            minHeight: 35,
+            padding: "8px 9px",
+            display: "flex",
+            alignItems: "center",
+            gap: 7,
+            border: `1px solid ${BORDER}`,
+            background: "rgba(255,255,255,.012)",
+            ...MONO,
+            color,
+            fontSize: 7,
+            lineHeight: 1.25,
+          }}
+        >
+          <span
+            aria-hidden="true"
+            style={{
+              width: 5,
+              height: 5,
+              flexShrink: 0,
+              borderRadius: "50%",
+              background: color,
+              boxShadow: `0 0 8px ${color}`,
+            }}
+          />
+          {item.toUpperCase()}
+        </div>
+      ))}
+    </div>
   );
 }
 

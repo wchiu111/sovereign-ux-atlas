@@ -144,6 +144,19 @@ export function useSpatialCamera({
     fitBounds(openingBounds, false);
   }, [fitBounds, openingBounds]);
 
+  const moveToView = useCallback(
+    (nextView: SpatialView, markInteracted = true) => {
+      if (markInteracted) hasInteractedRef.current = true;
+      beginCameraMotion();
+      setView({
+        x: nextView.x,
+        y: nextView.y,
+        scale: clamp(nextView.scale, minScale, maxScale),
+      });
+    },
+    [beginCameraMotion, maxScale, minScale, setView],
+  );
+
   const focusPoint = useCallback(
     (
       point: { x: number; y: number },
@@ -288,6 +301,7 @@ export function useSpatialCamera({
     reducedMotion,
     fitBounds,
     resetView,
+    moveToView,
     focusPoint,
     zoomAt,
     zoomIn: () => zoomAt(viewRef.current.scale * 1.18),
