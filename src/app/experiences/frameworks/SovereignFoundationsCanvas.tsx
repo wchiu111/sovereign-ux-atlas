@@ -20,7 +20,6 @@ import {
   RotateCcw,
   Scale,
   ShieldCheck,
-  SlidersHorizontal,
   X,
 } from "lucide-react";
 import {
@@ -89,6 +88,9 @@ const WORLD_BOUNDS = {
   height: 1380,
 } as const;
 
+const DEEP_DIVE_WIDTH = 900;
+const DEEP_DIVE_HEIGHT = 520;
+
 const FIELD_PRINCIPLES: ReadonlyArray<{
   id: FoundationPrincipleId;
   x: number;
@@ -117,6 +119,48 @@ const FIELD_COMMITMENTS: ReadonlyArray<{
   { id: "judgment", x: 1200, y: 1095 },
   { id: "agency", x: 885, y: 800 },
 ];
+
+function deepDiveLayout(id: FoundationPrincipleId) {
+  const node = FIELD_PRINCIPLES.find((item) => item.id === id);
+  if (!node) {
+    return {
+      node: { x: CENTER_X, y: CENTER_Y },
+      specimenX: CENTER_X - DEEP_DIVE_WIDTH / 2,
+      specimenY: CENTER_Y - DEEP_DIVE_HEIGHT / 2,
+      focusX: CENTER_X,
+      focusY: CENTER_Y,
+    };
+  }
+
+  const rawX =
+    node.x < CENTER_X - 200
+      ? node.x + 180
+      : node.x > CENTER_X + 200
+        ? node.x - DEEP_DIVE_WIDTH - 180
+        : node.x - DEEP_DIVE_WIDTH / 2;
+  const rawY =
+    node.y < 430
+      ? node.y + 150
+      : node.y > 1170
+        ? node.y - DEEP_DIVE_HEIGHT - 180
+        : node.y - DEEP_DIVE_HEIGHT / 2;
+  const specimenX = Math.max(
+    180,
+    Math.min(WORLD_WIDTH - DEEP_DIVE_WIDTH - 180, rawX),
+  );
+  const specimenY = Math.max(
+    130,
+    Math.min(WORLD_HEIGHT - DEEP_DIVE_HEIGHT - 190, rawY),
+  );
+
+  return {
+    node,
+    specimenX,
+    specimenY,
+    focusX: specimenX + DEEP_DIVE_WIDTH / 2,
+    focusY: specimenY + DEEP_DIVE_HEIGHT / 2 + 42,
+  };
+}
 
 function connectionPath(x: number, y: number, index: number) {
   const dx = x - CENTER_X;
@@ -346,14 +390,20 @@ export default function SovereignFoundationsCanvas({
       setPreviewId(null);
       setSelectedId(id);
       if (!compactField) {
-        const node = FIELD_PRINCIPLES.find((item) => item.id === id);
-        if (node) {
-          camera.focusPoint(node, {
-            scale: 1.18,
-            anchorX: 0.2,
-            anchorY: 0.52,
-          });
-        }
+        const layout = deepDiveLayout(id);
+        camera.focusPoint(
+          { x: layout.focusX, y: layout.focusY },
+          {
+            scale: 0.88,
+            anchorX: 0.5,
+            anchorY:
+              layout.node.y < 430
+                ? 0.62
+                : layout.node.y > 1170
+                  ? 0.36
+                  : 0.49,
+          },
+        );
       }
       requestAnimationFrame(() => {
         if (readScrollRef.current) readScrollRef.current.scrollTop = 0;
@@ -576,7 +626,9 @@ export default function SovereignFoundationsCanvas({
               }}
             >
               <Move size={14} />
-              DRAG TO EXPLORE · SCROLL TO ZOOM · SELECT A PRINCIPLE
+              {selected
+                ? `PRINCIPLE ${selected.id} · DRAG TO KEEP EXPLORING`
+                : "DRAG TO EXPLORE · SCROLL TO ZOOM · SELECT A PRINCIPLE"}
             </div>
           }
           bottomCenter={
@@ -589,20 +641,11 @@ export default function SovereignFoundationsCanvas({
           }
           overlay={
             selected ? (
-              <OrbitalDeepDive
+              <SpatialDiveHud
                 key={selected.id}
-                selected={selected}
                 selectedId={selected.id}
-                anchorPosition={FIELD_PRINCIPLES.find(
-                  (item) => item.id === selected.id,
-                )}
-                cameraView={camera.view}
                 onSelect={selectPrinciple}
                 onBack={returnToField}
-                onReflection={() => setReflectionOpen(true)}
-                readScrollRef={readScrollRef}
-                selectedHeadingRef={selectedHeadingRef}
-                reflectionTriggerRef={reflectionTriggerRef}
               />
             ) : null
           }
@@ -796,6 +839,15 @@ export default function SovereignFoundationsCanvas({
             })}
           </nav>
 
+          {selected && (
+            <SpatialPrincipleDeepDive
+              key={selected.id}
+              principle={selected}
+              layout={deepDiveLayout(selected.id)}
+              selectedHeadingRef={selectedHeadingRef}
+            />
+          )}
+
           {previewId && !selectedId && (
             <PrinciplePreview
               id={previewId}
@@ -835,6 +887,7 @@ function FoundationsStyles() {
     <style>{`
       .sux-foundation-root *{box-sizing:border-box}
       .sux-foundation-root button:focus-visible{outline:1px solid ${PURPOSE};outline-offset:4px}
+      .sux-foundation-root .foundation-spatial-heading:focus{outline:none}
       .sux-foundation-root .foundation-scroll{scrollbar-width:thin;scrollbar-color:rgba(200,180,130,.36) transparent}
       .sux-foundation-root [data-foundation-row]:hover{background:rgba(232,200,109,.055)!important;border-color:rgba(232,200,109,.44)!important}
       .sux-foundation-root [data-foundation-rail-item]:hover{background:rgba(232,200,109,.06)!important}
@@ -882,20 +935,11 @@ function FoundationsStyles() {
       .sux-foundation-root .foundation-principle-label{max-width:176px;text-align:center;text-wrap:balance}
       .sux-foundation-root .foundation-spatial-trace{stroke-dashoffset:1.1;animation:foundationSpatialTrace 11s linear infinite}
       @keyframes foundationSpatialTrace{0%{stroke-dashoffset:1.1;opacity:0}8%{opacity:.7}34%{opacity:.42}42%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:0;opacity:0}}
-      .sux-foundation-root .foundation-detail-panel{animation:foundationPanelIn 380ms cubic-bezier(.16,1,.3,1) both}
-      @keyframes foundationPanelIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
-      .sux-foundation-root .foundation-observatory-shell{animation:foundationObservatoryResolve 420ms 480ms ease-out both}
-      @keyframes foundationObservatoryResolve{from{opacity:0}to{opacity:1}}
-      .sux-foundation-root .foundation-observatory-tether{stroke-dasharray:5 8;animation:foundationTetherResolve 900ms cubic-bezier(.16,1,.3,1) both}
-      @keyframes foundationTetherResolve{from{opacity:0;stroke-dashoffset:50}to{opacity:1;stroke-dashoffset:0}}
-      .sux-foundation-root .foundation-anchor-orbit{transform-origin:center;animation:foundationAnchorOrbit 8s linear infinite}
-      @keyframes foundationAnchorOrbit{to{transform:rotate(360deg)}}
-      .sux-foundation-root .foundation-observatory-nav:hover{border-color:rgba(232,200,109,.48)!important;color:${PURPOSE}!important}
+      .sux-foundation-root .foundation-world-specimen{animation:foundationSpecimenResolve 620ms 360ms cubic-bezier(.16,1,.3,1) both;transform-origin:50% 18%}
+      @keyframes foundationSpecimenResolve{from{opacity:0;transform:translateY(22px) scale(.965);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+      .sux-foundation-root .foundation-dive-link{stroke-dashoffset:70;animation:foundationDiveLink 900ms 300ms cubic-bezier(.16,1,.3,1) both}
+      @keyframes foundationDiveLink{from{opacity:0;stroke-dashoffset:70}to{opacity:1;stroke-dashoffset:0}}
       .sux-foundation-root .foundation-lab-stage{transition:border-color 220ms ease,background 220ms ease}
-      @media(max-width:1380px){
-        .sux-foundation-root .foundation-observatory-grid{grid-template-columns:minmax(0,1fr)!important}
-        .sux-foundation-root .foundation-observatory-shell .foundation-detail-panel{left:clamp(340px,29vw,420px)!important}
-      }
       .sux-foundation-root .foundation-compact-commitments{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
       .sux-foundation-root .foundation-compact-principles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
       .sux-foundation-root .foundation-detail-layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:0;flex:1}
@@ -917,7 +961,7 @@ function FoundationsStyles() {
       }
       @media(prefers-reduced-motion:reduce){
         .sux-foundation-root,.sux-foundation-root *{transition:none!important;animation:none!important}
-        .sux-foundation-root .foundation-spatial-trace,.sux-foundation-root .foundation-observatory-tether{display:none!important}
+        .sux-foundation-root .foundation-spatial-trace,.sux-foundation-root .foundation-dive-link{display:none!important}
       }
     `}</style>
   );
@@ -1039,51 +1083,179 @@ function PrinciplePreview({
   );
 }
 
-function OrbitalDeepDive({
-  selected,
+function SpatialDiveHud({
   selectedId,
-  anchorPosition,
-  cameraView,
   onSelect,
   onBack,
-  onReflection,
-  readScrollRef,
-  selectedHeadingRef,
-  reflectionTriggerRef,
 }: {
-  selected: FoundationPrinciple;
   selectedId: FoundationPrincipleId;
-  anchorPosition: (typeof FIELD_PRINCIPLES)[number] | undefined;
-  cameraView: SpatialView;
   onSelect: (id: FoundationPrincipleId) => void;
   onBack: () => void;
-  onReflection: () => void;
-  readScrollRef: RefObject<HTMLDivElement | null>;
-  selectedHeadingRef: RefObject<HTMLHeadingElement | null>;
-  reflectionTriggerRef: RefObject<HTMLButtonElement | null>;
 }) {
-  const anchorX = anchorPosition
-    ? cameraView.x + anchorPosition.x * cameraView.scale
-    : 220;
-  const anchorY = anchorPosition
-    ? cameraView.y + anchorPosition.y * cameraView.scale
-    : 360;
-  const tetherEndX = Math.max(360, Math.min(520, anchorX + 160));
-
   return (
     <div
-      className="foundation-observatory-shell"
+      data-spatial-control
+      aria-label="Selected principle navigation"
       style={{
         position: "absolute",
-        zIndex: 35,
+        left: 18,
+        top: 16,
+        zIndex: 38,
+        display: "flex",
+        alignItems: "center",
+        gap: 7,
+        padding: 6,
+        border: `1px solid ${BORDER}`,
+        borderRadius: 999,
+        background: "rgba(6,8,14,.86)",
+        boxShadow: "0 12px 42px rgba(0,0,0,.32)",
+        backdropFilter: "blur(10px)",
+      }}
+    >
+      <button
+        type="button"
+        onClick={onBack}
+        style={{
+          ...controlButton,
+          minHeight: 34,
+          borderRadius: 999,
+          padding: "0 13px",
+        }}
+      >
+        <ArrowLeft size={13} /> RETURN
+      </button>
+      <div
+        role="group"
+        aria-label="Travel to another principle"
+        style={{ display: "flex", gap: 3 }}
+      >
+        {FOUNDATION_PRINCIPLES.map((principle) => (
+          <button
+            key={principle.id}
+            type="button"
+            onClick={() => onSelect(principle.id)}
+            aria-label={`Travel to principle ${principle.id}: ${principle.title}`}
+            aria-current={principle.id === selectedId ? "true" : undefined}
+            title={principle.title}
+            style={{
+              ...MONO,
+              width: 28,
+              height: 28,
+              padding: 0,
+              border:
+                principle.id === selectedId
+                  ? "1px solid rgba(232,200,109,.72)"
+                  : "1px solid transparent",
+              borderRadius: "50%",
+              color: principle.id === selectedId ? "#FFF0BE" : MUTED,
+              background:
+                principle.id === selectedId
+                  ? "rgba(232,200,109,.12)"
+                  : "transparent",
+              cursor: "pointer",
+            }}
+          >
+            {principle.id}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type DisclosureId = "original" | "belief" | "responsibility" | "agency";
+
+function SpatialPrincipleDeepDive({
+  principle,
+  layout,
+  selectedHeadingRef,
+}: {
+  principle: FoundationPrinciple;
+  layout: ReturnType<typeof deepDiveLayout>;
+  selectedHeadingRef: RefObject<HTMLHeadingElement | null>;
+}) {
+  const [disclosure, setDisclosure] = useState<DisclosureId | null>(null);
+  const specimenCenterX = layout.specimenX + DEEP_DIVE_WIDTH / 2;
+  const specimenCenterY = layout.specimenY + DEEP_DIVE_HEIGHT / 2;
+  const dx = specimenCenterX - layout.node.x;
+  const dy = specimenCenterY - layout.node.y;
+  const distance = Math.hypot(dx, dy) || 1;
+  const startX = layout.node.x + (dx / distance) * 54;
+  const startY = layout.node.y + (dy / distance) * 54;
+  const targetX =
+    Math.abs(dx) > Math.abs(dy)
+      ? dx > 0
+        ? layout.specimenX
+        : layout.specimenX + DEEP_DIVE_WIDTH
+      : Math.max(
+          layout.specimenX + 80,
+          Math.min(layout.specimenX + DEEP_DIVE_WIDTH - 80, layout.node.x),
+        );
+  const targetY =
+    Math.abs(dx) > Math.abs(dy)
+      ? Math.max(
+          layout.specimenY + 70,
+          Math.min(
+            layout.specimenY + DEEP_DIVE_HEIGHT - 70,
+            layout.node.y,
+          ),
+        )
+      : dy > 0
+        ? layout.specimenY
+        : layout.specimenY + DEEP_DIVE_HEIGHT;
+  const reflectionX = Math.min(
+    WORLD_WIDTH - 290,
+    layout.specimenX + DEEP_DIVE_WIDTH + 38,
+  );
+  const reflectionY = layout.specimenY + 170;
+
+  const disclosures: Array<{
+    id: DisclosureId;
+    label: string;
+    text: string;
+    color: string;
+  }> = [
+    {
+      id: "original",
+      label: "Original principle",
+      text: principle.originalPrinciple,
+      color: MUTED,
+    },
+    {
+      id: "belief",
+      label: "Underlying belief",
+      text: principle.belief,
+      color: STELLAR_PALETTE.agentic,
+    },
+    {
+      id: "responsibility",
+      label: "Design responsibility",
+      text: principle.designResponsibility,
+      color: PURPOSE,
+    },
+    {
+      id: "agency",
+      label: "Preserved agency",
+      text: principle.preservedAgency,
+      color: STELLAR_PALETTE.relational,
+    },
+  ];
+  const activeDisclosure = disclosures.find((item) => item.id === disclosure);
+
+  return (
+    <section
+      aria-label={`Spatial deep dive for principle ${principle.id}: ${principle.title}`}
+      style={{
+        position: "absolute",
         inset: 0,
+        zIndex: 24,
         pointerEvents: "none",
       }}
     >
       <svg
         aria-hidden="true"
-        width="100%"
-        height="100%"
+        width={WORLD_WIDTH}
+        height={WORLD_HEIGHT}
         style={{
           position: "absolute",
           inset: 0,
@@ -1093,337 +1265,246 @@ function OrbitalDeepDive({
       >
         <defs>
           <linearGradient
-            id="foundation-observatory-tether"
-            x1="0"
-            x2="1"
+            id={`foundation-dive-link-${principle.id}`}
+            x1={startX}
+            y1={startY}
+            x2={targetX}
+            y2={targetY}
+            gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0%" stopColor={PURPOSE} stopOpacity=".84" />
-            <stop offset="100%" stopColor={PURPOSE} stopOpacity=".12" />
+            <stop offset="0%" stopColor={PURPOSE} stopOpacity=".88" />
+            <stop offset="100%" stopColor={STELLAR_PALETTE.agentic} stopOpacity=".28" />
           </linearGradient>
-          <filter
-            id="foundation-observatory-anchor-glow"
-            x="-100%"
-            y="-100%"
-            width="300%"
-            height="300%"
-          >
-            <feGaussianBlur stdDeviation="8" />
-          </filter>
         </defs>
-        <circle
-          cx={anchorX}
-          cy={anchorY}
-          r="28"
-          fill="none"
-          stroke={PURPOSE}
-          strokeOpacity=".48"
-          strokeDasharray="2 7"
-          className="foundation-anchor-orbit"
-        />
-        <circle
-          cx={anchorX}
-          cy={anchorY}
-          r="7"
-          fill={PURPOSE}
-          opacity=".54"
-          filter="url(#foundation-observatory-anchor-glow)"
-        />
         <path
-          d={`M ${anchorX + 28} ${anchorY} C ${anchorX + 110} ${anchorY}, ${tetherEndX - 70} 110, ${tetherEndX} 110`}
+          d={`M ${startX} ${startY} Q ${(startX + targetX) / 2} ${(startY + targetY) / 2 - 74} ${targetX} ${targetY}`}
           fill="none"
-          stroke="url(#foundation-observatory-tether)"
-          strokeWidth="1"
+          stroke={`url(#foundation-dive-link-${principle.id})`}
+          strokeWidth="1.4"
+          strokeDasharray="4 8"
           vectorEffect="non-scaling-stroke"
-          className="foundation-observatory-tether"
+          className="foundation-dive-link"
+        />
+        <circle
+          cx={targetX}
+          cy={targetY}
+          r="9"
+          fill={STELLAR_PALETTE.agentic}
+          opacity=".78"
+        />
+        <ellipse
+          cx={specimenCenterX}
+          cy={specimenCenterY}
+          rx={DEEP_DIVE_WIDTH / 2 + 46}
+          ry={DEEP_DIVE_HEIGHT / 2 + 34}
+          fill="none"
+          stroke={STELLAR_PALETTE.agentic}
+          strokeOpacity=".12"
+          strokeWidth="1"
+          strokeDasharray="2 14"
+          vectorEffect="non-scaling-stroke"
         />
       </svg>
 
-      <aside
-        data-spatial-control
-        className="foundation-detail-panel foundation-scroll"
-        aria-label={`Principle ${selected.id} evidence observatory`}
-        style={{
-          position: "absolute",
-          pointerEvents: "auto",
-          inset: "22px 22px 76px clamp(360px,32vw,470px)",
-          minWidth: 0,
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          border: "1px solid rgba(232,200,109,.28)",
-          borderRadius: 18,
-          background:
-            "radial-gradient(circle at 18% 2%,rgba(232,200,109,.085),transparent 30%),linear-gradient(145deg,rgba(14,17,27,.965),rgba(5,7,13,.985))",
-          boxShadow:
-            "-28px 0 90px rgba(0,0,0,.5),0 24px 90px rgba(0,0,0,.5),inset 0 1px rgba(255,248,230,.035)",
-          backdropFilter: "blur(18px)",
-        }}
-      >
-        <header
-          style={{
-            flexShrink: 0,
-            display: "grid",
-            gridTemplateColumns: "auto minmax(0,1fr) auto",
-            alignItems: "center",
-            gap: 16,
-            padding: "15px 18px",
-            borderBottom: `1px solid ${BORDER}`,
-            background: "rgba(5,7,12,.66)",
-          }}
-        >
-          <button type="button" onClick={onBack} style={controlButton}>
-            <ArrowLeft size={14} /> RETURN TO FIELD
-          </button>
-          <div style={{ minWidth: 0 }}>
-            <div
-              style={{
-                ...MONO,
-                color: PURPOSE,
-                fontSize: 9,
-                marginBottom: 5,
-              }}
-            >
-              EVIDENCE OBSERVATORY · PRINCIPLE {selected.id}
-            </div>
-            <h2
-              ref={selectedHeadingRef}
-              tabIndex={-1}
-              style={{
-                ...SERIF,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                fontSize: 25,
-                fontWeight: 400,
-                lineHeight: 1.08,
-                margin: 0,
-                color: IVORY,
-              }}
-            >
-              {selected.title}
-            </h2>
-          </div>
-          <div
-            aria-label="Travel to another principle"
-            style={{ display: "flex", alignItems: "center", gap: 4 }}
-          >
-            {FOUNDATION_PRINCIPLES.map((principle) => (
-              <button
-                key={principle.id}
-                type="button"
-                className="foundation-observatory-nav"
-                onClick={() => onSelect(principle.id)}
-                aria-label={`Travel to principle ${principle.id}: ${principle.title}`}
-                aria-current={
-                  principle.id === selectedId ? "true" : undefined
-                }
-                title={principle.title}
-                style={{
-                  ...MONO,
-                  width: 29,
-                  height: 29,
-                  padding: 0,
-                  border:
-                    principle.id === selectedId
-                      ? "1px solid rgba(232,200,109,.72)"
-                      : "1px solid rgba(200,180,130,.13)",
-                  borderRadius: "50%",
-                  color: principle.id === selectedId ? "#FFF0BE" : MUTED,
-                  background:
-                    principle.id === selectedId
-                      ? "rgba(232,200,109,.12)"
-                      : "rgba(255,255,255,.015)",
-                  cursor: "pointer",
-                }}
-              >
-                {principle.id}
-              </button>
-            ))}
-          </div>
-        </header>
-
-        <div
-          ref={readScrollRef}
-          className="foundation-scroll"
-          style={{
-            flex: 1,
-            minHeight: 0,
-            overflow: "auto",
-            padding: 20,
-          }}
-        >
-          <div
-            className="foundation-observatory-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "minmax(0,1.42fr) minmax(270px,.72fr)",
-              gap: 18,
-              alignItems: "start",
-            }}
-          >
-            <div style={{ minWidth: 0 }}>
-              <div
-                style={{
-                  ...MONO,
-                  color: GOLD,
-                  fontSize: 9,
-                  marginBottom: 9,
-                }}
-              >
-                INTERFACE EVIDENCE LAB · TRY THE PATTERN
-              </div>
-              <EvidenceLab key={selected.id} principle={selected} />
-            </div>
-
-            <div
-              aria-label="Principle interpretation"
-              style={{ display: "grid", gap: 9 }}
-            >
-              <EvidenceRecord
-                icon={<Eye size={14} />}
-                label="UNDERLYING BELIEF"
-                text={selected.belief}
-              />
-              <EvidenceRecord
-                icon={<SlidersHorizontal size={14} />}
-                label="DESIGN RESPONSIBILITY"
-                text={selected.designResponsibility}
-                emphasis
-              />
-              <EvidenceRecord
-                icon={<ShieldCheck size={14} />}
-                label="PRESERVED AGENCY"
-                text={selected.preservedAgency}
-              />
-              <div
-                style={{
-                  marginTop: 4,
-                  padding: "13px 14px",
-                  border: `1px solid ${BORDER}`,
-                  background: "rgba(255,255,255,.014)",
-                }}
-              >
-                <div
-                  style={{
-                    ...MONO,
-                    color: MUTED,
-                    fontSize: 8,
-                    marginBottom: 8,
-                  }}
-                >
-                  ORIGINAL PRINCIPLE
-                </div>
-                <p
-                  style={{
-                    ...SERIF,
-                    color: SECONDARY,
-                    fontSize: 14,
-                    lineHeight: 1.42,
-                    margin: 0,
-                  }}
-                >
-                  {selected.originalPrinciple}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <footer
-          style={{
-            flexShrink: 0,
-            display: "grid",
-            gridTemplateColumns: "minmax(0,1fr) auto",
-            alignItems: "center",
-            gap: 18,
-            padding: "13px 18px",
-            borderTop: `1px solid ${BORDER}`,
-            background: "rgba(5,7,12,.76)",
-          }}
-        >
-          <div style={{ minWidth: 0 }}>
-            <div
-              style={{
-                ...MONO,
-                color: PURPOSE,
-                fontSize: 8,
-                marginBottom: 5,
-              }}
-            >
-              CONTEXTUAL REFLECTION
-            </div>
-            <div
-              style={{
-                ...SERIF,
-                color: SECONDARY,
-                fontSize: 15,
-                lineHeight: 1.25,
-              }}
-            >
-              {reflectionPrompt(selected.id)}
-            </div>
-          </div>
-          <button
-            ref={reflectionTriggerRef}
-            type="button"
-            onClick={onReflection}
-            style={controlButton}
-          >
-            REFLECT <MessageCircleQuestion size={15} />
-          </button>
-        </footer>
-      </aside>
-    </div>
-  );
-}
-
-function EvidenceRecord({
-  icon,
-  label,
-  text,
-  emphasis = false,
-}: {
-  icon: ReactNode;
-  label: string;
-  text: string;
-  emphasis?: boolean;
-}) {
-  return (
-    <section
-      style={{
-        padding: 14,
-        border: emphasis
-          ? "1px solid rgba(232,200,109,.34)"
-          : `1px solid ${BORDER}`,
-        background: emphasis
-          ? "rgba(232,200,109,.055)"
-          : "rgba(255,255,255,.018)",
-      }}
-    >
       <div
         style={{
-          ...MONO,
+          position: "absolute",
+          left: layout.node.x,
+          top:
+            layout.node.y < specimenCenterY
+              ? layout.node.y - 94
+              : layout.node.y + 92,
+          width: 360,
+          transform: "translateX(-50%)",
+          textAlign: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <div
+          style={{
+            ...MONO,
+            color: PURPOSE,
+            fontSize: 9,
+            marginBottom: 7,
+          }}
+        >
+          PRINCIPLE {principle.id} · SPATIAL ANCHOR
+        </div>
+        <h2
+          ref={selectedHeadingRef}
+          className="foundation-spatial-heading"
+          tabIndex={-1}
+          style={{
+            ...SERIF,
+            color: IVORY,
+            fontSize: 30,
+            fontWeight: 400,
+            lineHeight: 1.05,
+            margin: 0,
+            textWrap: "balance",
+            textShadow: "0 4px 20px #04060B",
+          }}
+        >
+          {principle.title}
+        </h2>
+      </div>
+
+      <div
+        data-spatial-control
+        className="foundation-world-specimen"
+        style={{
+          position: "absolute",
+          left: layout.specimenX,
+          top: layout.specimenY,
+          width: DEEP_DIVE_WIDTH,
+          minHeight: DEEP_DIVE_HEIGHT,
+          pointerEvents: "auto",
+          filter: "drop-shadow(0 30px 70px rgba(0,0,0,.52))",
+        }}
+      >
+        <EvidenceLab principle={principle} />
+      </div>
+
+      <aside
+        aria-label="Contextual reflection"
+        style={{
+          position: "absolute",
+          left: reflectionX,
+          top: reflectionY,
+          width: 250,
+          minHeight: 180,
+          padding: "22px 21px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          border: "1px solid rgba(166,139,212,.32)",
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle,rgba(166,139,212,.11),rgba(7,9,15,.94) 70%)",
+          boxShadow: "0 0 50px rgba(166,139,212,.08)",
+          textAlign: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <div
+          style={{
+            ...MONO,
+            color: STELLAR_PALETTE.relational,
+            fontSize: 8,
+            marginBottom: 11,
+          }}
+        >
+          REFLECTION IN CONTEXT
+        </div>
+        <div
+          style={{
+            ...SERIF,
+            color: SECONDARY,
+            fontSize: 17,
+            lineHeight: 1.35,
+          }}
+        >
+          {reflectionPrompt(principle.id)}
+        </div>
+      </aside>
+
+      <div
+        data-spatial-control
+        role="group"
+        aria-label="Reveal principle context"
+        style={{
+          position: "absolute",
+          left: layout.specimenX + 30,
+          top: layout.specimenY + DEEP_DIVE_HEIGHT + 28,
           display: "flex",
           alignItems: "center",
-          gap: 7,
-          color: emphasis ? PURPOSE : GOLD,
-          fontSize: 8,
-          marginBottom: 8,
+          gap: 9,
+          pointerEvents: "auto",
         }}
       >
-        {icon} {label}
+        {disclosures.map((item) => {
+          const active = disclosure === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              aria-expanded={active}
+              onClick={() => setDisclosure(active ? null : item.id)}
+              style={{
+                ...MONO,
+                minHeight: 38,
+                padding: "0 13px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                border: active
+                  ? `1px solid ${item.color}`
+                  : `1px solid ${BORDER}`,
+                borderRadius: 999,
+                background: active
+                  ? "rgba(12,15,24,.96)"
+                  : "rgba(7,9,15,.82)",
+                color: active ? item.color : MUTED,
+                cursor: "pointer",
+                boxShadow: active ? `0 0 24px ${item.color}18` : "none",
+              }}
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: item.color,
+                }}
+              />
+              {item.label.toUpperCase()}
+            </button>
+          );
+        })}
       </div>
-      <p
-        style={{
-          ...SERIF,
-          color: emphasis ? IVORY : SECONDARY,
-          fontSize: emphasis ? 15.5 : 14.5,
-          lineHeight: 1.42,
-          margin: 0,
-        }}
-      >
-        {text}
-      </p>
+
+      {activeDisclosure && (
+        <div
+          data-spatial-control
+          role="region"
+          aria-live="polite"
+          style={{
+            position: "absolute",
+            left: layout.specimenX + 120,
+            top: layout.specimenY + DEEP_DIVE_HEIGHT + 82,
+            zIndex: 32,
+            width: 590,
+            padding: "17px 19px",
+            border: `1px solid ${activeDisclosure.color}55`,
+            background: "rgba(7,9,15,.97)",
+            boxShadow: "0 22px 60px rgba(0,0,0,.5)",
+            pointerEvents: "auto",
+          }}
+        >
+          <div
+            style={{
+              ...MONO,
+              color: activeDisclosure.color,
+              fontSize: 8,
+              marginBottom: 8,
+            }}
+          >
+            {activeDisclosure.label.toUpperCase()}
+          </div>
+          <p
+            style={{
+              ...SERIF,
+              color: IVORY,
+              fontSize: 17,
+              lineHeight: 1.42,
+              margin: 0,
+            }}
+          >
+            {activeDisclosure.text}
+          </p>
+        </div>
+      )}
     </section>
   );
 }
