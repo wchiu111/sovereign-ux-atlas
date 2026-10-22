@@ -9,6 +9,7 @@ interface Props {
   children: ReactNode;
   background?: CSSProperties["background"];
   backgroundImage?: CSSProperties["backgroundImage"];
+  backgroundLayer?: ReactNode;
   bottomLeft?: ReactNode;
   bottomCenter?: ReactNode;
   overlay?: ReactNode;
@@ -21,6 +22,7 @@ export function SpatialViewport({
   children,
   background,
   backgroundImage,
+  backgroundLayer,
   bottomLeft,
   bottomCenter,
   overlay,
@@ -47,6 +49,7 @@ export function SpatialViewport({
         backgroundImage,
       }}
     >
+      {backgroundLayer}
       <div
         style={{
           position: "absolute",

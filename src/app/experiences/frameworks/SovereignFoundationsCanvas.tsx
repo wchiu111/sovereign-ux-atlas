@@ -45,6 +45,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import foundationsNebula from "@/assets/foundations-nebula.webp";
 import {
   FOUNDATION_COMMITMENTS,
   FOUNDATION_PRACTICE_NOTE,
@@ -113,6 +114,81 @@ const WORLD_BOUNDS = {
 
 const DEEP_DIVE_WIDTH = 900;
 const DEEP_DIVE_HEIGHT = 520;
+
+function clampAtmosphere(value: number, limit: number) {
+  return Math.max(-limit, Math.min(limit, value));
+}
+
+function FoundationsNebulaBackground({
+  camera,
+  dimmed,
+}: {
+  camera: ReturnType<typeof useSpatialCamera>;
+  dimmed: boolean;
+}) {
+  const parallaxX = clampAtmosphere(camera.view.x * 0.035, 72);
+  const parallaxY = clampAtmosphere(camera.view.y * 0.035, 56);
+  const zoomResponse = Math.max(
+    1.06,
+    Math.min(1.11, 1.075 + (camera.view.scale - 0.7) * 0.025),
+  );
+  const transition = camera.reducedMotion
+    ? "none"
+    : camera.cameraTransition === "none"
+      ? "opacity 420ms ease,filter 420ms ease"
+      : `${camera.cameraTransition},opacity 420ms ease,filter 420ms ease`;
+
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        inset: "-14%",
+        zIndex: 0,
+        overflow: "hidden",
+        pointerEvents: "none",
+        background: "#02050A",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `url(${foundationsNebula})`,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          opacity: dimmed ? 0.24 : 0.42,
+          filter: dimmed
+            ? "saturate(.68) brightness(.58) contrast(1.08)"
+            : "saturate(.82) brightness(.72) contrast(1.05)",
+          transform: `translate3d(${parallaxX}px,${parallaxY}px,0) scale(${zoomResponse})`,
+          transformOrigin: "50% 50%",
+          transition,
+          willChange: camera.reducedMotion ? undefined : "transform,opacity,filter",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: dimmed
+            ? "radial-gradient(ellipse at 50% 48%,rgba(2,5,12,.9) 0%,rgba(2,5,12,.72) 34%,rgba(2,5,12,.52) 66%,rgba(2,5,12,.64) 100%)"
+            : "radial-gradient(ellipse at 50% 48%,rgba(2,5,12,.78) 0%,rgba(2,5,12,.48) 34%,rgba(2,5,12,.18) 67%,rgba(2,5,12,.35) 100%)",
+          transition: camera.reducedMotion ? "none" : "background 420ms ease",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(180deg,rgba(2,4,10,.28),transparent 24%,transparent 70%,rgba(2,4,10,.44)),radial-gradient(ellipse at center,transparent 42%,rgba(1,3,8,.42) 100%)",
+        }}
+      />
+    </div>
+  );
+}
 
 const FIELD_PRINCIPLES: ReadonlyArray<{
   id: FoundationPrincipleId;
@@ -552,7 +628,7 @@ export default function SovereignFoundationsCanvas({
         flexDirection: "column",
         overflow: "hidden",
         color: IVORY,
-        background: "#04060B",
+        background: `radial-gradient(ellipse at center,rgba(2,5,12,.8) 0%,rgba(2,5,12,.58) 52%,rgba(2,5,12,.72) 100%),url(${foundationsNebula}) center / cover no-repeat,#04060B`,
         opacity: phase === "exiting" ? 0 : 1,
         transition: "opacity 210ms ease",
       }}
@@ -628,8 +704,13 @@ export default function SovereignFoundationsCanvas({
           camera={camera}
           worldSize={{ width: WORLD_WIDTH, height: WORLD_HEIGHT }}
           ariaLabel={`${frameworkTitle}, ${sectionTitle}, interactive Foundations principle field`}
-          background="radial-gradient(ellipse at 48% 47%,rgba(232,200,109,.055),transparent 38%),radial-gradient(ellipse at 12% 84%,rgba(82,123,170,.055),transparent 34%),#04060B"
-          backgroundImage="linear-gradient(rgba(130,160,155,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(130,160,155,.018) 1px,transparent 1px)"
+          background="#02050A"
+          backgroundLayer={
+            <FoundationsNebulaBackground
+              camera={camera}
+              dimmed={Boolean(selectedId)}
+            />
+          }
           bottomLeft={
             <div
               data-spatial-control
@@ -915,7 +996,7 @@ function FoundationsStyles() {
       .sux-foundation-root [data-foundation-row]:hover{background:rgba(232,200,109,.055)!important;border-color:rgba(232,200,109,.44)!important}
       .sux-foundation-root [data-foundation-rail-item]:hover{background:rgba(232,200,109,.06)!important}
       .sux-foundation-root .foundation-star-field{
-        opacity:.62;
+        opacity:.24;
         background-image:
           radial-gradient(1px 1px at 8% 12%,rgba(232,200,109,.55) 98%,transparent),
           radial-gradient(1px 1px at 20% 75%,rgba(138,174,200,.48) 98%,transparent),
