@@ -1536,6 +1536,9 @@ function reflectionPrompt(id: FoundationPrincipleId) {
   if (id === "02") {
     return "If declining is harder than accepting, was the choice ever neutral?";
   }
+  if (id === "03") {
+    return "Does the response acknowledge what the person has already experienced before proposing a solution?";
+  }
   if (id === "10") {
     return "What changed: the available options, or the frame used to rank them?";
   }
@@ -4060,11 +4063,11 @@ function SupportAttunementEvidenceLab() {
       style={{
         overflow: "hidden",
         minHeight: 492,
-        border: "1px solid rgba(124,180,213,.28)",
+        border: "1px solid rgba(123,145,163,.3)",
         borderRadius: 15,
-        background: "#0D1520",
-        color: "#EAF1F7",
-        boxShadow: "0 26px 70px rgba(0,0,0,.42)",
+        background: "#F4F6F8",
+        color: "#26313D",
+        boxShadow: "0 26px 70px rgba(0,0,0,.36)",
       }}
     >
       <header
@@ -4074,8 +4077,8 @@ function SupportAttunementEvidenceLab() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: "1px solid #223141",
-          background: "#101B28",
+          borderBottom: "1px solid #D8E0E6",
+          background: "#FFFFFF",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -4086,8 +4089,8 @@ function SupportAttunementEvidenceLab() {
               display: "grid",
               placeItems: "center",
               borderRadius: "50%",
-              background: "#18344A",
-              color: "#83C6E7",
+              background: "#E4EEF3",
+              color: "#3E7087",
             }}
           >
             <Headphones size={16} />
@@ -4106,7 +4109,7 @@ function SupportAttunementEvidenceLab() {
               style={{
                 fontFamily: "Inter,sans-serif",
                 fontSize: 9.5,
-                color: "#8CA0B2",
+                color: "#758392",
               }}
             >
               Upload failure · open
@@ -4117,8 +4120,8 @@ function SupportAttunementEvidenceLab() {
           style={{
             padding: "5px 8px",
             borderRadius: 999,
-            background: "#2C2518",
-            color: "#E7C477",
+            background: "#F6ECD8",
+            color: "#8B6428",
             fontFamily: "Inter,sans-serif",
             fontSize: 9,
           }}
@@ -4139,8 +4142,8 @@ function SupportAttunementEvidenceLab() {
             padding: "17px 18px 14px",
             display: "flex",
             flexDirection: "column",
-            borderRight: "1px solid #223141",
-            background: "#0B131D",
+            borderRight: "1px solid #D8E0E6",
+            background: "#FBFCFD",
           }}
         >
           <div
@@ -4159,8 +4162,8 @@ function SupportAttunementEvidenceLab() {
                 placeItems: "center",
                 flexShrink: 0,
                 borderRadius: "50%",
-                background: "#263245",
-                color: "#CBD7E5",
+                background: "#E5EBF0",
+                color: "#657687",
               }}
             >
               <UserRound size={14} />
@@ -4170,11 +4173,11 @@ function SupportAttunementEvidenceLab() {
                 maxWidth: 460,
                 padding: "11px 13px",
                 borderRadius: "5px 13px 13px 13px",
-                background: "#182433",
+                background: "#EAF0F4",
                 fontFamily: "Inter,sans-serif",
                 fontSize: 11.5,
                 lineHeight: 1.45,
-                color: "#D8E2EC",
+                color: "#354351",
               }}
             >
               I’ve tried uploading the invoice three times. It fails with X14,
@@ -4197,15 +4200,15 @@ function SupportAttunementEvidenceLab() {
                   maxWidth: 500,
                   padding: "11px 13px",
                   borderRadius: "13px 5px 13px 13px",
-                  background: approach === "fast" ? "#2A2430" : "#123044",
+                  background: approach === "fast" ? "#FFF1EE" : "#EAF4F5",
                   border:
                     approach === "fast"
-                      ? "1px solid #493546"
-                      : "1px solid #22506B",
+                      ? "1px solid #E7C0BA"
+                      : "1px solid #B5D3D6",
                   fontFamily: "Inter,sans-serif",
                   fontSize: 11.5,
                   lineHeight: 1.45,
-                  color: "#E8EEF5",
+                  color: "#34434D",
                 }}
               >
                 {approach === "fast" ? (
@@ -4229,8 +4232,8 @@ function SupportAttunementEvidenceLab() {
                   placeItems: "center",
                   flexShrink: 0,
                   borderRadius: "50%",
-                  background: "#17364B",
-                  color: "#8DCDEB",
+                  background: approach === "fast" ? "#F5DCD7" : "#D8E9EB",
+                  color: approach === "fast" ? "#A75B52" : "#3F7880",
                 }}
               >
                 <Headphones size={14} />
@@ -4246,7 +4249,7 @@ function SupportAttunementEvidenceLab() {
                     fontFamily: "Inter,sans-serif",
                     fontSize: 9,
                     fontWeight: 700,
-                    color: "#8EA2B5",
+                    color: "#748291",
                     marginBottom: 8,
                   }}
                 >
@@ -4269,10 +4272,10 @@ function SupportAttunementEvidenceLab() {
                       alignItems: "center",
                       gap: 9,
                       textAlign: "left",
-                      border: "1px solid #4A3848",
+                      border: "1px solid #E0C4BF",
                       borderRadius: 9,
-                      background: "#241E28",
-                      color: "#E5D7E2",
+                      background: "#FFF4F2",
+                      color: "#6D453F",
                       fontFamily: "Inter,sans-serif",
                       fontSize: 10.5,
                       lineHeight: 1.3,
@@ -4292,10 +4295,10 @@ function SupportAttunementEvidenceLab() {
                       alignItems: "center",
                       gap: 9,
                       textAlign: "left",
-                      border: "1px solid #285772",
+                      border: "1px solid #B8D2D5",
                       borderRadius: 9,
-                      background: "#102A3B",
-                      color: "#D8ECF6",
+                      background: "#EEF6F6",
+                      color: "#315F66",
                       fontFamily: "Inter,sans-serif",
                       fontSize: 10.5,
                       lineHeight: 1.3,
@@ -4368,14 +4371,14 @@ function SupportAttunementEvidenceLab() {
           </div>
         </main>
 
-        <aside style={{ padding: 16, background: "#101B28" }}>
+        <aside style={{ padding: 16, background: "#F0F4F6" }}>
           <div
             style={{
               fontFamily: "Inter,sans-serif",
               fontSize: 9,
               fontWeight: 700,
               letterSpacing: ".08em",
-              color: "#8FA4B7",
+              color: "#697887",
               marginBottom: 12,
             }}
           >
@@ -4399,10 +4402,10 @@ function SupportAttunementEvidenceLab() {
                 width: "100%",
                 minHeight: 36,
                 marginTop: 10,
-                border: "1px solid #304459",
+                border: "1px solid #BBC8D1",
                 borderRadius: 8,
-                background: "transparent",
-                color: "#9FB4C6",
+                background: "#FFFFFF",
+                color: "#526576",
                 fontFamily: "Inter,sans-serif",
                 fontSize: 9.5,
                 cursor: "pointer",
@@ -4422,9 +4425,9 @@ function SupportAttunementEvidenceLab() {
           display: "flex",
           alignItems: "center",
           gap: 9,
-          borderTop: "1px solid #223141",
-          background: result ? "#102B27" : "#0F1925",
-          color: result ? "#A9DCC8" : "#8499AC",
+          borderTop: "1px solid #D8E0E6",
+          background: result ? "#EAF3EE" : "#FFFFFF",
+          color: result ? "#32624C" : "#71808D",
           fontFamily: "Inter,sans-serif",
           fontSize: 10.5,
           lineHeight: 1.35,
@@ -4451,10 +4454,10 @@ function SupportAction({
       onClick={onClick}
       style={{
         minHeight: 38,
-        border: "1px solid #31506A",
+        border: "1px solid #B9CAD4",
         borderRadius: 8,
-        background: "#122638",
-        color: "#D5E5EF",
+        background: "#F7FAFB",
+        color: "#3E5968",
         fontFamily: "Inter,sans-serif",
         fontSize: 9.5,
         cursor: "pointer",
@@ -4470,7 +4473,7 @@ function ContextFact({ label, value }: LabelValueProps) {
     <div
       style={{
         padding: "10px 0",
-        borderBottom: "1px solid #263647",
+        borderBottom: "1px solid #D8E0E6",
       }}
     >
       <div
@@ -4478,7 +4481,7 @@ function ContextFact({ label, value }: LabelValueProps) {
           fontFamily: "Inter,sans-serif",
           fontSize: 7.5,
           fontWeight: 700,
-          color: "#71879A",
+          color: "#7B8996",
           marginBottom: 4,
         }}
       >
@@ -4489,7 +4492,7 @@ function ContextFact({ label, value }: LabelValueProps) {
           fontFamily: "Inter,sans-serif",
           fontSize: 10.5,
           lineHeight: 1.35,
-          color: "#CBD8E4",
+          color: "#40505E",
         }}
       >
         {value}
