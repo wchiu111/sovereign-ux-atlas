@@ -115,6 +115,29 @@ const WORLD_BOUNDS = {
 const DEEP_DIVE_WIDTH = 900;
 const DEEP_DIVE_HEIGHT = 520;
 
+const COMMITMENT_VISUALS = {
+  clarity: { color: "#E8C86D", rgb: "232,200,109" },
+  consent: { color: "#5CCBC6", rgb: "92,203,198" },
+  judgment: { color: "#A68BD4", rgb: "166,139,212" },
+  agency: { color: "#D4916A", rgb: "212,145,106" },
+} as const;
+
+const PRINCIPLE_VISUALS: Record<
+  FoundationPrincipleId,
+  { color: string; rgb: string }
+> = {
+  "01": { color: "#63A7F2", rgb: "99,167,242" },
+  "02": { color: "#E4AE56", rgb: "228,174,86" },
+  "03": { color: "#5CCBC6", rgb: "92,203,198" },
+  "04": { color: "#7FD39A", rgb: "127,211,154" },
+  "05": { color: "#B18BE0", rgb: "177,139,224" },
+  "06": { color: "#E8C86D", rgb: "232,200,109" },
+  "07": { color: "#E07E72", rgb: "224,126,114" },
+  "08": { color: "#D7709E", rgb: "215,112,158" },
+  "09": { color: "#62B0E8", rgb: "98,176,232" },
+  "10": { color: "#D4916A", rgb: "212,145,106" },
+};
+
 function clampAtmosphere(value: number, limit: number) {
   return Math.max(-limit, Math.min(limit, value));
 }
@@ -158,10 +181,10 @@ function FoundationsNebulaBackground({
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
-          opacity: dimmed ? 0.24 : 0.42,
+          opacity: dimmed ? 0.23 : 0.5,
           filter: dimmed
             ? "saturate(.68) brightness(.58) contrast(1.08)"
-            : "saturate(.82) brightness(.72) contrast(1.05)",
+            : "saturate(.94) brightness(.78) contrast(1.05)",
           transform: `translate3d(${parallaxX}px,${parallaxY}px,0) scale(${zoomResponse})`,
           transformOrigin: "50% 50%",
           transition,
@@ -174,7 +197,7 @@ function FoundationsNebulaBackground({
           inset: 0,
           background: dimmed
             ? "radial-gradient(ellipse at 50% 48%,rgba(2,5,12,.9) 0%,rgba(2,5,12,.72) 34%,rgba(2,5,12,.52) 66%,rgba(2,5,12,.64) 100%)"
-            : "radial-gradient(ellipse at 50% 48%,rgba(2,5,12,.78) 0%,rgba(2,5,12,.48) 34%,rgba(2,5,12,.18) 67%,rgba(2,5,12,.35) 100%)",
+            : "radial-gradient(ellipse at 50% 48%,rgba(2,5,12,.78) 0%,rgba(2,5,12,.46) 34%,rgba(2,5,12,.12) 67%,rgba(2,5,12,.28) 100%)",
           transition: camera.reducedMotion ? "none" : "background 420ms ease",
         }}
       />
@@ -183,7 +206,7 @@ function FoundationsNebulaBackground({
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg,rgba(2,4,10,.28),transparent 24%,transparent 70%,rgba(2,4,10,.44)),radial-gradient(ellipse at center,transparent 42%,rgba(1,3,8,.42) 100%)",
+            "linear-gradient(180deg,rgba(2,4,10,.22),transparent 24%,transparent 70%,rgba(2,4,10,.36)),radial-gradient(ellipse at center,transparent 42%,rgba(1,3,8,.34) 100%)",
         }}
       />
     </div>
@@ -325,8 +348,8 @@ function FoundationsConnections({
           rx={radius * 1.23}
           ry={radius * 0.78}
           fill="none"
-          stroke={PURPOSE}
-          strokeOpacity={index === 0 ? 0.18 : index === 1 ? 0.1 : 0.065}
+          stroke="#C4CDD0"
+          strokeOpacity={index === 0 ? 0.13 : index === 1 ? 0.075 : 0.045}
           strokeWidth="1"
           strokeDasharray={index === 1 ? "3 14" : index === 2 ? "1 19" : undefined}
           vectorEffect="non-scaling-stroke"
@@ -338,7 +361,7 @@ function FoundationsConnections({
         y1={CENTER_Y}
         x2="2050"
         y2={CENTER_Y}
-        stroke={PURPOSE}
+        stroke="#B8C5CB"
         strokeOpacity=".035"
         vectorEffect="non-scaling-stroke"
       />
@@ -347,20 +370,21 @@ function FoundationsConnections({
         y1="150"
         x2={CENTER_X}
         y2="1450"
-        stroke={PURPOSE}
+        stroke="#B8C5CB"
         strokeOpacity=".035"
         vectorEffect="non-scaling-stroke"
       />
       {FIELD_PRINCIPLES.map((node, index) => {
         const path = connectionPath(node.x, node.y, index);
         const active = focusId === node.id;
+        const visual = PRINCIPLE_VISUALS[node.id];
         return (
           <g key={node.id}>
             <path
               d={path}
               fill="none"
-              stroke={PURPOSE}
-              strokeOpacity={active ? 0.58 : focusId ? 0.025 : 0.1}
+              stroke={active ? visual.color : "#B8C5CB"}
+              strokeOpacity={active ? 0.62 : focusId ? 0.025 : 0.11}
               strokeWidth={active ? 1.4 : 0.8}
               vectorEffect="non-scaling-stroke"
               style={{ transition: "stroke-opacity 260ms ease" }}
@@ -370,8 +394,8 @@ function FoundationsConnections({
               d={path}
               pathLength={1}
               fill="none"
-              stroke={active ? PURPOSE : "#D7E9EA"}
-              strokeOpacity={active ? 0.92 : 0.32}
+              stroke={visual.color}
+              strokeOpacity={active ? 0.94 : focusId ? 0.05 : 0.16}
               strokeWidth={active ? 2.2 : 1.25}
               strokeLinecap="round"
               strokeDasharray=".11 1"
@@ -381,7 +405,7 @@ function FoundationsConnections({
             {active && (
               <circle
                 r="5"
-                fill={PURPOSE}
+                fill={visual.color}
                 filter="url(#foundation-trace-glow)"
               >
                 <animateMotion
@@ -816,6 +840,7 @@ export default function SovereignFoundationsCanvas({
                 (item) => item.id === position.id,
               );
               if (!commitment) return null;
+              const visual = COMMITMENT_VISUALS[position.id];
               return (
                 <div
                   key={position.id}
@@ -838,7 +863,9 @@ export default function SovereignFoundationsCanvas({
                     gap: 8,
                     padding: 24,
                     textAlign: "center",
-                  }}
+                    "--commitment-color": visual.color,
+                    "--commitment-rgb": visual.rgb,
+                  } as CSSProperties}
                 >
                   <span
                     aria-hidden="true"
@@ -846,8 +873,8 @@ export default function SovereignFoundationsCanvas({
                       width: 9,
                       height: 9,
                       transform: "rotate(45deg)",
-                      background: PURPOSE,
-                      boxShadow: "0 0 16px rgba(232,200,109,.72)",
+                      background: visual.color,
+                      boxShadow: `0 0 16px rgba(${visual.rgb},.78)`,
                     }}
                   />
                   <span
@@ -881,6 +908,7 @@ export default function SovereignFoundationsCanvas({
               const principle = FOUNDATION_PRINCIPLES_BY_ID[position.id];
               const active = selectedId === position.id;
               const previewed = previewId === position.id;
+              const visual = PRINCIPLE_VISUALS[position.id];
               return (
                 <SpatialNode
                   key={position.id}
@@ -903,7 +931,9 @@ export default function SovereignFoundationsCanvas({
                     width: 180,
                     minHeight: 132,
                     zIndex: active || previewed ? 12 : 8,
-                  }}
+                    "--node-color": visual.color,
+                    "--node-rgb": visual.rgb,
+                  } as CSSProperties}
                 >
                   <span
                     className="foundation-principle-orb"
@@ -919,7 +949,7 @@ export default function SovereignFoundationsCanvas({
                     <span
                       style={{
                         ...MONO,
-                        color: active ? "#FFF0BE" : PURPOSE,
+                        color: active ? "#FFFFFF" : visual.color,
                         fontSize: 10,
                         letterSpacing: ".08em",
                       }}
@@ -1013,9 +1043,15 @@ function FoundationsStyles() {
         box-shadow:0 0 0 12px rgba(232,200,109,.025),0 0 44px rgba(232,200,109,.20),0 0 110px rgba(232,200,109,.08),inset 0 0 24px rgba(232,200,109,.12);
       }
       .sux-foundation-root .foundation-commitment{
-        border:1px solid rgba(232,200,109,.35);
-        background:radial-gradient(circle at 42% 32%,rgba(232,200,109,.15),rgba(17,16,17,.96) 55%,rgba(6,8,13,.98));
-        box-shadow:0 0 35px rgba(232,200,109,.055),inset 0 0 28px rgba(232,200,109,.04);
+        border:1px solid rgba(var(--commitment-rgb),.62);
+        background:
+          radial-gradient(circle at 42% 30%,rgba(var(--commitment-rgb),.24),rgba(var(--commitment-rgb),.075) 35%,rgba(11,13,20,.96) 68%),
+          rgba(6,8,13,.98);
+        box-shadow:
+          0 0 0 1px rgba(var(--commitment-rgb),.08),
+          0 0 34px rgba(var(--commitment-rgb),.2),
+          0 0 92px rgba(var(--commitment-rgb),.09),
+          inset 0 0 32px rgba(var(--commitment-rgb),.1);
       }
       .sux-foundation-root .foundation-principle-node{
         border:0;background:transparent;color:${IVORY};cursor:pointer;padding:8px;
@@ -1023,20 +1059,89 @@ function FoundationsStyles() {
         transition:opacity 260ms ease,filter 220ms ease;
       }
       .sux-foundation-root .foundation-principle-node:hover,
-      .sux-foundation-root .foundation-principle-node:focus-visible{filter:brightness(1.28)}
+      .sux-foundation-root .foundation-principle-node:focus-visible{filter:brightness(1.08)}
+      .sux-foundation-root .foundation-principle-node:focus-visible{
+        outline:2px solid var(--node-color);
+        outline-offset:5px;
+        border-radius:18px;
+      }
       .sux-foundation-root .foundation-principle-orb{
-        border:1px solid rgba(232,200,109,.34);
-        background:radial-gradient(circle at 38% 31%,rgba(255,232,155,.2),rgba(17,17,22,.98) 68%);
-        box-shadow:0 0 22px rgba(232,200,109,.08),inset 0 0 15px rgba(232,200,109,.05);
-        transition:width 320ms cubic-bezier(.16,1,.3,1),height 320ms cubic-bezier(.16,1,.3,1),border-color 220ms ease,box-shadow 220ms ease;
+        position:relative;
+        isolation:isolate;
+        border:1px solid rgba(var(--node-rgb),.62);
+        background:
+          radial-gradient(circle at 40% 32%,rgba(255,255,255,.25),transparent 15%),
+          radial-gradient(circle,rgba(var(--node-rgb),.27),rgba(var(--node-rgb),.07) 42%,rgba(11,14,22,.98) 72%);
+        box-shadow:
+          0 0 18px rgba(var(--node-rgb),.18),
+          0 0 46px rgba(var(--node-rgb),.07),
+          inset 0 0 17px rgba(var(--node-rgb),.11);
+        transition:
+          width 320ms cubic-bezier(.16,1,.3,1),
+          height 320ms cubic-bezier(.16,1,.3,1),
+          transform 280ms cubic-bezier(.16,1,.3,1),
+          border-color 220ms ease,
+          box-shadow 280ms ease,
+          background 280ms ease;
+      }
+      .sux-foundation-root .foundation-principle-orb>span{position:relative;z-index:2}
+      .sux-foundation-root .foundation-principle-orb::after{
+        content:"";
+        position:absolute;
+        inset:-8px;
+        z-index:0;
+        border:1px solid rgba(var(--node-rgb),.7);
+        border-radius:50%;
+        opacity:0;
+        transform:scale(.86);
+        box-shadow:0 0 26px rgba(var(--node-rgb),.2);
+        transition:opacity 260ms ease,transform 300ms cubic-bezier(.16,1,.3,1);
       }
       .sux-foundation-root .foundation-principle-node:hover .foundation-principle-orb,
-      .sux-foundation-root .foundation-principle-node:focus-visible .foundation-principle-orb,
-      .sux-foundation-root .foundation-principle-node[data-selected="true"] .foundation-principle-orb{
-        border-color:rgba(232,200,109,.82);
-        box-shadow:0 0 30px rgba(232,200,109,.27),0 0 75px rgba(232,200,109,.09),inset 0 0 19px rgba(232,200,109,.12);
+      .sux-foundation-root .foundation-principle-node:focus-visible .foundation-principle-orb{
+        transform:scale(1.1);
+        border-color:rgba(var(--node-rgb),.98);
+        background:
+          radial-gradient(circle at 40% 32%,rgba(255,255,255,.42),transparent 16%),
+          radial-gradient(circle,rgba(var(--node-rgb),.4),rgba(var(--node-rgb),.11) 44%,rgba(10,13,21,.98) 73%);
+        box-shadow:
+          0 0 24px rgba(var(--node-rgb),.48),
+          0 0 68px rgba(var(--node-rgb),.22),
+          inset 0 0 21px rgba(var(--node-rgb),.2);
       }
-      .sux-foundation-root .foundation-principle-label{max-width:176px;text-align:center;text-wrap:balance}
+      .sux-foundation-root .foundation-principle-node:hover .foundation-principle-orb::after,
+      .sux-foundation-root .foundation-principle-node:focus-visible .foundation-principle-orb::after{
+        opacity:.42;
+        transform:scale(.96);
+      }
+      .sux-foundation-root .foundation-principle-node[data-selected="true"] .foundation-principle-orb{
+        transform:scale(1.035);
+        border-color:var(--node-color);
+        background:
+          radial-gradient(circle at 40% 32%,rgba(255,255,255,.48),transparent 16%),
+          radial-gradient(circle,rgba(var(--node-rgb),.44),rgba(var(--node-rgb),.13) 45%,rgba(9,12,20,.98) 74%);
+        box-shadow:
+          0 0 0 2px rgba(var(--node-rgb),.14),
+          0 0 30px rgba(var(--node-rgb),.52),
+          0 0 86px rgba(var(--node-rgb),.24),
+          inset 0 0 23px rgba(var(--node-rgb),.22);
+      }
+      .sux-foundation-root .foundation-principle-node[data-selected="true"] .foundation-principle-orb::after{
+        opacity:.92;
+        transform:scale(1);
+        border-color:rgba(var(--node-rgb),.88);
+        box-shadow:0 0 24px rgba(var(--node-rgb),.3),0 0 52px rgba(var(--node-rgb),.14);
+      }
+      .sux-foundation-root .foundation-principle-label{
+        max-width:176px;text-align:center;text-wrap:balance;
+        transition:color 220ms ease,text-shadow 220ms ease;
+      }
+      .sux-foundation-root .foundation-principle-node:hover .foundation-principle-label,
+      .sux-foundation-root .foundation-principle-node:focus-visible .foundation-principle-label,
+      .sux-foundation-root .foundation-principle-node[data-selected="true"] .foundation-principle-label{
+        color:#FFF8E9;
+        text-shadow:0 0 16px rgba(var(--node-rgb),.34);
+      }
       .sux-foundation-root .foundation-spatial-trace{stroke-dashoffset:1.1;animation:foundationSpatialTrace 11s linear infinite}
       @keyframes foundationSpatialTrace{0%{stroke-dashoffset:1.1;opacity:0}8%{opacity:.7}34%{opacity:.42}42%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:0;opacity:0}}
       .sux-foundation-root .foundation-world-specimen{animation:foundationSpecimenResolve 620ms 360ms cubic-bezier(.16,1,.3,1) both;transform-origin:50% 18%}
@@ -1066,6 +1171,9 @@ function FoundationsStyles() {
       @media(prefers-reduced-motion:reduce){
         .sux-foundation-root,.sux-foundation-root *{transition:none!important;animation:none!important}
         .sux-foundation-root .foundation-spatial-trace,.sux-foundation-root .foundation-dive-link{display:none!important}
+        .sux-foundation-root .foundation-principle-node:hover .foundation-principle-orb,
+        .sux-foundation-root .foundation-principle-node:focus-visible .foundation-principle-orb,
+        .sux-foundation-root .foundation-principle-node[data-selected="true"] .foundation-principle-orb{transform:none!important}
       }
     `}</style>
   );
