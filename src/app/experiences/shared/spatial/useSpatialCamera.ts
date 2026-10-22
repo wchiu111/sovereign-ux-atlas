@@ -39,9 +39,28 @@ const DEFAULT_PADDING: SpatialPadding = {
 };
 
 const CAMERA_EASING = "transform 780ms cubic-bezier(.22,1,.36,1)";
+const SPATIAL_INTERACTIVE_SELECTOR = [
+  "[data-spatial-control]",
+  "[data-spatial-node]",
+  "button",
+  "a[href]",
+  "input",
+  "select",
+  "textarea",
+  "[role='button']",
+  "[role='link']",
+  "[contenteditable='true']",
+].join(",");
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
+}
+
+function isSpatialInteractiveTarget(target: EventTarget | null) {
+  return (
+    target instanceof Element &&
+    target.closest(SPATIAL_INTERACTIVE_SELECTOR) !== null
+  );
 }
 
 export function useSpatialCamera({
@@ -204,6 +223,7 @@ export function useSpatialCamera({
 
   const handleWheel = useCallback(
     (event: ReactWheelEvent<HTMLDivElement>) => {
+      if (isSpatialInteractiveTarget(event.target)) return;
       event.preventDefault();
       zoomAt(
         viewRef.current.scale * Math.exp(-event.deltaY * 0.0013),
@@ -216,7 +236,7 @@ export function useSpatialCamera({
 
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
-      if ((event.target as HTMLElement).closest("[data-spatial-control]")) return;
+      if (isSpatialInteractiveTarget(event.target)) return;
       stopCameraMotion();
       hasInteractedRef.current = true;
       event.currentTarget.setPointerCapture(event.pointerId);

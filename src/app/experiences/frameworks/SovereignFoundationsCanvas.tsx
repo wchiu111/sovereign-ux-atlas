@@ -8,18 +8,26 @@ import {
   type RefObject,
 } from "react";
 import {
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
+  Bot,
   Check,
   ChevronRight,
+  Clock3,
+  Database,
   Eye,
+  FileSearch,
+  Headphones,
   MessageCircleQuestion,
+  MessageSquare,
   Minus,
   Move,
   Plus,
   RotateCcw,
   Scale,
   ShieldCheck,
+  UserRound,
   X,
 } from "lucide-react";
 import {
@@ -1523,7 +1531,13 @@ function reflectionPrompt(id: FoundationPrincipleId) {
 
 function EvidenceLab({ principle }: { principle: FoundationPrinciple }) {
   if (principle.id === "02") {
-    return <TargetingEvidenceLab />;
+    return <SubscriptionUpgradeEvidenceLab />;
+  }
+  if (principle.id === "03") {
+    return <SupportAttunementEvidenceLab />;
+  }
+  if (principle.id === "09") {
+    return <InterpretationEvidenceLab />;
   }
   if (principle.id === "10") {
     return <DecisionFramingEvidenceLab />;
@@ -1658,274 +1672,1481 @@ function LabShell({
   );
 }
 
-function TargetingEvidenceLab() {
-  const [mode, setMode] = useState<"pressure" | "sovereign">("pressure");
-  const [result, setResult] = useState("");
+function SubscriptionUpgradeEvidenceLab() {
+  const [mode, setMode] = useState<"pressure" | "informed">("pressure")
+  const [billing, setBilling] = useState<"monthly" | "annual">("annual")
+  const [result, setResult] = useState("")
 
-  const switchMode = (next: "pressure" | "sovereign") => {
-    setMode(next);
-    setResult("");
-  };
+  const changeMode = (next: "pressure" | "informed") => {
+    setMode(next)
+    setBilling("annual")
+    setResult("")
+  }
+  const annual = billing === "annual"
 
   return (
-    <LabShell
-      label="PRODUCT OFFER · CHOICE ARCHITECTURE"
-      summary="The offer stays the same. Change how the choice treats the person."
-      result={result}
-      controls={
-        <>
+    <section
+      aria-label="Interactive SaaS subscription upgrade offer"
+      style={{
+        overflow: "hidden",
+        minHeight: 492,
+        border: "1px solid rgba(138,174,200,.25)",
+        borderRadius: 16,
+        background: "#F4F6FA",
+        color: "#182133",
+        boxShadow: "0 26px 70px rgba(0,0,0,.36)",
+      }}
+    >
+      <header
+        style={{
+          height: 58,
+          padding: "0 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 16,
+          borderBottom: "1px solid #DCE2EA",
+          background: "#FFFFFF",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+          <div
+            aria-hidden="true"
+            style={{
+              width: 29,
+              height: 29,
+              display: "grid",
+              placeItems: "center",
+              borderRadius: 8,
+              background: "#3559E8",
+              color: "#FFFFFF",
+              fontFamily: "Inter,sans-serif",
+              fontWeight: 700,
+            }}
+          >
+            N
+          </div>
+          <div>
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 13,
+                fontWeight: 700,
+              }}
+            >
+              Northstar Workspace
+            </div>
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 10,
+                color: "#6B7486",
+              }}
+            >
+              Billing and plans
+            </div>
+          </div>
+        </div>
+        <div
+          role="group"
+          aria-label="Offer architecture"
+          style={{
+            display: "flex",
+            gap: 3,
+            padding: 3,
+            borderRadius: 9,
+            background: "#EEF1F6",
+          }}
+        >
           <button
             type="button"
             aria-pressed={mode === "pressure"}
-            onClick={() => switchMode("pressure")}
+            onClick={() => changeMode("pressure")}
             style={{
-              ...labToggleStyle,
-              color: mode === "pressure" ? STELLAR_PALETTE.risk : MUTED,
-              borderColor:
-                mode === "pressure"
-                  ? "rgba(216,108,97,.48)"
-                  : "rgba(200,180,130,.16)",
-              background:
-                mode === "pressure"
-                  ? "rgba(216,108,97,.07)"
-                  : "rgba(255,255,255,.018)",
+              minHeight: 30,
+              padding: "0 11px",
+              border: 0,
+              borderRadius: 7,
+              background: mode === "pressure" ? "#FFFFFF" : "transparent",
+              color: mode === "pressure" ? "#B24842" : "#697386",
+              boxShadow:
+                mode === "pressure" ? "0 1px 4px rgba(20,28,45,.12)" : "none",
+              fontFamily: "Inter,sans-serif",
+              fontSize: 10,
+              fontWeight: 700,
+              cursor: "pointer",
             }}
           >
-            PRESSURE PATTERN
+            Pressure offer
           </button>
           <button
             type="button"
-            aria-pressed={mode === "sovereign"}
-            onClick={() => switchMode("sovereign")}
+            aria-pressed={mode === "informed"}
+            onClick={() => changeMode("informed")}
             style={{
-              ...labToggleStyle,
-              color: mode === "sovereign" ? PURPOSE : MUTED,
-              borderColor:
-                mode === "sovereign"
-                  ? "rgba(232,200,109,.5)"
-                  : "rgba(200,180,130,.16)",
-              background:
-                mode === "sovereign"
-                  ? "rgba(232,200,109,.07)"
-                  : "rgba(255,255,255,.018)",
+              minHeight: 30,
+              padding: "0 11px",
+              border: 0,
+              borderRadius: 7,
+              background: mode === "informed" ? "#FFFFFF" : "transparent",
+              color: mode === "informed" ? "#244BBE" : "#697386",
+              boxShadow:
+                mode === "informed" ? "0 1px 4px rgba(20,28,45,.12)" : "none",
+              fontFamily: "Inter,sans-serif",
+              fontSize: 10,
+              fontWeight: 700,
+              cursor: "pointer",
             }}
           >
-            SOVEREIGN PATTERN
+            Informed choice
           </button>
-        </>
-      }
-    >
+        </div>
+      </header>
+
       <div
-        className="foundation-lab-stage"
         style={{
-          minHeight: 295,
+          minHeight: 382,
           display: "grid",
-          placeItems: "center",
-          border: `1px solid ${BORDER}`,
-          borderRadius: 10,
-          padding: 20,
-          background:
-            "linear-gradient(145deg,rgba(16,20,31,.88),rgba(7,9,15,.96))",
+          gridTemplateColumns: "238px minmax(0,1fr)",
         }}
       >
-        <div
+        <aside
           style={{
-            width: "min(100%,430px)",
-            border:
-              mode === "pressure"
-                ? "1px solid rgba(216,108,97,.32)"
-                : "1px solid rgba(232,200,109,.3)",
-            background: "rgba(8,11,18,.96)",
-            boxShadow: "0 20px 60px rgba(0,0,0,.42)",
+            padding: 20,
+            borderRight: "1px solid #DCE2EA",
+            background: "#F9FAFC",
           }}
         >
+          <div
+            style={{
+              fontFamily: "Inter,sans-serif",
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: ".08em",
+              color: "#687286",
+              marginBottom: 12,
+            }}
+          >
+            CURRENT PLAN
+          </div>
+          <div
+            style={{
+              padding: 15,
+              border: "1px solid #D7DDE6",
+              borderRadius: 11,
+              background: "#FFFFFF",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 15,
+                fontWeight: 700,
+              }}
+            >
+              Starter
+            </div>
+            <div style={{ margin: "7px 0 13px" }}>
+              <span
+                style={{
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 27,
+                  fontWeight: 750,
+                }}
+              >
+                $12
+              </span>
+              <span
+                style={{
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 11,
+                  color: "#6B7486",
+                }}
+              >
+                {" "}
+                / month
+              </span>
+            </div>
+            {["3 team members", "5 active projects", "Email support"].map(
+              (item) => (
+                <div
+                  key={item}
+                  style={{
+                    display: "flex",
+                    gap: 7,
+                    alignItems: "center",
+                    marginTop: 8,
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 11,
+                    color: "#566174",
+                  }}
+                >
+                  <Check size={12} color="#4A67C7" /> {item}
+                </div>
+              ),
+            )}
+          </div>
+          <div
+            style={{
+              marginTop: 13,
+              fontFamily: "Inter,sans-serif",
+              fontSize: 10,
+              lineHeight: 1.45,
+              color: "#70798B",
+            }}
+          >
+            Renews monthly. Keeping Starter makes no account changes.
+          </div>
+        </aside>
+
+        <main style={{ padding: "20px 22px 16px" }}>
           {mode === "pressure" ? (
             <>
               <div
                 style={{
-                  ...MONO,
-                  padding: "8px 14px",
-                  color: "#F0A49B",
-                  fontSize: 8,
-                  textAlign: "center",
-                  background: "rgba(216,108,97,.11)",
-                  borderBottom: "1px solid rgba(216,108,97,.22)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: 18,
+                  marginBottom: 13,
                 }}
               >
-                YOUR OFFER EXPIRES IN 01:59
-              </div>
-              <div style={{ padding: "22px 22px 18px", textAlign: "center" }}>
-                <div
-                  style={{
-                    ...SERIF,
-                    color: IVORY,
-                    fontSize: 26,
-                    marginBottom: 7,
-                  }}
-                >
-                  Unlock your full potential
+                <div>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      marginBottom: 8,
+                      padding: "5px 8px",
+                      borderRadius: 999,
+                      background: "#FCE7E5",
+                      color: "#A13D36",
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 9,
+                      fontWeight: 750,
+                    }}
+                  >
+                    <Clock3 size={11} /> OFFER ENDS IN 01:59
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 22,
+                      fontWeight: 760,
+                    }}
+                  >
+                    Don’t let your team fall behind
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 5,
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 12,
+                      color: "#626D80",
+                    }}
+                  >
+                    Upgrade to Pro before this page closes.
+                  </div>
                 </div>
-                <p
-                  style={{
-                    ...SERIF,
-                    color: SECONDARY,
-                    fontSize: 14,
-                    lineHeight: 1.4,
-                    margin: "0 0 18px",
-                  }}
-                >
-                  Join today so you do not fall behind.
-                </p>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setResult(
-                      "The system captured conversion, but urgency and unequal exits made consent ambiguous.",
-                    )
-                  }
-                  style={{
-                    ...labPrimaryAction,
-                    width: "100%",
-                    borderColor: "rgba(216,108,97,.68)",
-                    background: "rgba(216,108,97,.2)",
-                    color: "#FFD8D2",
-                  }}
-                >
-                  START MY FREE TRIAL
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setResult(
-                      "The exit exists, but shame-loaded copy makes declining feel like failure.",
-                    )
-                  }
-                  style={{
-                    marginTop: 11,
-                    padding: 0,
-                    border: 0,
-                    background: "transparent",
-                    color: "rgba(189,177,142,.48)",
-                    ...SERIF,
-                    fontSize: 11,
-                    cursor: "pointer",
-                  }}
-                >
-                  No thanks, I prefer staying limited
-                </button>
+                <div style={{ textAlign: "right" }}>
+                  <div
+                    style={{
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 27,
+                      fontWeight: 780,
+                    }}
+                  >
+                    $290
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 10,
+                      color: "#6B7486",
+                    }}
+                  >
+                    charged today · annual
+                  </div>
+                </div>
               </div>
-            </>
-          ) : (
-            <div style={{ padding: 22 }}>
-              <div
-                style={{
-                  ...MONO,
-                  color: PURPOSE,
-                  fontSize: 8,
-                  marginBottom: 10,
-                }}
-              >
-                OPTIONAL RECOMMENDATION
-              </div>
-              <div
-                style={{
-                  ...SERIF,
-                  color: IVORY,
-                  fontSize: 26,
-                  marginBottom: 8,
-                }}
-              >
-                Explore the expanded plan
-              </div>
-              <p
-                style={{
-                  ...SERIF,
-                  color: SECONDARY,
-                  fontSize: 14,
-                  lineHeight: 1.45,
-                  margin: "0 0 18px",
-                }}
-              >
-                It adds collaboration tools for $12/month. Your current plan
-                will continue unchanged if you decline.
-              </p>
               <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  gap: 8,
+                  gap: 7,
+                  marginBottom: 15,
+                }}
+              >
+                {[
+                  "Unlimited projects",
+                  "20 team members",
+                  "Priority support",
+                  "Advanced exports",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 7,
+                      padding: "8px 9px",
+                      borderRadius: 7,
+                      background: "#F3F5F9",
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 10,
+                      color: "#4D586B",
+                    }}
+                  >
+                    <Check size={11} color="#3559E8" /> {item}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "Annual Pro was purchased for $290 today. The interface emphasized urgency instead of comparison.",
+                  )
+                }
+                style={{
+                  width: "100%",
+                  minHeight: 45,
+                  border: 0,
+                  borderRadius: 8,
+                  background: "#D84D45",
+                  color: "#FFFFFF",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 13,
+                  fontWeight: 750,
+                  cursor: "pointer",
+                }}
+              >
+                Upgrade now — pay $290 today
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "Starter was kept, but the decline path used loss-framed language and weaker visual emphasis.",
+                  )
+                }
+                style={{
+                  width: "100%",
+                  marginTop: 9,
+                  padding: 4,
+                  border: 0,
+                  background: "transparent",
+                  color: "#8A909C",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 9.5,
+                  cursor: "pointer",
+                }}
+              >
+                No thanks, keep my team limited
+              </button>
+            </>
+          ) : (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: 18,
+                  marginBottom: 13,
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 21,
+                      fontWeight: 760,
+                    }}
+                  >
+                    Compare Pro before changing
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 4,
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 11,
+                      color: "#626D80",
+                    }}
+                  >
+                    Your Starter plan remains active unless you confirm.
+                  </div>
+                </div>
+                <div
+                  role="group"
+                  aria-label="Billing cadence"
+                  style={{
+                    display: "flex",
+                    padding: 3,
+                    borderRadius: 8,
+                    background: "#E9EDF4",
+                  }}
+                >
+                  {(["monthly", "annual"] as const).map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      aria-pressed={billing === item}
+                      onClick={() => {
+                        setBilling(item)
+                        setResult("")
+                      }}
+                      style={{
+                        minHeight: 29,
+                        padding: "0 10px",
+                        border: 0,
+                        borderRadius: 6,
+                        background:
+                          billing === item ? "#FFFFFF" : "transparent",
+                        color: billing === item ? "#2747A8" : "#677286",
+                        boxShadow:
+                          billing === item
+                            ? "0 1px 4px rgba(20,28,45,.12)"
+                            : "none",
+                        fontFamily: "Inter,sans-serif",
+                        fontSize: 9,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {item.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 9,
+                  marginBottom: 13,
+                }}
+              >
+                <PlanFact
+                  label="PRICE"
+                  value={annual ? "$290 / year" : "$29 / month"}
+                />
+                <PlanFact
+                  label="CHARGE"
+                  value={annual ? "$290 today" : "$29 today"}
+                />
+                <PlanFact
+                  label="RENEWS"
+                  value={annual ? "Annually" : "Monthly"}
+                />
+                <PlanFact label="CURRENT PLAN" value="Unchanged if declined" />
+              </div>
+              <div
+                style={{
+                  padding: "9px 11px",
+                  marginBottom: 13,
+                  borderLeft: "3px solid #3559E8",
+                  background: "#EEF3FF",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 10.5,
+                  lineHeight: 1.4,
+                  color: "#465268",
+                }}
+              >
+                Adds unlimited projects, 20 members, advanced exports, and
+                priority support. Existing projects are unaffected.
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 9,
                 }}
               >
                 <button
                   type="button"
                   onClick={() =>
                     setResult(
-                      "The person chose to explore after seeing the cost, purpose, and consequence.",
+                      `Pro review opened with the ${billing} price, charge, renewal, and account consequence visible.`,
                     )
                   }
-                  style={labPrimaryAction}
+                  style={{
+                    minHeight: 43,
+                    border: 0,
+                    borderRadius: 8,
+                    background: "#3559E8",
+                    color: "#FFFFFF",
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 12,
+                    fontWeight: 750,
+                    cursor: "pointer",
+                  }}
                 >
-                  Explore plan
+                  Review Pro change
                 </button>
                 <button
                   type="button"
                   onClick={() =>
                     setResult(
-                      "Declining is treated as an ordinary choice; the current plan remains unchanged.",
+                      "Starter remains active. Declining produces no penalty or degraded account state.",
                     )
                   }
-                  style={labSecondaryAction}
+                  style={{
+                    minHeight: 43,
+                    border: "1px solid #BAC3D1",
+                    borderRadius: 8,
+                    background: "#FFFFFF",
+                    color: "#344054",
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
                 >
-                  Not now
+                  Keep Starter
                 </button>
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          minHeight: 51,
+          padding: "10px 18px",
+          display: "flex",
+          alignItems: "center",
+          gap: 9,
+          borderTop: "1px solid #DCE2EA",
+          background: result ? "#EEF7F2" : "#FFFFFF",
+          color: result ? "#265E44" : "#737D8F",
+          fontFamily: "Inter,sans-serif",
+          fontSize: 10.5,
+          lineHeight: 1.35,
+        }}
+      >
+        {result ? <Check size={14} /> : <ShieldCheck size={14} />}
+        {result ||
+          (mode === "pressure"
+            ? "Notice which information is prominent—and which choice is visually diminished."
+            : "Price, timing, renewal, consequences, and decline are available before commitment.")}
+      </div>
+    </section>
+  )
+}
+
+type LabelValueProps = {
+  label: string
+  value: string
+}
+
+function PlanFact({ label, value }: LabelValueProps) {
+  return (
+    <div
+      style={{
+        padding: "9px 10px",
+        border: "1px solid #DCE2EA",
+        borderRadius: 8,
+        background: "#FFFFFF",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "Inter,sans-serif",
+          fontSize: 8,
+          fontWeight: 750,
+          letterSpacing: ".08em",
+          color: "#7B8494",
+          marginBottom: 4,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: "Inter,sans-serif",
+          fontSize: 11,
+          fontWeight: 650,
+          color: "#273142",
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  )
+}
+
+type SupportApproach = "fast" | "attuned" | null
+
+function SupportAttunementEvidenceLab() {
+  const [approach, setApproach] = useState<SupportApproach>(null)
+  const [result, setResult] = useState("")
+
+  const chooseApproach = (next: Exclude<SupportApproach, null>) => {
+    setApproach(next)
+    setResult("")
+  }
+
+  return (
+    <section
+      aria-label="Interactive customer support conversation"
+      style={{
+        overflow: "hidden",
+        minHeight: 492,
+        border: "1px solid rgba(124,180,213,.28)",
+        borderRadius: 15,
+        background: "#0D1520",
+        color: "#EAF1F7",
+        boxShadow: "0 26px 70px rgba(0,0,0,.42)",
+      }}
+    >
+      <header
+        style={{
+          height: 56,
+          padding: "0 17px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #223141",
+          background: "#101B28",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              width: 31,
+              height: 31,
+              display: "grid",
+              placeItems: "center",
+              borderRadius: "50%",
+              background: "#18344A",
+              color: "#83C6E7",
+            }}
+          >
+            <Headphones size={16} />
+          </div>
+          <div>
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 12.5,
+                fontWeight: 700,
+              }}
+            >
+              Support thread #4821
+            </div>
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 9.5,
+                color: "#8CA0B2",
+              }}
+            >
+              Upload failure · open
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            padding: "5px 8px",
+            borderRadius: 999,
+            background: "#2C2518",
+            color: "#E7C477",
+            fontFamily: "Inter,sans-serif",
+            fontSize: 9,
+          }}
+        >
+          DEADLINE PROVIDED: TODAY
+        </div>
+      </header>
+
+      <div
+        style={{
+          minHeight: 385,
+          display: "grid",
+          gridTemplateColumns: "minmax(0,1fr) 230px",
+        }}
+      >
+        <main
+          style={{
+            padding: "17px 18px 14px",
+            display: "flex",
+            flexDirection: "column",
+            borderRight: "1px solid #223141",
+            background: "#0B131D",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 9,
+              marginBottom: 13,
+            }}
+          >
+            <div
+              style={{
+                width: 27,
+                height: 27,
+                display: "grid",
+                placeItems: "center",
+                flexShrink: 0,
+                borderRadius: "50%",
+                background: "#263245",
+                color: "#CBD7E5",
+              }}
+            >
+              <UserRound size={14} />
+            </div>
+            <div
+              style={{
+                maxWidth: 460,
+                padding: "11px 13px",
+                borderRadius: "5px 13px 13px 13px",
+                background: "#182433",
+                fontFamily: "Inter,sans-serif",
+                fontSize: 11.5,
+                lineHeight: 1.45,
+                color: "#D8E2EC",
+              }}
+            >
+              I’ve tried uploading the invoice three times. It fails with X14,
+              and I need to send it today. I don’t want to repeat the same steps
+              again.
+            </div>
+          </div>
+
+          {approach && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 9,
+                marginBottom: 14,
+              }}
+            >
+              <div
+                style={{
+                  maxWidth: 500,
+                  padding: "11px 13px",
+                  borderRadius: "13px 5px 13px 13px",
+                  background: approach === "fast" ? "#2A2430" : "#123044",
+                  border:
+                    approach === "fast"
+                      ? "1px solid #493546"
+                      : "1px solid #22506B",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 11.5,
+                  lineHeight: 1.45,
+                  color: "#E8EEF5",
+                }}
+              >
+                {approach === "fast" ? (
+                  <>
+                    Clear your browser cache and try the upload again. I’ve
+                    marked this as resolved.
+                  </>
+                ) : (
+                  <>
+                    I can see the three X14 failures in this thread. Let’s avoid
+                    another repeat. You can send the invoice through the secure
+                    email route, or I can connect you with a specialist.
+                  </>
+                )}
+              </div>
+              <div
+                style={{
+                  width: 27,
+                  height: 27,
+                  display: "grid",
+                  placeItems: "center",
+                  flexShrink: 0,
+                  borderRadius: "50%",
+                  background: "#17364B",
+                  color: "#8DCDEB",
+                }}
+              >
+                <Headphones size={14} />
               </div>
             </div>
           )}
-        </div>
+
+          <div style={{ marginTop: "auto" }}>
+            {!approach ? (
+              <>
+                <div
+                  style={{
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 9,
+                    fontWeight: 700,
+                    color: "#8EA2B5",
+                    marginBottom: 8,
+                  }}
+                >
+                  CHOOSE THE SUPPORT RESPONSE
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 8,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => chooseApproach("fast")}
+                    style={{
+                      minHeight: 54,
+                      padding: "9px 11px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 9,
+                      textAlign: "left",
+                      border: "1px solid #4A3848",
+                      borderRadius: 9,
+                      background: "#241E28",
+                      color: "#E5D7E2",
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 10.5,
+                      lineHeight: 1.3,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Clock3 size={16} color="#D99588" />
+                    Resolve quickly and close the ticket
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => chooseApproach("attuned")}
+                    style={{
+                      minHeight: 54,
+                      padding: "9px 11px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 9,
+                      textAlign: "left",
+                      border: "1px solid #285772",
+                      borderRadius: 9,
+                      background: "#102A3B",
+                      color: "#D8ECF6",
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 10.5,
+                      lineHeight: 1.3,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <MessageSquare size={16} color="#82C4E5" />
+                    Acknowledge the record, then offer useful paths
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    approach === "fast" ? "1fr 1fr" : "repeat(3,1fr)",
+                  gap: 7,
+                }}
+              >
+                {approach === "fast" ? (
+                  <>
+                    <SupportAction
+                      label="Try the same steps"
+                      onClick={() =>
+                        setResult(
+                          "The response was fast, but it ignored the three recorded failures and repeated an already rejected path.",
+                        )
+                      }
+                    />
+                    <SupportAction
+                      label="Reopen the ticket"
+                      onClick={() =>
+                        setResult(
+                          "The person had to restore the support context after the system closed it prematurely.",
+                        )
+                      }
+                    />
+                  </>
+                ) : (
+                  <>
+                    <SupportAction
+                      label="Use secure email"
+                      onClick={() =>
+                        setResult(
+                          "A different route is available without requiring another failed upload.",
+                        )
+                      }
+                    />
+                    <SupportAction
+                      label="Connect specialist"
+                      onClick={() =>
+                        setResult(
+                          "The person can move to human support with the existing failure context preserved.",
+                        )
+                      }
+                    />
+                    <SupportAction
+                      label="Pause"
+                      onClick={() =>
+                        setResult(
+                          "The interaction preserves the option to pause without closing the issue.",
+                        )
+                      }
+                    />
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </main>
+
+        <aside style={{ padding: 16, background: "#101B28" }}>
+          <div
+            style={{
+              fontFamily: "Inter,sans-serif",
+              fontSize: 9,
+              fontWeight: 700,
+              letterSpacing: ".08em",
+              color: "#8FA4B7",
+              marginBottom: 12,
+            }}
+          >
+            THREAD CONTEXT
+          </div>
+          <ContextFact label="RECORDED ATTEMPTS" value="3 failed uploads" />
+          <ContextFact label="SYSTEM MESSAGE" value="Error X14" />
+          <ContextFact label="PERSON STATED" value="Deadline is today" />
+          <ContextFact
+            label="BOUNDARY"
+            value="No inference about emotional state"
+          />
+          {approach && (
+            <button
+              type="button"
+              onClick={() => {
+                setApproach(null)
+                setResult("")
+              }}
+              style={{
+                width: "100%",
+                minHeight: 36,
+                marginTop: 10,
+                border: "1px solid #304459",
+                borderRadius: 8,
+                background: "transparent",
+                color: "#9FB4C6",
+                fontFamily: "Inter,sans-serif",
+                fontSize: 9.5,
+                cursor: "pointer",
+              }}
+            >
+              Try another response
+            </button>
+          )}
+        </aside>
       </div>
-      <SignalStrip
-        items={
-          mode === "pressure"
-            ? ["Manufactured urgency", "Unequal emphasis", "Shame-loaded exit"]
-            : ["Visible consequence", "Equivalent exit", "No penalty for decline"]
-        }
-        risk={mode === "pressure"}
-      />
-    </LabShell>
-  );
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          minHeight: 51,
+          padding: "10px 17px",
+          display: "flex",
+          alignItems: "center",
+          gap: 9,
+          borderTop: "1px solid #223141",
+          background: result ? "#102B27" : "#0F1925",
+          color: result ? "#A9DCC8" : "#8499AC",
+          fontFamily: "Inter,sans-serif",
+          fontSize: 10.5,
+          lineHeight: 1.35,
+        }}
+      >
+        {result ? <Check size={14} /> : <MessageSquare size={14} />}
+        {result ||
+          "Attunement uses expressed context and interaction history—not simulated emotional diagnosis."}
+      </div>
+    </section>
+  )
 }
 
-type DecisionCriterion = "speed" | "cost" | "privacy";
+function SupportAction({
+  label,
+  onClick,
+}: {
+  label: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        minHeight: 38,
+        border: "1px solid #31506A",
+        borderRadius: 8,
+        background: "#122638",
+        color: "#D5E5EF",
+        fontFamily: "Inter,sans-serif",
+        fontSize: 9.5,
+        cursor: "pointer",
+      }}
+    >
+      {label}
+    </button>
+  )
+}
 
-const DECISION_OPTIONS = [
-  {
-    id: "a",
-    name: "Cloud Relay",
-    speed: "Fastest",
-    cost: "$24",
-    privacy: "Standard",
-  },
-  {
-    id: "b",
-    name: "Local Bridge",
-    speed: "Moderate",
-    cost: "$16",
-    privacy: "Highest",
-  },
-  {
-    id: "c",
-    name: "Open Route",
-    speed: "Standard",
-    cost: "$8",
-    privacy: "Enhanced",
-  },
-] as const;
+function ContextFact({ label, value }: LabelValueProps) {
+  return (
+    <div
+      style={{
+        padding: "10px 0",
+        borderBottom: "1px solid #263647",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "Inter,sans-serif",
+          fontSize: 7.5,
+          fontWeight: 700,
+          color: "#71879A",
+          marginBottom: 4,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: "Inter,sans-serif",
+          fontSize: 10.5,
+          lineHeight: 1.35,
+          color: "#CBD8E4",
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  )
+}
 
-const RECOMMENDED_BY_CRITERION: Record<DecisionCriterion, string> = {
-  speed: "a",
-  privacy: "b",
-  cost: "c",
-};
+const INTERPRETATION_SOURCES = [
+  {
+    id: "session-a",
+    label: "Session A",
+    summary: "Switched billing views twice, then left the pricing page.",
+  },
+  {
+    id: "session-b",
+    label: "Session B",
+    summary: "Opened the plan guide, returned later, and upgraded.",
+  },
+  {
+    id: "session-c",
+    label: "Session C",
+    summary: "Reached payment, received an error, and closed the app.",
+  },
+  {
+    id: "support-note",
+    label: "Support note",
+    summary: "Asked whether a team administrator must approve upgrades.",
+  },
+] as const
+
+function InterpretationEvidenceLab() {
+  const [layersVisible, setLayersVisible] = useState(false)
+  const [challenged, setChallenged] = useState(false)
+  const [activeSource, setActiveSource] = useState(INTERPRETATION_SOURCES[0].id)
+  const [result, setResult] = useState("")
+  const source =
+    INTERPRETATION_SOURCES.find((item) => item.id === activeSource) ??
+    INTERPRETATION_SOURCES[0]
+
+  return (
+    <section
+      aria-label="Interactive AI-generated analysis dashboard"
+      style={{
+        overflow: "hidden",
+        minHeight: 492,
+        border: "1px solid rgba(196,174,221,.28)",
+        borderRadius: 14,
+        background: "#F6F4F1",
+        color: "#25232A",
+        boxShadow: "0 26px 70px rgba(0,0,0,.36)",
+      }}
+    >
+      <header
+        style={{
+          height: 58,
+          padding: "0 17px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #D8D3CE",
+          background: "#23212A",
+          color: "#F7F3ED",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Bot size={18} color="#C5A9DF" />
+          <div>
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 12.5,
+                fontWeight: 700,
+              }}
+            >
+              Atlas Insights
+            </div>
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 9,
+                color: "#ACA5B5",
+              }}
+            >
+              Illustrative AI analysis · not a research finding
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          aria-pressed={layersVisible}
+          onClick={() => {
+            setLayersVisible((value) => !value)
+            setResult("")
+          }}
+          style={{
+            minHeight: 33,
+            padding: "0 11px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 7,
+            border: "1px solid #5B5265",
+            borderRadius: 8,
+            background: layersVisible ? "#43384E" : "transparent",
+            color: "#E8DDF0",
+            fontFamily: "Inter,sans-serif",
+            fontSize: 9.5,
+            cursor: "pointer",
+          }}
+        >
+          <FileSearch size={13} />
+          {layersVisible ? "Hide evidence layers" : "Inspect evidence layers"}
+        </button>
+      </header>
+
+      <div
+        style={{
+          minHeight: 383,
+          display: "grid",
+          gridTemplateColumns: "270px minmax(0,1fr)",
+        }}
+      >
+        <aside
+          style={{
+            padding: 14,
+            borderRight: "1px solid #D8D3CE",
+            background: "#ECE8E3",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 7,
+              marginBottom: 10,
+              fontFamily: "Inter,sans-serif",
+              fontSize: 9,
+              fontWeight: 750,
+              letterSpacing: ".07em",
+              color: "#6D6672",
+            }}
+          >
+            <Database size={13} /> SOURCE RECORDS
+          </div>
+          <div style={{ display: "grid", gap: 6 }}>
+            {INTERPRETATION_SOURCES.map((item) => {
+              const active = item.id === activeSource
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => {
+                    setActiveSource(item.id)
+                    setResult(`Opened ${item.label}: ${item.summary}`)
+                  }}
+                  style={{
+                    minHeight: 55,
+                    padding: "9px 10px",
+                    display: "grid",
+                    gridTemplateColumns: "auto 1fr",
+                    gap: 8,
+                    textAlign: "left",
+                    border: active ? "1px solid #83708E" : "1px solid #D4CFC9",
+                    borderRadius: 8,
+                    background: active ? "#FFFFFF" : "#F4F1ED",
+                    color: "#312D35",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Eye size={13} color={active ? "#7B5D89" : "#8C8790"} />
+                  <span>
+                    <span
+                      style={{
+                        display: "block",
+                        fontFamily: "Inter,sans-serif",
+                        fontSize: 10,
+                        fontWeight: 750,
+                        marginBottom: 3,
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                    <span
+                      style={{
+                        display: "block",
+                        fontFamily: "Inter,sans-serif",
+                        fontSize: 8.5,
+                        lineHeight: 1.28,
+                        color: "#716B76",
+                      }}
+                    >
+                      {item.summary}
+                    </span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </aside>
+
+        <main style={{ padding: "16px 18px 14px" }}>
+          <div
+            style={{
+              marginBottom: 10,
+              fontFamily: "Inter,sans-serif",
+              fontSize: 8.5,
+              fontWeight: 750,
+              letterSpacing: ".08em",
+              color: "#7A727E",
+            }}
+          >
+            AI-GENERATED ANALYSIS
+          </div>
+          <div
+            style={{
+              padding: "14px 15px",
+              border: challenged ? "1px solid #9A7B58" : "1px solid #C6B8CD",
+              borderRadius: 10,
+              background: challenged ? "#FFF8EC" : "#FFFFFF",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                marginBottom: 7,
+                fontFamily: "Inter,sans-serif",
+                fontSize: 9,
+                fontWeight: 750,
+                color: challenged ? "#8A5E2F" : "#744F83",
+              }}
+            >
+              {challenged ? <AlertTriangle size={13} /> : <Bot size={13} />}
+              {challenged ? "INTERPRETATION UNDER REVIEW" : "SYSTEM FINDING"}
+            </div>
+            <div
+              style={{
+                fontFamily: "Inter,sans-serif",
+                fontSize: 21,
+                fontWeight: 730,
+                lineHeight: 1.18,
+                color: "#28232C",
+              }}
+            >
+              Pricing confusion caused checkout abandonment.
+            </div>
+          </div>
+
+          {layersVisible ? (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 7,
+                marginTop: 9,
+              }}
+            >
+              <AnalysisLayer
+                label="OBSERVATIONS"
+                text="Billing views changed; help content opened; one payment error occurred; one approval question was recorded."
+                color="#466F72"
+              />
+              <AnalysisLayer
+                label="INTERPRETATION"
+                text="The system links those actions to pricing confusion and abandonment."
+                color="#744F83"
+              />
+              <AnalysisLayer
+                label="ASSUMPTIONS"
+                text="Leaving means abandoning; comparison means confusion; all records describe the same cause."
+                color="#A06A3E"
+              />
+              <AnalysisLayer
+                label="UNCERTAINTY"
+                text="Intent, organizational approval, and the effect of the payment error remain unknown."
+                color="#647184"
+              />
+            </div>
+          ) : (
+            <div
+              style={{
+                marginTop: 10,
+                padding: "10px 12px",
+                display: "flex",
+                alignItems: "center",
+                gap: 9,
+                borderRadius: 8,
+                background: "#EAE5EC",
+                color: "#6B6170",
+                fontFamily: "Inter,sans-serif",
+                fontSize: 10,
+              }}
+            >
+              <AlertTriangle size={14} />
+              Observation, interpretation, assumption, and uncertainty are
+              collapsed into one claim.
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr auto",
+              gap: 9,
+              marginTop: 10,
+            }}
+          >
+            <div
+              style={{
+                minHeight: 47,
+                padding: "9px 11px",
+                border: "1px solid #D5D0CA",
+                borderRadius: 8,
+                background: "#F1EEEA",
+                fontFamily: "Inter,sans-serif",
+                fontSize: 9.5,
+                lineHeight: 1.35,
+                color: "#625D65",
+              }}
+            >
+              <strong style={{ color: "#37323A" }}>{source.label}:</strong>{" "}
+              {source.summary}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setChallenged(true)
+                setLayersVisible(true)
+                setResult(
+                  "The claim is now treated as a hypothesis. Payment failure, approval needs, and ordinary comparison remain plausible alternatives.",
+                )
+              }}
+              style={{
+                minWidth: 150,
+                border: 0,
+                borderRadius: 8,
+                background: challenged ? "#7A6249" : "#6E4C7C",
+                color: "#FFFFFF",
+                fontFamily: "Inter,sans-serif",
+                fontSize: 10.5,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              {challenged
+                ? "Interpretation challenged"
+                : "Challenge interpretation"}
+            </button>
+          </div>
+        </main>
+      </div>
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          minHeight: 51,
+          padding: "10px 17px",
+          display: "flex",
+          alignItems: "center",
+          gap: 9,
+          borderTop: "1px solid #D8D3CE",
+          background: result ? "#EFE8F1" : "#F7F4F0",
+          color: result ? "#5F4569" : "#756F78",
+          fontFamily: "Inter,sans-serif",
+          fontSize: 10.5,
+          lineHeight: 1.35,
+        }}
+      >
+        {result ? <Check size={14} /> : <FileSearch size={14} />}
+        {result ||
+          "Constructed example. Inspect the source records before treating the generated claim as fact."}
+      </div>
+    </section>
+  )
+}
+
+function AnalysisLayer({
+  label,
+  text,
+  color,
+}: {
+  label: string
+  text: string
+  color: string
+}) {
+  return (
+    <div
+      style={{
+        minHeight: 68,
+        padding: "9px 10px",
+        border: `1px solid ${color}44`,
+        borderRadius: 8,
+        background: `${color}0D`,
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "Inter,sans-serif",
+          fontSize: 7.5,
+          fontWeight: 800,
+          letterSpacing: ".07em",
+          color,
+          marginBottom: 5,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontFamily: "Inter,sans-serif",
+          fontSize: 9,
+          lineHeight: 1.35,
+          color: "#5D5761",
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  )
+}
 
 function DecisionFramingEvidenceLab() {
   const [criterion, setCriterion] = useState<DecisionCriterion>("speed");
