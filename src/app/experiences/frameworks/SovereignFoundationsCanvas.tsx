@@ -4,29 +4,44 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ReactNode,
   type RefObject,
 } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
+  Bell,
   Bot,
+  CalendarDays,
   Check,
-  ChevronRight,
   Clock3,
+  Cloud,
   Database,
+  Download,
   Eye,
+  FileCheck2,
   FileSearch,
+  FileText,
   Headphones,
+  KeyRound,
+  LockKeyhole,
+  Mail,
   MessageCircleQuestion,
   MessageSquare,
   Minus,
   Move,
+  Pause,
+  Play,
   Plus,
+  ReceiptText,
   RotateCcw,
   Scale,
+  Settings2,
   ShieldCheck,
+  SlidersHorizontal,
+  Smartphone,
+  Sparkles,
+  Upload,
   UserRound,
   X,
 } from "lucide-react";
@@ -1530,11 +1545,29 @@ function reflectionPrompt(id: FoundationPrincipleId) {
 }
 
 function EvidenceLab({ principle }: { principle: FoundationPrinciple }) {
+  if (principle.id === "01") {
+    return <SubmissionAwarenessEvidenceLab />;
+  }
   if (principle.id === "02") {
     return <SubscriptionUpgradeEvidenceLab />;
   }
   if (principle.id === "03") {
     return <SupportAttunementEvidenceLab />;
+  }
+  if (principle.id === "04") {
+    return <PresenceCheckpointEvidenceLab />;
+  }
+  if (principle.id === "05") {
+    return <AccountRecoveryEvidenceLab />;
+  }
+  if (principle.id === "06") {
+    return <ChoiceAmplificationEvidenceLab />;
+  }
+  if (principle.id === "07") {
+    return <MeaningfulClosureEvidenceLab />;
+  }
+  if (principle.id === "08") {
+    return <PrivacyIntegrityEvidenceLab />;
   }
   if (principle.id === "09") {
     return <InterpretationEvidenceLab />;
@@ -1542,133 +1575,1865 @@ function EvidenceLab({ principle }: { principle: FoundationPrinciple }) {
   if (principle.id === "10") {
     return <DecisionFramingEvidenceLab />;
   }
-  return <ReusablePrincipleLab principle={principle} />;
+  return null;
 }
 
-const labToggleStyle: CSSProperties = {
-  ...MONO,
-  minHeight: 34,
-  padding: "0 11px",
-  border: `1px solid ${BORDER}`,
-  background: "rgba(255,255,255,.018)",
-  color: MUTED,
-  cursor: "pointer",
-};
+function SubmissionAwarenessEvidenceLab() {
+  const [mode, setMode] = useState<"quick" | "aware">("quick");
+  const [includeNotes, setIncludeNotes] = useState(true);
+  const [result, setResult] = useState("");
 
-const labPrimaryAction: CSSProperties = {
-  ...SERIF,
-  minHeight: 40,
-  padding: "0 16px",
-  border: "1px solid rgba(232,200,109,.58)",
-  background: "rgba(232,200,109,.13)",
-  color: "#FFF0BE",
-  fontSize: 15,
-  cursor: "pointer",
-};
+  const changeMode = (next: "quick" | "aware") => {
+    setMode(next);
+    setResult("");
+  };
 
-const labSecondaryAction: CSSProperties = {
-  ...SERIF,
-  minHeight: 40,
-  padding: "0 16px",
-  border: `1px solid ${BORDER}`,
-  background: "rgba(255,255,255,.018)",
-  color: SECONDARY,
-  fontSize: 15,
-  cursor: "pointer",
-};
-
-function LabShell({
-  label,
-  summary,
-  controls,
-  children,
-  result,
-}: {
-  label: string;
-  summary: string;
-  controls: ReactNode;
-  children: ReactNode;
-  result: string;
-}) {
   return (
     <section
+      aria-label="Interactive submission and review interface"
       style={{
+        minHeight: 492,
         overflow: "hidden",
-        border: "1px solid rgba(138,174,200,.22)",
-        borderRadius: 14,
-        background:
-          "radial-gradient(circle at 82% 8%,rgba(138,174,200,.08),transparent 34%),rgba(4,7,13,.78)",
-        boxShadow: "inset 0 1px rgba(255,255,255,.025)",
+        border: "1px solid rgba(135,157,184,.28)",
+        borderRadius: 15,
+        background: "#F5F7FA",
+        color: "#1F2937",
+        boxShadow: "0 26px 70px rgba(0,0,0,.38)",
       }}
     >
-      <div
+      <header
         style={{
+          height: 56,
+          padding: "0 17px",
           display: "flex",
+          alignItems: "center",
           justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: 16,
-          padding: "13px 14px",
-          borderBottom: `1px solid ${BORDER}`,
+          borderBottom: "1px solid #D9E0E8",
+          background: "#FFFFFF",
         }}
       >
-        <div style={{ minWidth: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
             style={{
-              ...MONO,
-              color: STELLAR_PALETTE.agentic,
-              fontSize: 8,
-              marginBottom: 5,
+              width: 30,
+              height: 30,
+              display: "grid",
+              placeItems: "center",
+              borderRadius: 8,
+              background: "#E8EEF8",
+              color: "#355A91",
             }}
           >
-            {label}
+            <FileText size={16} />
           </div>
-          <div
-            style={{
-              ...SERIF,
-              color: SECONDARY,
-              fontSize: 14,
-              lineHeight: 1.3,
-            }}
-          >
-            {summary}
+          <div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12.5, fontWeight: 750 }}>
+              Editorial submission
+            </div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9.5, color: "#738095" }}>
+              Draft saved · Review cycle 2
+            </div>
           </div>
         </div>
         <div
-          style={{
-            flexShrink: 0,
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "flex-end",
-            gap: 5,
-          }}
+          role="group"
+          aria-label="Submission design"
+          style={{ display: "flex", gap: 3, padding: 3, borderRadius: 9, background: "#EDF1F6" }}
         >
-          {controls}
+          {(["quick", "aware"] as const).map((item) => (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={mode === item}
+              onClick={() => changeMode(item)}
+              style={{
+                minHeight: 30,
+                padding: "0 11px",
+                border: 0,
+                borderRadius: 7,
+                background: mode === item ? "#FFFFFF" : "transparent",
+                color: mode === item ? (item === "quick" ? "#9D463F" : "#315C8F") : "#6D7889",
+                boxShadow: mode === item ? "0 1px 4px rgba(20,28,45,.12)" : "none",
+                fontFamily: "Inter,sans-serif",
+                fontSize: 9.5,
+                fontWeight: 750,
+                cursor: "pointer",
+              }}
+            >
+              {item === "quick" ? "Quick submit" : "Review context"}
+            </button>
+          ))}
         </div>
+      </header>
+
+      <div style={{ minHeight: 384, display: "grid", gridTemplateColumns: "minmax(0,1fr) 292px" }}>
+        <main style={{ padding: "18px 20px", borderRight: "1px solid #D9E0E8" }}>
+          <div
+            style={{
+              marginBottom: 13,
+              fontFamily: "Inter,sans-serif",
+              fontSize: 9,
+              fontWeight: 750,
+              letterSpacing: ".08em",
+              color: "#758195",
+            }}
+          >
+            MANUSCRIPT DETAILS
+          </div>
+          <div
+            style={{
+              padding: "15px 16px",
+              border: "1px solid #D7DEE8",
+              borderRadius: 10,
+              background: "#FFFFFF",
+            }}
+          >
+            <div style={{ fontFamily: "Georgia,serif", fontSize: 23, color: "#202B3B" }}>
+              Designing for legible decisions
+            </div>
+            <div style={{ marginTop: 6, fontFamily: "Inter,sans-serif", fontSize: 10.5, color: "#6D7889" }}>
+              Essay · 1,842 words · Updated 4 minutes ago
+            </div>
+            <div
+              style={{
+                marginTop: 16,
+                padding: "12px 13px",
+                borderLeft: "3px solid #8DA7C5",
+                background: "#F4F7FB",
+                fontFamily: "Georgia,serif",
+                fontSize: 13,
+                lineHeight: 1.5,
+                color: "#4B586B",
+              }}
+            >
+              The draft argues that recommendation systems should expose the
+              frame shaping a decision before asking for commitment.
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, marginTop: 10 }}>
+            <SubmissionFact label="DESTINATION" value="Design Review Board" />
+            <SubmissionFact label="ACCESS" value="Editors and reviewers" />
+            <SubmissionFact label="REVIEW WINDOW" value="Closes Friday" />
+            <SubmissionFact label="VERSION" value="Locks this draft" />
+          </div>
+        </main>
+
+        <aside style={{ padding: 17, background: mode === "quick" ? "#FFF9F8" : "#F5F9FD" }}>
+          {mode === "quick" ? (
+            <>
+              <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#A14B44" }}>
+                READY TO SEND
+              </div>
+              <div style={{ marginTop: 9, fontFamily: "Inter,sans-serif", fontSize: 22, fontWeight: 760 }}>
+                Submit draft?
+              </div>
+              <p style={{ margin: "7px 0 20px", fontFamily: "Inter,sans-serif", fontSize: 11, lineHeight: 1.45, color: "#6E7683" }}>
+                Your work is ready for the next step.
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "The draft was submitted and locked before the interface made recipients, timing, or visibility prominent.",
+                  )
+                }
+                style={{
+                  width: "100%",
+                  minHeight: 45,
+                  border: 0,
+                  borderRadius: 8,
+                  background: "#C9554D",
+                  color: "#FFFFFF",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 12,
+                  fontWeight: 750,
+                  cursor: "pointer",
+                }}
+              >
+                Submit now
+              </button>
+              <div style={{ marginTop: 13, fontFamily: "Inter,sans-serif", fontSize: 8.5, lineHeight: 1.4, color: "#A0A5AE" }}>
+                Submission locks this version and shares reviewer notes with
+                the full board.
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#315C8F" }}>
+                BEFORE YOU SUBMIT
+              </div>
+              <div style={{ marginTop: 8, fontFamily: "Inter,sans-serif", fontSize: 18, fontWeight: 760 }}>
+                Confirm the review context
+              </div>
+              <div style={{ display: "grid", gap: 7, marginTop: 13 }}>
+                {[
+                  ["Who receives it", "4 board reviewers"],
+                  ["What changes", "This draft becomes read-only"],
+                  ["What remains private", "Personal scratch notes"],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ padding: "8px 9px", borderRadius: 7, background: "#FFFFFF", border: "1px solid #D6E0EA" }}>
+                    <div style={{ fontFamily: "Inter,sans-serif", fontSize: 7.5, fontWeight: 800, color: "#7A8798" }}>
+                      {label.toUpperCase()}
+                    </div>
+                    <div style={{ marginTop: 3, fontFamily: "Inter,sans-serif", fontSize: 10.5, color: "#344154" }}>
+                      {value}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  marginTop: 10,
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 10,
+                  color: "#445267",
+                  cursor: "pointer",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={includeNotes}
+                  onChange={(event) => {
+                    setIncludeNotes(event.target.checked);
+                    setResult("");
+                  }}
+                />
+                Share reviewer notes with the board
+              </label>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7, marginTop: 12 }}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResult(
+                      `Submitted with recipients, locking behavior, and note visibility reviewed. Reviewer notes were ${includeNotes ? "included" : "kept private"}.`,
+                    )
+                  }
+                  style={{
+                    minHeight: 40,
+                    border: 0,
+                    borderRadius: 8,
+                    background: "#315C8F",
+                    color: "#FFFFFF",
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 10,
+                    fontWeight: 750,
+                    cursor: "pointer",
+                  }}
+                >
+                  Confirm submit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResult("The draft remains editable. No review invitation was sent.")}
+                  style={{
+                    minHeight: 40,
+                    border: "1px solid #BFCBD8",
+                    borderRadius: 8,
+                    background: "#FFFFFF",
+                    color: "#415069",
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 10,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  Keep editing
+                </button>
+              </div>
+            </>
+          )}
+        </aside>
       </div>
-      <div style={{ padding: 16 }}>{children}</div>
-      <div
-        role="status"
-        aria-live="polite"
+      <ExhibitStatus
+        result={result}
+        idle={
+          mode === "quick"
+            ? "The action is prominent; its audience and consequences are visually deferred."
+            : "Context appears before commitment, and the person can still revise or leave."
+        }
+        light
+      />
+    </section>
+  );
+}
+
+function SubmissionFact({ label, value }: LabelValueProps) {
+  return (
+    <div style={{ padding: "9px 10px", border: "1px solid #D9E0E8", borderRadius: 8, background: "#F9FAFC" }}>
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: 7.5, fontWeight: 800, color: "#8290A2" }}>
+        {label}
+      </div>
+      <div style={{ marginTop: 4, fontFamily: "Inter,sans-serif", fontSize: 10.5, color: "#39475B" }}>
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function PresenceCheckpointEvidenceLab() {
+  const [mode, setMode] = useState<"pressure" | "present">("pressure");
+  const [result, setResult] = useState("");
+
+  return (
+    <section
+      aria-label="Interactive sensitive workflow checkpoint"
+      style={{
+        minHeight: 492,
+        overflow: "hidden",
+        border: "1px solid rgba(194,168,128,.32)",
+        borderRadius: 16,
+        background: "#F3EEE6",
+        color: "#292822",
+        boxShadow: "0 26px 70px rgba(0,0,0,.38)",
+      }}
+    >
+      <header
         style={{
-          minHeight: 43,
-          padding: "10px 14px",
+          height: 58,
+          padding: "0 18px",
           display: "flex",
           alignItems: "center",
-          gap: 9,
-          borderTop: `1px solid ${BORDER}`,
-          ...MONO,
-          fontSize: 8.5,
-          lineHeight: 1.35,
-          color: result ? PURPOSE : MUTED,
-          background: result
-            ? "rgba(232,200,109,.045)"
-            : "rgba(255,255,255,.01)",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #D9CFC0",
+          background: "#FFFCF7",
         }}
       >
-        {result ? <Check size={13} aria-hidden="true" /> : <Eye size={13} aria-hidden="true" />}
-        {result || "INTERACT WITH THE EXAMPLE TO REVEAL THE BEHAVIORAL CONSEQUENCE"}
+        <div>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12.5, fontWeight: 750 }}>
+            Housing assistance application
+          </div>
+          <div style={{ marginTop: 3, fontFamily: "Inter,sans-serif", fontSize: 9.5, color: "#7E776D" }}>
+            Eligibility details · Step 3 of 5
+          </div>
+        </div>
+        <div role="group" aria-label="Checkpoint behavior" style={{ display: "flex", gap: 5 }}>
+          <button
+            type="button"
+            aria-pressed={mode === "pressure"}
+            onClick={() => {
+              setMode("pressure");
+              setResult("");
+            }}
+            style={checkpointModeButton(mode === "pressure", "#A64F45")}
+          >
+            Pressure
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "present"}
+            onClick={() => {
+              setMode("present");
+              setResult("");
+            }}
+            style={checkpointModeButton(mode === "present", "#466B5A")}
+          >
+            Orientation
+          </button>
+        </div>
+      </header>
+
+      <div style={{ padding: "17px 20px 0" }}>
+        <div aria-label="Application progress" style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 6 }}>
+          {["Household", "Income", "Documents", "Review", "Submit"].map((step, index) => (
+            <div key={step}>
+              <div style={{ height: 4, borderRadius: 99, background: index <= 2 ? "#6E8D79" : "#D7CEC1" }} />
+              <div style={{ marginTop: 5, fontFamily: "Inter,sans-serif", fontSize: 8, color: index <= 2 ? "#3F5F50" : "#918A80" }}>
+                {step}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <main
+        style={{
+          minHeight: 337,
+          margin: "15px 20px 0",
+          display: "grid",
+          gridTemplateColumns: "220px minmax(0,1fr)",
+          overflow: "hidden",
+          border: "1px solid #D9CFC0",
+          borderRadius: "13px 13px 0 0",
+          background: "#FFFCF7",
+        }}
+      >
+        <aside style={{ padding: 18, borderRight: "1px solid #DED5C9", background: "#F7F1E8" }}>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#7A7167" }}>
+            SAVED SO FAR
+          </div>
+          {[
+            ["Household", "Complete"],
+            ["Income", "Complete"],
+            ["Documents", "2 of 3 added"],
+          ].map(([label, value], index) => (
+            <div key={label} style={{ display: "flex", gap: 9, padding: "12px 0", borderBottom: "1px solid #DED5C9" }}>
+              <div
+                style={{
+                  width: 22,
+                  height: 22,
+                  display: "grid",
+                  placeItems: "center",
+                  borderRadius: "50%",
+                  background: index < 2 ? "#DDE9E1" : "#EFE3CF",
+                  color: index < 2 ? "#476956" : "#8C6840",
+                }}
+              >
+                {index < 2 ? <Check size={12} /> : <Upload size={12} />}
+              </div>
+              <div>
+                <div style={{ fontFamily: "Inter,sans-serif", fontSize: 10.5, fontWeight: 700 }}>{label}</div>
+                <div style={{ marginTop: 2, fontFamily: "Inter,sans-serif", fontSize: 8.5, color: "#80796F" }}>{value}</div>
+              </div>
+            </div>
+          ))}
+        </aside>
+
+        <div style={{ padding: "20px 22px" }}>
+          {mode === "pressure" ? (
+            <>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "6px 9px",
+                  borderRadius: 999,
+                  background: "#F8E1DD",
+                  color: "#9A433B",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 9,
+                  fontWeight: 750,
+                }}
+              >
+                <Clock3 size={12} /> SESSION ENDS IN 02:00
+              </div>
+              <div style={{ marginTop: 13, fontFamily: "Georgia,serif", fontSize: 25 }}>
+                Keep going to avoid losing progress
+              </div>
+              <p style={{ margin: "8px 0 20px", maxWidth: 460, fontFamily: "Inter,sans-serif", fontSize: 11.5, lineHeight: 1.5, color: "#756E65" }}>
+                Upload the final document now. Leaving may delay your application.
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "The workflow continued under time and loss pressure without explaining whether progress was actually at risk.",
+                  )
+                }
+                style={{
+                  width: "100%",
+                  minHeight: 46,
+                  border: 0,
+                  borderRadius: 8,
+                  background: "#B45147",
+                  color: "#FFFFFF",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 12,
+                  fontWeight: 750,
+                  cursor: "pointer",
+                }}
+              >
+                Continue now
+              </button>
+              <button
+                type="button"
+                onClick={() => setResult("The person left without a clear statement about saved progress or how to return.")}
+                style={{
+                  width: "100%",
+                  marginTop: 9,
+                  border: 0,
+                  background: "transparent",
+                  color: "#9A9187",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 9,
+                  cursor: "pointer",
+                }}
+              >
+                Exit application
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#466B5A" }}>
+                CHECKPOINT · YOUR PROGRESS IS SAVED
+              </div>
+              <div style={{ marginTop: 9, fontFamily: "Georgia,serif", fontSize: 24 }}>
+                Before the document step
+              </div>
+              <p style={{ margin: "7px 0 13px", fontFamily: "Inter,sans-serif", fontSize: 11, lineHeight: 1.5, color: "#6F6A62" }}>
+                Next, you’ll add proof of address. You can continue, pause, or
+                leave. Completed information remains saved for 30 days.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+                <SubmissionFact label="NEXT STEP" value="One document upload" />
+                <SubmissionFact label="ESTIMATED TIME" value="About 4 minutes" />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 7 }}>
+                <button
+                  type="button"
+                  onClick={() => setResult("The next step opened after its purpose, duration, and save behavior were made visible.")}
+                  style={checkpointAction("#466B5A", "#FFFFFF")}
+                >
+                  Continue
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResult("Progress was saved. The person can return to the document step within 30 days.")}
+                  style={checkpointAction("#FFFFFF", "#4E5F55", true)}
+                >
+                  <Pause size={12} /> Pause
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResult("The application closed with completed information preserved.")}
+                  style={checkpointAction("#FFFFFF", "#6C635B", true)}
+                >
+                  Leave
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </main>
+      <ExhibitStatus
+        result={result}
+        idle={
+          mode === "pressure"
+            ? "Urgency narrows attention toward continuation."
+            : "Presence orients the person without manufacturing urgency or trapping them in the flow."
+        }
+        light
+      />
+    </section>
+  );
+}
+
+function checkpointModeButton(active: boolean, color: string): CSSProperties {
+  return {
+    minHeight: 31,
+    padding: "0 11px",
+    border: active ? `1px solid ${color}66` : "1px solid #D5CCC0",
+    borderRadius: 8,
+    background: active ? `${color}12` : "#FFFFFF",
+    color: active ? color : "#817A71",
+    fontFamily: "Inter,sans-serif",
+    fontSize: 9.5,
+    fontWeight: 750,
+    cursor: "pointer",
+  };
+}
+
+function checkpointAction(
+  background: string,
+  color: string,
+  bordered = false,
+): CSSProperties {
+  return {
+    minHeight: 42,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    border: bordered ? "1px solid #CFC5B8" : 0,
+    borderRadius: 8,
+    background,
+    color,
+    fontFamily: "Inter,sans-serif",
+    fontSize: 10,
+    fontWeight: 750,
+    cursor: "pointer",
+  };
+}
+
+function AccountRecoveryEvidenceLab() {
+  const [mode, setMode] = useState<"blame" | "recovery">("blame");
+  const [route, setRoute] = useState<"email" | "key" | "support" | null>(null);
+  const [result, setResult] = useState("");
+
+  const changeMode = (next: "blame" | "recovery") => {
+    setMode(next);
+    setRoute(null);
+    setResult("");
+  };
+
+  return (
+    <section
+      aria-label="Interactive account recovery interface"
+      style={{
+        minHeight: 492,
+        overflow: "hidden",
+        display: "grid",
+        gridTemplateColumns: "280px minmax(0,1fr)",
+        border: "1px solid rgba(102,141,181,.3)",
+        borderRadius: 16,
+        background: "#F8FAFD",
+        color: "#1C2A3D",
+        boxShadow: "0 26px 70px rgba(0,0,0,.4)",
+      }}
+    >
+      <aside
+        style={{
+          padding: "22px 20px",
+          display: "flex",
+          flexDirection: "column",
+          background:
+            "radial-gradient(circle at 20% 14%,rgba(114,172,211,.22),transparent 34%),#102238",
+          color: "#EAF3FA",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+          <div
+            style={{
+              width: 31,
+              height: 31,
+              display: "grid",
+              placeItems: "center",
+              borderRadius: 9,
+              background: "#1C3A58",
+              color: "#8FC8E8",
+            }}
+          >
+            <KeyRound size={16} />
+          </div>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: 13, fontWeight: 750 }}>
+            Northline ID
+          </div>
+        </div>
+        <div style={{ marginTop: 50, fontFamily: "Georgia,serif", fontSize: 27, lineHeight: 1.15 }}>
+          Return to your account.
+        </div>
+        <p style={{ margin: "12px 0 0", fontFamily: "Inter,sans-serif", fontSize: 11, lineHeight: 1.55, color: "#AFC0D0" }}>
+          Recovery should restore access without turning a security boundary
+          into a judgment about the person.
+        </p>
+        <div style={{ marginTop: "auto", paddingTop: 18, borderTop: "1px solid #29415A" }}>
+          {["Encrypted recovery", "No password requested", "Account changes logged"].map((item) => (
+            <div key={item} style={{ display: "flex", alignItems: "center", gap: 7, marginTop: 8, fontFamily: "Inter,sans-serif", fontSize: 9.5, color: "#AFC0D0" }}>
+              <ShieldCheck size={12} color="#7FB69D" /> {item}
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      <div style={{ display: "flex", minWidth: 0, flexDirection: "column" }}>
+        <header
+          style={{
+            height: 58,
+            padding: "0 18px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid #DCE3EC",
+            background: "#FFFFFF",
+          }}
+        >
+          <div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12, fontWeight: 750 }}>Recover access</div>
+            <div style={{ marginTop: 2, fontFamily: "Inter,sans-serif", fontSize: 9, color: "#77869A" }}>
+              alex@northline.example
+            </div>
+          </div>
+          <div role="group" aria-label="Recovery language" style={{ display: "flex", gap: 4 }}>
+            <button
+              type="button"
+              aria-pressed={mode === "blame"}
+              onClick={() => changeMode("blame")}
+              style={recoveryModeButton(mode === "blame", "#A64B46")}
+            >
+              Blame error
+            </button>
+            <button
+              type="button"
+              aria-pressed={mode === "recovery"}
+              onClick={() => changeMode("recovery")}
+              style={recoveryModeButton(mode === "recovery", "#315F83")}
+            >
+              Guided recovery
+            </button>
+          </div>
+        </header>
+
+        <main style={{ flex: 1, padding: "22px 24px 16px" }}>
+          {mode === "blame" ? (
+            <div style={{ maxWidth: 470, margin: "28px auto 0" }}>
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  display: "grid",
+                  placeItems: "center",
+                  borderRadius: "50%",
+                  background: "#F8E7E5",
+                  color: "#B14D46",
+                }}
+              >
+                <X size={21} />
+              </div>
+              <div style={{ marginTop: 14, fontFamily: "Inter,sans-serif", fontSize: 23, fontWeight: 780 }}>
+                You entered the wrong code too many times
+              </div>
+              <p style={{ margin: "8px 0 18px", fontFamily: "Inter,sans-serif", fontSize: 11.5, lineHeight: 1.5, color: "#69778A" }}>
+                Access is blocked. Try again later.
+              </p>
+              <div style={{ padding: "11px 12px", borderRadius: 8, background: "#F2F4F7", fontFamily: "Inter,sans-serif", fontSize: 10, color: "#778294" }}>
+                Error R-18 · Attempts exceeded
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "The person reached the same blocked state again. The interface named fault but offered no viable recovery route.",
+                  )
+                }
+                style={{
+                  width: "100%",
+                  minHeight: 44,
+                  marginTop: 14,
+                  border: 0,
+                  borderRadius: 8,
+                  background: "#B14D46",
+                  color: "#FFFFFF",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 11,
+                  fontWeight: 750,
+                  cursor: "pointer",
+                }}
+              >
+                Try code again
+              </button>
+            </div>
+          ) : (
+            <>
+              <div style={{ fontFamily: "Inter,sans-serif", fontSize: 20, fontWeight: 770 }}>
+                The verification code expired
+              </div>
+              <p style={{ margin: "6px 0 15px", fontFamily: "Inter,sans-serif", fontSize: 11, color: "#657489" }}>
+                Your account is still secure. Choose a route that works for you.
+              </p>
+              <div role="group" aria-label="Recovery route" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8 }}>
+                {[
+                  { id: "email" as const, icon: <Mail size={17} />, title: "Email link", note: "Send to verified inbox" },
+                  { id: "key" as const, icon: <KeyRound size={17} />, title: "Backup key", note: "Use a saved recovery key" },
+                  { id: "support" as const, icon: <Headphones size={17} />, title: "Human support", note: "Keep this context attached" },
+                ].map((item) => {
+                  const active = route === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => {
+                        setRoute(item.id);
+                        setResult("");
+                      }}
+                      style={{
+                        minHeight: 96,
+                        padding: 12,
+                        textAlign: "left",
+                        border: active ? "1px solid #4E789A" : "1px solid #D7E0E9",
+                        borderRadius: 9,
+                        background: active ? "#EDF5FA" : "#FFFFFF",
+                        color: active ? "#315F83" : "#46566A",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {item.icon}
+                      <span style={{ display: "block", marginTop: 9, fontFamily: "Inter,sans-serif", fontSize: 10.5, fontWeight: 750 }}>
+                        {item.title}
+                      </span>
+                      <span style={{ display: "block", marginTop: 3, fontFamily: "Inter,sans-serif", fontSize: 8.5, lineHeight: 1.3, color: "#77869A" }}>
+                        {item.note}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div
+                style={{
+                  minHeight: 82,
+                  marginTop: 11,
+                  padding: "12px 13px",
+                  border: "1px solid #D7E0E9",
+                  borderRadius: 9,
+                  background: "#F5F8FB",
+                }}
+              >
+                {route ? (
+                  <>
+                    <div style={{ fontFamily: "Inter,sans-serif", fontSize: 10.5, fontWeight: 750, color: "#33465C" }}>
+                      {route === "email"
+                        ? "Send a single-use link"
+                        : route === "key"
+                          ? "Enter your offline recovery key"
+                          : "Open a support request"}
+                    </div>
+                    <div style={{ marginTop: 4, fontFamily: "Inter,sans-serif", fontSize: 9.5, lineHeight: 1.35, color: "#6D7C8E" }}>
+                      {route === "support"
+                        ? "The expired-code context and account identifier will be included. No password is shared."
+                        : "This route restores access without resetting unrelated account preferences."}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setResult(
+                          `${route === "email" ? "Email link" : route === "key" ? "Backup key" : "Human support"} selected. The recovery path explains what happens and preserves other account settings.`,
+                        )
+                      }
+                      style={{
+                        minHeight: 32,
+                        marginTop: 9,
+                        padding: "0 12px",
+                        border: 0,
+                        borderRadius: 7,
+                        background: "#315F83",
+                        color: "#FFFFFF",
+                        fontFamily: "Inter,sans-serif",
+                        fontSize: 9.5,
+                        fontWeight: 750,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Continue with this route
+                    </button>
+                  </>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, height: "100%", fontFamily: "Inter,sans-serif", fontSize: 10, color: "#7A8798" }}>
+                    <CircleHelpIcon /> Select a recovery route to see what it requires.
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </main>
+        <ExhibitStatus
+          result={result}
+          idle={
+            mode === "blame"
+              ? "The error treats a security event as personal failure and withholds a next step."
+              : "The system names what happened, keeps the boundary, and offers viable recovery routes."
+          }
+          light
+        />
       </div>
     </section>
+  );
+}
+
+function CircleHelpIcon() {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        width: 18,
+        height: 18,
+        display: "grid",
+        placeItems: "center",
+        flexShrink: 0,
+        border: "1px solid #9AA8B8",
+        borderRadius: "50%",
+        fontFamily: "Inter,sans-serif",
+        fontSize: 10,
+      }}
+    >
+      ?
+    </span>
+  );
+}
+
+function recoveryModeButton(active: boolean, color: string): CSSProperties {
+  return {
+    minHeight: 30,
+    padding: "0 10px",
+    border: active ? `1px solid ${color}55` : "1px solid #D7E0E9",
+    borderRadius: 7,
+    background: active ? `${color}10` : "#FFFFFF",
+    color: active ? color : "#758398",
+    fontFamily: "Inter,sans-serif",
+    fontSize: 9,
+    fontWeight: 750,
+    cursor: "pointer",
+  };
+}
+
+function ChoiceAmplificationEvidenceLab() {
+  const [mode, setMode] = useState<"automatic" | "editable">("automatic");
+  const [priority, setPriority] = useState<"focus" | "team" | "earliest">("focus");
+  const [choice, setChoice] = useState("option-a");
+  const [result, setResult] = useState("");
+
+  const options = {
+    focus: [
+      { id: "option-a", time: "Tue · 10:30", note: "Preserves two focus blocks", moved: "Moves 1 meeting" },
+      { id: "option-b", time: "Wed · 13:00", note: "Most attendees available", moved: "Moves 0 meetings" },
+      { id: "option-c", time: "Mon · 16:00", note: "Earliest open slot", moved: "Moves 2 meetings" },
+    ],
+    team: [
+      { id: "option-b", time: "Wed · 13:00", note: "Most attendees available", moved: "Moves 0 meetings" },
+      { id: "option-a", time: "Tue · 10:30", note: "Preserves two focus blocks", moved: "Moves 1 meeting" },
+      { id: "option-c", time: "Mon · 16:00", note: "Earliest open slot", moved: "Moves 2 meetings" },
+    ],
+    earliest: [
+      { id: "option-c", time: "Mon · 16:00", note: "Earliest open slot", moved: "Moves 2 meetings" },
+      { id: "option-a", time: "Tue · 10:30", note: "Preserves two focus blocks", moved: "Moves 1 meeting" },
+      { id: "option-b", time: "Wed · 13:00", note: "Most attendees available", moved: "Moves 0 meetings" },
+    ],
+  }[priority];
+
+  const changeMode = (next: "automatic" | "editable") => {
+    setMode(next);
+    setChoice("option-a");
+    setResult("");
+  };
+
+  return (
+    <section
+      aria-label="Interactive AI scheduling recommendation"
+      style={{
+        minHeight: 492,
+        overflow: "hidden",
+        border: "1px solid rgba(124,151,205,.3)",
+        borderRadius: 15,
+        background: "#111522",
+        color: "#EDF1FA",
+        boxShadow: "0 26px 70px rgba(0,0,0,.42)",
+      }}
+    >
+      <header
+        style={{
+          height: 58,
+          padding: "0 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #2A3143",
+          background: "#171C2B",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+          <Sparkles size={16} color="#9AAEED" />
+          <div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12.5, fontWeight: 750 }}>Schedule assistant</div>
+            <div style={{ marginTop: 2, fontFamily: "Inter,sans-serif", fontSize: 9, color: "#8E99AE" }}>
+              Plan a 45-minute project review
+            </div>
+          </div>
+        </div>
+        <div role="group" aria-label="Recommendation control" style={{ display: "flex", gap: 4 }}>
+          <button
+            type="button"
+            aria-pressed={mode === "automatic"}
+            onClick={() => changeMode("automatic")}
+            style={aiModeButton(mode === "automatic", "#D47A70")}
+          >
+            Auto-decide
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "editable"}
+            onClick={() => changeMode("editable")}
+            style={aiModeButton(mode === "editable", "#92A9EF")}
+          >
+            Editable criteria
+          </button>
+        </div>
+      </header>
+
+      <div style={{ minHeight: 383, display: "grid", gridTemplateColumns: "360px minmax(0,1fr)" }}>
+        <aside style={{ padding: 17, borderRight: "1px solid #2A3143", background: "#121724" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#8E99AE" }}>
+              TEAM CALENDAR
+            </div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 8.5, color: "#68758D" }}>MON–WED</div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 7 }}>
+            {["MON 14", "TUE 15", "WED 16"].map((day, dayIndex) => (
+              <div key={day} style={{ minHeight: 280, padding: 8, border: "1px solid #283044", borderRadius: 8, background: "#171D2B" }}>
+                <div style={{ fontFamily: "Inter,sans-serif", fontSize: 8, fontWeight: 750, color: "#8995A9", marginBottom: 9 }}>
+                  {day}
+                </div>
+                {[
+                  { top: dayIndex === 0 ? 22 : 5, height: 38, label: dayIndex === 0 ? "Planning" : "Focus" },
+                  { top: dayIndex === 1 ? 32 : 20, height: dayIndex === 2 ? 54 : 44, label: dayIndex === 2 ? "Team sync" : "Review" },
+                  { top: dayIndex === 0 ? 36 : 28, height: 48, label: "Focus" },
+                ].map((block, index) => (
+                  <div
+                    key={`${block.label}-${index}`}
+                    style={{
+                      height: block.height,
+                      marginTop: block.top,
+                      padding: "6px 5px",
+                      borderLeft: `2px solid ${block.label === "Focus" ? "#6278BD" : "#4F8C83"}`,
+                      borderRadius: 4,
+                      background: block.label === "Focus" ? "#202943" : "#1C3337",
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 7.5,
+                      color: "#B7C1D2",
+                    }}
+                  >
+                    {block.label}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        <main style={{ padding: "17px 19px 13px" }}>
+          {mode === "automatic" ? (
+            <>
+              <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#D58A80" }}>
+                AI SCHEDULE APPLIED
+              </div>
+              <div style={{ marginTop: 9, fontFamily: "Inter,sans-serif", fontSize: 22, fontWeight: 760 }}>
+                Review scheduled Monday at 16:00
+              </div>
+              <p style={{ margin: "7px 0 14px", fontFamily: "Inter,sans-serif", fontSize: 11, lineHeight: 1.45, color: "#98A4B8" }}>
+                The assistant selected the earliest opening and moved two existing meetings.
+              </p>
+              <div style={{ padding: "12px 13px", border: "1px solid #49363C", borderRadius: 9, background: "#251D28" }}>
+                {["Design critique moved to Tuesday", "Focus block shortened by 45 minutes"].map((item) => (
+                  <div key={item} style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 7, fontFamily: "Inter,sans-serif", fontSize: 10, color: "#D2BBC0" }}>
+                    <AlertTriangle size={12} color="#D58A80" /> {item}
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setResult(
+                    "The automatic schedule remained in place. A hidden priority—earliest availability—overrode existing commitments.",
+                  )
+                }
+                style={{
+                  width: "100%",
+                  minHeight: 44,
+                  marginTop: 15,
+                  border: 0,
+                  borderRadius: 8,
+                  background: "#B9655D",
+                  color: "#FFFFFF",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 11,
+                  fontWeight: 750,
+                  cursor: "pointer",
+                }}
+              >
+                Accept applied schedule
+              </button>
+              <button
+                type="button"
+                onClick={() => changeMode("editable")}
+                style={{
+                  width: "100%",
+                  minHeight: 34,
+                  marginTop: 7,
+                  border: 0,
+                  background: "transparent",
+                  color: "#9EA9BD",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 9.5,
+                  cursor: "pointer",
+                }}
+              >
+                Undo and review options
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#9AAEED" }}>
+                <SlidersHorizontal size={13} /> WHAT SHOULD THE ASSISTANT PRIORITIZE?
+              </div>
+              <div role="group" aria-label="Scheduling priority" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, marginTop: 10 }}>
+                {[
+                  ["focus", "Protect focus"],
+                  ["team", "Team availability"],
+                  ["earliest", "Earliest time"],
+                ].map(([id, label]) => (
+                  <button
+                    key={id}
+                    type="button"
+                    aria-pressed={priority === id}
+                    onClick={() => {
+                      setPriority(id as typeof priority);
+                      setChoice(options[0].id);
+                      setResult("");
+                    }}
+                    style={{
+                      minHeight: 35,
+                      border: priority === id ? "1px solid #7188CB" : "1px solid #343D52",
+                      borderRadius: 7,
+                      background: priority === id ? "#222D4B" : "#171D2B",
+                      color: priority === id ? "#C8D3F6" : "#909CAF",
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 8.5,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: "grid", gap: 6, marginTop: 11 }}>
+                {options.map((option, index) => {
+                  const active = choice === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => {
+                        setChoice(option.id);
+                        setResult("");
+                      }}
+                      style={{
+                        minHeight: 56,
+                        padding: "8px 10px",
+                        display: "grid",
+                        gridTemplateColumns: "23px 1fr auto",
+                        alignItems: "center",
+                        gap: 9,
+                        textAlign: "left",
+                        border: active ? "1px solid #7188CB" : "1px solid #30384B",
+                        borderRadius: 8,
+                        background: active ? "#202A46" : "#171D2B",
+                        color: "#E7ECF5",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: 19,
+                          height: 19,
+                          display: "grid",
+                          placeItems: "center",
+                          borderRadius: "50%",
+                          border: active ? "5px solid #92A9EF" : "1px solid #596579",
+                        }}
+                      />
+                      <span>
+                        <span style={{ display: "block", fontFamily: "Inter,sans-serif", fontSize: 10.5, fontWeight: 750 }}>
+                          {option.time} {index === 0 ? "· Best match" : ""}
+                        </span>
+                        <span style={{ display: "block", marginTop: 3, fontFamily: "Inter,sans-serif", fontSize: 8.5, color: "#98A4B8" }}>
+                          {option.note}
+                        </span>
+                      </span>
+                      <span style={{ fontFamily: "Inter,sans-serif", fontSize: 8, color: "#91A0B5" }}>{option.moved}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const selected = options.find((option) => option.id === choice) ?? options[0];
+                  setResult(
+                    `${selected.time} selected. The person chose the priority and option; no other meeting changed without confirmation.`,
+                  );
+                }}
+                style={{
+                  width: "100%",
+                  minHeight: 39,
+                  marginTop: 9,
+                  border: 0,
+                  borderRadius: 8,
+                  background: "#647CC5",
+                  color: "#FFFFFF",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 10.5,
+                  fontWeight: 750,
+                  cursor: "pointer",
+                }}
+              >
+                Confirm selected option
+              </button>
+            </>
+          )}
+        </main>
+      </div>
+      <ExhibitStatus
+        result={result}
+        idle={
+          mode === "automatic"
+            ? "The system acted on a hidden priority and changed the calendar before consent."
+            : "The assistant narrows possibilities while criteria, alternatives, and final authority stay editable."
+        }
+      />
+    </section>
+  );
+}
+
+function aiModeButton(active: boolean, color: string): CSSProperties {
+  return {
+    minHeight: 30,
+    padding: "0 10px",
+    border: active ? `1px solid ${color}77` : "1px solid #394156",
+    borderRadius: 7,
+    background: active ? `${color}18` : "#171C2B",
+    color: active ? color : "#8D99AE",
+    fontFamily: "Inter,sans-serif",
+    fontSize: 9,
+    fontWeight: 750,
+    cursor: "pointer",
+  };
+}
+
+function MeaningfulClosureEvidenceLab() {
+  const [mode, setMode] = useState<"mechanical" | "closure">("mechanical");
+  const [receiptSaved, setReceiptSaved] = useState(false);
+  const [reminder, setReminder] = useState(false);
+  const [result, setResult] = useState("");
+
+  const changeMode = (next: "mechanical" | "closure") => {
+    setMode(next);
+    setReceiptSaved(false);
+    setReminder(false);
+    setResult("");
+  };
+
+  return (
+    <section
+      aria-label="Interactive completion and saved-progress interface"
+      style={{
+        minHeight: 492,
+        overflow: "hidden",
+        border: "1px solid rgba(107,168,149,.3)",
+        borderRadius: 16,
+        background: "#F4F8F5",
+        color: "#21342D",
+        boxShadow: "0 26px 70px rgba(0,0,0,.38)",
+      }}
+    >
+      <header
+        style={{
+          height: 58,
+          padding: "0 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #D5E2DA",
+          background: "#FBFDFC",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+          <Cloud size={16} color="#4D806C" />
+          <div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12.5, fontWeight: 750 }}>Community grant portal</div>
+            <div style={{ marginTop: 2, fontFamily: "Inter,sans-serif", fontSize: 9, color: "#74877E" }}>
+              Neighborhood garden proposal
+            </div>
+          </div>
+        </div>
+        <div role="group" aria-label="Completion experience" style={{ display: "flex", gap: 4 }}>
+          <button
+            type="button"
+            aria-pressed={mode === "mechanical"}
+            onClick={() => changeMode("mechanical")}
+            style={closureModeButton(mode === "mechanical", "#867A71")}
+          >
+            Mechanical end
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "closure"}
+            onClick={() => changeMode("closure")}
+            style={closureModeButton(mode === "closure", "#477A65")}
+          >
+            Meaningful closure
+          </button>
+        </div>
+      </header>
+
+      <div style={{ minHeight: 383, display: "grid", gridTemplateColumns: "225px minmax(0,1fr)" }}>
+        <aside style={{ padding: 17, borderRight: "1px solid #D5E2DA", background: "#EAF2ED" }}>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#6C8076" }}>
+            APPLICATION
+          </div>
+          {[
+            ["Project details", "Saved"],
+            ["Budget", "Saved"],
+            ["Documents", "3 attached"],
+            ["Submit", "Complete"],
+          ].map(([label, state], index) => (
+            <div key={label} style={{ display: "grid", gridTemplateColumns: "24px 1fr", gap: 8, padding: "11px 0", borderBottom: "1px solid #CFDDD4" }}>
+              <div
+                style={{
+                  width: 21,
+                  height: 21,
+                  display: "grid",
+                  placeItems: "center",
+                  borderRadius: "50%",
+                  background: index === 3 ? "#4F826D" : "#D7E7DD",
+                  color: index === 3 ? "#FFFFFF" : "#4F826D",
+                }}
+              >
+                <Check size={12} />
+              </div>
+              <div>
+                <div style={{ fontFamily: "Inter,sans-serif", fontSize: 10, fontWeight: 700 }}>{label}</div>
+                <div style={{ marginTop: 2, fontFamily: "Inter,sans-serif", fontSize: 8.5, color: "#74877E" }}>{state}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{ marginTop: 14, fontFamily: "Inter,sans-serif", fontSize: 8.5, lineHeight: 1.45, color: "#73867C" }}>
+            Last autosave: today at 14:32
+          </div>
+        </aside>
+
+        <main style={{ padding: "18px 21px 14px" }}>
+          {mode === "mechanical" ? (
+            <div style={{ height: "100%", display: "grid", placeItems: "center", textAlign: "center" }}>
+              <div>
+                <div
+                  style={{
+                    width: 58,
+                    height: 58,
+                    margin: "0 auto",
+                    display: "grid",
+                    placeItems: "center",
+                    borderRadius: "50%",
+                    background: "#DCEBE2",
+                    color: "#4D806C",
+                  }}
+                >
+                  <Check size={27} />
+                </div>
+                <div style={{ marginTop: 14, fontFamily: "Inter,sans-serif", fontSize: 25, fontWeight: 780 }}>
+                  Done
+                </div>
+                <p style={{ margin: "7px auto 17px", maxWidth: 340, fontFamily: "Inter,sans-serif", fontSize: 11, lineHeight: 1.5, color: "#718179" }}>
+                  Your task is complete.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResult(
+                      "The flow ended, but the person still does not know what was saved, what happens next, or how to return.",
+                    )
+                  }
+                  style={{
+                    minHeight: 42,
+                    padding: "0 22px",
+                    border: 0,
+                    borderRadius: 8,
+                    background: "#5A876F",
+                    color: "#FFFFFF",
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 10.5,
+                    fontWeight: 750,
+                    cursor: "pointer",
+                  }}
+                >
+                  Return home
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14 }}>
+                <div>
+                  <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: "#4D806C" }}>
+                    SUBMISSION RECEIVED
+                  </div>
+                  <div style={{ marginTop: 7, fontFamily: "Georgia,serif", fontSize: 24 }}>
+                    Your proposal is safely in review
+                  </div>
+                  <div style={{ marginTop: 5, fontFamily: "Inter,sans-serif", fontSize: 10.5, color: "#708179" }}>
+                    Reference CG-2048 · Submitted today at 14:34
+                  </div>
+                </div>
+                <div
+                  style={{
+                    width: 42,
+                    height: 42,
+                    display: "grid",
+                    placeItems: "center",
+                    flexShrink: 0,
+                    borderRadius: 10,
+                    background: "#DCEBE2",
+                    color: "#4D806C",
+                  }}
+                >
+                  <FileCheck2 size={21} />
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 14 }}>
+                <div style={{ padding: "11px 12px", border: "1px solid #D2E0D7", borderRadius: 9, background: "#FFFFFF" }}>
+                  <div style={{ fontFamily: "Inter,sans-serif", fontSize: 8, fontWeight: 800, color: "#7A8D83" }}>WHAT WAS SAVED</div>
+                  <div style={{ marginTop: 6, fontFamily: "Inter,sans-serif", fontSize: 10.5, lineHeight: 1.4 }}>
+                    Proposal, budget, and 3 attachments
+                  </div>
+                </div>
+                <div style={{ padding: "11px 12px", border: "1px solid #D2E0D7", borderRadius: 9, background: "#FFFFFF" }}>
+                  <div style={{ fontFamily: "Inter,sans-serif", fontSize: 8, fontWeight: 800, color: "#7A8D83" }}>WHAT HAPPENS NEXT</div>
+                  <div style={{ marginTop: 6, fontFamily: "Inter,sans-serif", fontSize: 10.5, lineHeight: 1.4 }}>
+                    Eligibility review by 18 June
+                  </div>
+                </div>
+              </div>
+              <div style={{ marginTop: 10, padding: "10px 12px", display: "flex", alignItems: "center", gap: 9, borderLeft: "3px solid #5A8A74", background: "#E8F1EB" }}>
+                <Bell size={14} color="#4D806C" />
+                <div style={{ fontFamily: "Inter,sans-serif", fontSize: 10, lineHeight: 1.4, color: "#486054" }}>
+                  We’ll email alex@example.org when the review status changes.
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 7, marginTop: 11 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReceiptSaved(true);
+                    setResult("A receipt containing the reference, saved materials, and review timeline was downloaded.");
+                  }}
+                  style={closureAction(receiptSaved)}
+                >
+                  <Download size={13} /> {receiptSaved ? "Receipt saved" : "Save receipt"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReminder(true);
+                    setResult("A private reminder was set for the stated review date.");
+                  }}
+                  style={closureAction(reminder)}
+                >
+                  <CalendarDays size={13} /> {reminder ? "Reminder set" : "Set reminder"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResult("The person returned home with the submission reference preserved in progress history.")}
+                  style={closureAction(false)}
+                >
+                  Return home
+                </button>
+              </div>
+            </>
+          )}
+        </main>
+      </div>
+      <ExhibitStatus
+        result={result}
+        idle={
+          mode === "mechanical"
+            ? "Completion is acknowledged, but continuity and memory are left to the person."
+            : "Closure confirms what happened, preserves a record, and makes the next moment legible."
+        }
+        light
+      />
+    </section>
+  );
+}
+
+function closureModeButton(active: boolean, color: string): CSSProperties {
+  return {
+    minHeight: 30,
+    padding: "0 10px",
+    border: active ? `1px solid ${color}66` : "1px solid #D4E0D8",
+    borderRadius: 7,
+    background: active ? `${color}12` : "#FFFFFF",
+    color: active ? color : "#75877D",
+    fontFamily: "Inter,sans-serif",
+    fontSize: 9,
+    fontWeight: 750,
+    cursor: "pointer",
+  };
+}
+
+function closureAction(active: boolean): CSSProperties {
+  return {
+    minHeight: 39,
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    border: active ? "1px solid #5D8B76" : "1px solid #C8D8CE",
+    borderRadius: 8,
+    background: active ? "#E0EEE5" : "#FFFFFF",
+    color: "#436957",
+    fontFamily: "Inter,sans-serif",
+    fontSize: 9,
+    fontWeight: 700,
+    cursor: "pointer",
+  };
+}
+
+function PrivacyIntegrityEvidenceLab() {
+  const [mode, setMode] = useState<"promise" | "integrity">("promise");
+  const [analytics, setAnalytics] = useState(true);
+  const [personalization, setPersonalization] = useState(true);
+  const [location, setLocation] = useState(true);
+  const [result, setResult] = useState("");
+
+  const changeMode = (next: "promise" | "integrity") => {
+    setMode(next);
+    setAnalytics(true);
+    setPersonalization(true);
+    setLocation(true);
+    setResult("");
+  };
+
+  const activeCount = [analytics, personalization, location].filter(Boolean).length;
+
+  return (
+    <section
+      aria-label="Interactive privacy and permissions settings"
+      style={{
+        minHeight: 492,
+        overflow: "hidden",
+        border: "1px solid rgba(127,154,159,.3)",
+        borderRadius: 16,
+        background: "#10171A",
+        color: "#EAF0EE",
+        boxShadow: "0 26px 70px rgba(0,0,0,.42)",
+      }}
+    >
+      <header
+        style={{
+          height: 58,
+          padding: "0 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #293539",
+          background: "#151E21",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+          <LockKeyhole size={16} color="#8FB7AC" />
+          <div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12.5, fontWeight: 750 }}>Harbor privacy center</div>
+            <div style={{ marginTop: 2, fontFamily: "Inter,sans-serif", fontSize: 9, color: "#8A9A9B" }}>
+              Permissions and data use
+            </div>
+          </div>
+        </div>
+        <div role="group" aria-label="Privacy behavior" style={{ display: "flex", gap: 4 }}>
+          <button
+            type="button"
+            aria-pressed={mode === "promise"}
+            onClick={() => changeMode("promise")}
+            style={privacyModeButton(mode === "promise", "#D48075")}
+          >
+            Promise only
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "integrity"}
+            onClick={() => changeMode("integrity")}
+            style={privacyModeButton(mode === "integrity", "#8FB7AC")}
+          >
+            Promise + control
+          </button>
+        </div>
+      </header>
+
+      <div style={{ minHeight: 383, display: "grid", gridTemplateColumns: "310px minmax(0,1fr)" }}>
+        <aside style={{ padding: 16, display: "grid", placeItems: "center", borderRight: "1px solid #293539", background: "#0D1417" }}>
+          <div
+            style={{
+              width: 218,
+              height: 330,
+              padding: "13px 12px",
+              border: "5px solid #293438",
+              borderRadius: 27,
+              background: "#F5F8F7",
+              color: "#263734",
+              boxShadow: "0 18px 40px rgba(0,0,0,.35)",
+            }}
+          >
+            <div style={{ width: 54, height: 5, margin: "0 auto 16px", borderRadius: 99, background: "#C7D0CE" }} />
+            <div style={{ textAlign: "center" }}>
+              <ShieldCheck size={28} color="#4F8274" />
+              <div style={{ marginTop: 8, fontFamily: "Inter,sans-serif", fontSize: 17, fontWeight: 780 }}>
+                Your privacy matters
+              </div>
+              <p style={{ margin: "7px 6px 15px", fontFamily: "Inter,sans-serif", fontSize: 9.5, lineHeight: 1.45, color: "#697875" }}>
+                You’re in control of your information.
+              </p>
+            </div>
+            {mode === "promise" ? (
+              <>
+                <div style={{ padding: "12px", borderRadius: 9, background: "#E8F0ED", fontFamily: "Inter,sans-serif", fontSize: 9.5, lineHeight: 1.45, color: "#52635F" }}>
+                  We use data to improve Harbor and provide a personalized
+                  experience.
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResult(
+                      "The privacy promise was accepted while analytics, personalization, and background location remained active.",
+                    )
+                  }
+                  style={{
+                    width: "100%",
+                    minHeight: 38,
+                    marginTop: 13,
+                    border: 0,
+                    borderRadius: 8,
+                    background: "#4F8274",
+                    color: "#FFFFFF",
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 10,
+                    fontWeight: 750,
+                    cursor: "pointer",
+                  }}
+                >
+                  Sounds good
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResult("The person opened settings only after accepting the broad privacy statement.")}
+                  style={{
+                    width: "100%",
+                    marginTop: 10,
+                    border: 0,
+                    background: "transparent",
+                    color: "#87938F",
+                    fontFamily: "Inter,sans-serif",
+                    fontSize: 8.5,
+                    cursor: "pointer",
+                  }}
+                >
+                  Manage in settings
+                </button>
+              </>
+            ) : (
+              <div style={{ display: "grid", gap: 7 }}>
+                <PhonePermission label="Usage analytics" enabled={analytics} onChange={setAnalytics} />
+                <PhonePermission label="Personalization" enabled={personalization} onChange={setPersonalization} />
+                <PhonePermission label="Background location" enabled={location} onChange={setLocation} />
+              </div>
+            )}
+          </div>
+        </aside>
+
+        <main style={{ padding: "17px 19px 13px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div>
+              <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: mode === "promise" ? "#D58A80" : "#8FB7AC" }}>
+                {mode === "promise" ? "CLAIM / BEHAVIOR CHECK" : "LIVE DATA FLOW"}
+              </div>
+              <div style={{ marginTop: 7, fontFamily: "Inter,sans-serif", fontSize: 20, fontWeight: 760 }}>
+                {mode === "promise" ? "The promise and controls disagree" : `${activeCount} optional data flows active`}
+              </div>
+            </div>
+            <Settings2 size={20} color={mode === "promise" ? "#D58A80" : "#8FB7AC"} />
+          </div>
+          <div style={{ display: "grid", gap: 7, marginTop: 14 }}>
+            <PrivacyFlow
+              label="Usage analytics"
+              detail="Feature taps and session events"
+              destination="Analytics provider"
+              active={analytics}
+              disclosed={mode === "integrity"}
+            />
+            <PrivacyFlow
+              label="Personalization"
+              detail="Viewed topics and saved items"
+              destination="Recommendation service"
+              active={personalization}
+              disclosed={mode === "integrity"}
+            />
+            <PrivacyFlow
+              label="Background location"
+              detail="Location when the app is closed"
+              destination="Harbor servers"
+              active={location}
+              disclosed={mode === "integrity"}
+            />
+          </div>
+          {mode === "promise" ? (
+            <div style={{ marginTop: 11, padding: "11px 12px", border: "1px solid #4A3434", borderRadius: 8, background: "#241C1E", fontFamily: "Inter,sans-serif", fontSize: 9.5, lineHeight: 1.45, color: "#D9B7B2" }}>
+              “You’re in control” is not supported by the visible interface:
+              three optional flows are active, but none can be changed here.
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() =>
+                setResult(
+                  `Preferences saved. ${activeCount} optional data ${activeCount === 1 ? "flow remains" : "flows remain"} active, matching the visible controls.`,
+                )
+              }
+              style={{
+                width: "100%",
+                minHeight: 41,
+                marginTop: 11,
+                border: 0,
+                borderRadius: 8,
+                background: "#5B887C",
+                color: "#FFFFFF",
+                fontFamily: "Inter,sans-serif",
+                fontSize: 10.5,
+                fontWeight: 750,
+                cursor: "pointer",
+              }}
+            >
+              Save these permissions
+            </button>
+          )}
+        </main>
+      </div>
+      <ExhibitStatus
+        result={result}
+        idle={
+          mode === "promise"
+            ? "Trust language cannot compensate for controls that contradict it."
+            : "The statement, actual data flows, and available controls now describe the same behavior."
+        }
+      />
+    </section>
+  );
+}
+
+function privacyModeButton(active: boolean, color: string): CSSProperties {
+  return {
+    minHeight: 30,
+    padding: "0 10px",
+    border: active ? `1px solid ${color}77` : "1px solid #374347",
+    borderRadius: 7,
+    background: active ? `${color}18` : "#151E21",
+    color: active ? color : "#8A999B",
+    fontFamily: "Inter,sans-serif",
+    fontSize: 9,
+    fontWeight: 750,
+    cursor: "pointer",
+  };
+}
+
+function PhonePermission({
+  label,
+  enabled,
+  onChange,
+}: {
+  label: string;
+  enabled: boolean;
+  onChange: (enabled: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={enabled}
+      onClick={() => onChange(!enabled)}
+      style={{
+        minHeight: 43,
+        padding: "0 9px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        border: "1px solid #D6E0DD",
+        borderRadius: 8,
+        background: "#FFFFFF",
+        color: "#334540",
+        fontFamily: "Inter,sans-serif",
+        fontSize: 9,
+        fontWeight: 700,
+        cursor: "pointer",
+      }}
+    >
+      {label}
+      <span
+        aria-hidden="true"
+        style={{
+          width: 30,
+          height: 17,
+          padding: 2,
+          display: "flex",
+          justifyContent: enabled ? "flex-end" : "flex-start",
+          borderRadius: 99,
+          background: enabled ? "#5B887C" : "#C3CECB",
+        }}
+      >
+        <span style={{ width: 13, height: 13, borderRadius: "50%", background: "#FFFFFF" }} />
+      </span>
+    </button>
+  );
+}
+
+function PrivacyFlow({
+  label,
+  detail,
+  destination,
+  active,
+  disclosed,
+}: {
+  label: string;
+  detail: string;
+  destination: string;
+  active: boolean;
+  disclosed: boolean;
+}) {
+  return (
+    <div
+      style={{
+        minHeight: 58,
+        padding: "9px 10px",
+        display: "grid",
+        gridTemplateColumns: "1fr auto 1fr",
+        alignItems: "center",
+        gap: 9,
+        border: `1px solid ${active ? (disclosed ? "#3B5C56" : "#52383A") : "#2D383C"}`,
+        borderRadius: 8,
+        background: active ? (disclosed ? "#172622" : "#241C1E") : "#141B1E",
+        opacity: active ? 1 : 0.58,
+      }}
+    >
+      <div>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: 10, fontWeight: 750 }}>{label}</div>
+        <div style={{ marginTop: 3, fontFamily: "Inter,sans-serif", fontSize: 8.5, color: "#8D9B9B" }}>{detail}</div>
+      </div>
+      <ArrowRight size={14} color={active ? (disclosed ? "#8FB7AC" : "#D58A80") : "#657174"} />
+      <div style={{ textAlign: "right" }}>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9.5, color: "#C4CECC" }}>{active ? destination : "Off"}</div>
+        <div style={{ marginTop: 3, fontFamily: "Inter,sans-serif", fontSize: 7.5, color: active ? (disclosed ? "#8FB7AC" : "#D58A80") : "#687477" }}>
+          {active ? (disclosed ? "VISIBLE + CONTROLLABLE" : "ACTIVE / CONTROL HIDDEN") : "NO DATA SENT"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExhibitStatus({
+  result,
+  idle,
+  light = false,
+}: {
+  result: string;
+  idle: string;
+  light?: boolean;
+}) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        minHeight: 51,
+        padding: "10px 17px",
+        display: "flex",
+        alignItems: "center",
+        gap: 9,
+        borderTop: light ? "1px solid rgba(93,112,124,.18)" : "1px solid rgba(143,183,172,.16)",
+        background: light
+          ? result
+            ? "#EAF3ED"
+            : "#FFFFFF"
+          : result
+            ? "#142923"
+            : "#111A1D",
+        color: light ? (result ? "#315D49" : "#718078") : result ? "#9AC9B8" : "#849598",
+        fontFamily: "Inter,sans-serif",
+        fontSize: 10.5,
+        lineHeight: 1.35,
+      }}
+    >
+      {result ? <Check size={14} /> : <Eye size={14} />}
+      {result || idle}
+    </div>
   );
 }
 
@@ -3148,421 +4913,321 @@ function AnalysisLayer({
   )
 }
 
-function DecisionFramingEvidenceLab() {
-  const [criterion, setCriterion] = useState<DecisionCriterion>("speed");
-  const [chosen, setChosen] = useState<string | null>(null);
-  const recommended = RECOMMENDED_BY_CRITERION[criterion];
-  const criterionLabel =
-    criterion === "speed"
-      ? "fastest setup"
-      : criterion === "cost"
-        ? "lowest monthly cost"
-        : "strongest data boundary";
+type ComparisonCriterion = "price" | "coverage" | "flexibility"
 
-  const changeCriterion = (next: DecisionCriterion) => {
-    setCriterion(next);
-    setChosen(null);
-  };
+const COMPARISON_PLANS = [
+  { id: "harbor", name: "Harbor Basic", price: 34, coverage: "$25k", coverageScore: 1, cancel: "48 hours", flexScore: 2 },
+  { id: "summit", name: "Summit Plus", price: 62, coverage: "$100k", coverageScore: 3, cancel: "Any time", flexScore: 3 },
+  { id: "field", name: "Field Essential", price: 41, coverage: "$50k", coverageScore: 2, cancel: "7 days", flexScore: 1 },
+] as const
+
+function DecisionFramingEvidenceLab() {
+  const [mode, setMode] = useState<"hidden" | "visible">("hidden")
+  const [criterion, setCriterion] = useState<ComparisonCriterion>("price")
+  const [chosen, setChosen] = useState<string | null>(null)
+  const [result, setResult] = useState("")
+
+  const ordered = [...COMPARISON_PLANS].sort((a, b) => {
+    if (criterion === "price") return a.price - b.price
+    if (criterion === "coverage") return b.coverageScore - a.coverageScore
+    return b.flexScore - a.flexScore
+  })
+  const displayed = mode === "hidden"
+    ? [COMPARISON_PLANS[1], COMPARISON_PLANS[0], COMPARISON_PLANS[2]]
+    : ordered
+  const criterionLabel =
+    criterion === "price"
+      ? "lowest price"
+      : criterion === "coverage"
+        ? "highest coverage"
+        : "most flexible cancellation"
+
+  const changeMode = (next: "hidden" | "visible") => {
+    setMode(next)
+    setChosen(null)
+    setResult("")
+  }
 
   return (
-    <LabShell
-      label="SERVICE COMPARISON · RECOMMENDATION FRAME"
-      summary="Keep every option fixed, then change the criterion used to frame the recommendation."
-      result={
-        chosen
-          ? `You chose ${DECISION_OPTIONS.find((option) => option.id === chosen)?.name}. The system recommended for ${criterionLabel}, not because one option is universally best.`
-          : `Recommendation currently reflects ${criterionLabel}. Change the frame and watch the recommendation move.`
-      }
-      controls={
-        <>
-          {(["speed", "cost", "privacy"] as const).map((item) => (
-            <button
-              key={item}
-              type="button"
-              aria-pressed={criterion === item}
-              onClick={() => changeCriterion(item)}
-              style={{
-                ...labToggleStyle,
-                color: criterion === item ? PURPOSE : MUTED,
-                borderColor:
-                  criterion === item
-                    ? "rgba(232,200,109,.5)"
-                    : "rgba(200,180,130,.16)",
-                background:
-                  criterion === item
-                    ? "rgba(232,200,109,.07)"
-                    : "rgba(255,255,255,.018)",
-              }}
-            >
-              {item.toUpperCase()}
-            </button>
-          ))}
-        </>
-      }
+    <section
+      aria-label="Interactive ranked travel protection comparison"
+      style={{
+        minHeight: 492,
+        overflow: "hidden",
+        border: "1px solid rgba(116,151,177,.3)",
+        borderRadius: 15,
+        background: "#F5F3EF",
+        color: "#252A30",
+        boxShadow: "0 26px 70px rgba(0,0,0,.38)",
+      }}
     >
-      <div
+      <header
         style={{
-          padding: 14,
-          border: `1px solid ${BORDER}`,
-          borderRadius: 10,
-          background:
-            "linear-gradient(145deg,rgba(16,20,31,.88),rgba(7,9,15,.96))",
+          height: 58,
+          padding: "0 18px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid #D9D4CC",
+          background: "#173247",
+          color: "#F4F8FA",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 14,
-            marginBottom: 12,
-          }}
-        >
-          <div>
-            <div style={{ ...MONO, color: MUTED, fontSize: 8, marginBottom: 4 }}>
-              VISIBLE RECOMMENDATION CRITERION
-            </div>
-            <div style={{ ...SERIF, color: IVORY, fontSize: 18 }}>
-              Recommended for {criterionLabel}
-            </div>
+        <div>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: 12.5, fontWeight: 750 }}>
+            Wayfinder travel protection
           </div>
-          <Scale size={21} color={PURPOSE} aria-hidden="true" />
+          <div style={{ marginTop: 2, fontFamily: "Inter,sans-serif", fontSize: 9, color: "#A8BBC9" }}>
+            Compare coverage for Lisbon · 8 days
+          </div>
         </div>
-        <div style={{ display: "grid", gap: 7 }}>
-          {DECISION_OPTIONS.map((option) => {
-            const isRecommended = option.id === recommended;
-            const isChosen = option.id === chosen;
-            return (
+        <div role="group" aria-label="Ranking transparency" style={{ display: "flex", gap: 4 }}>
+          <button
+            type="button"
+            aria-pressed={mode === "hidden"}
+            onClick={() => changeMode("hidden")}
+            style={rankingModeButton(mode === "hidden", "#E1A276")}
+          >
+            Default ranking
+          </button>
+          <button
+            type="button"
+            aria-pressed={mode === "visible"}
+            onClick={() => changeMode("visible")}
+            style={rankingModeButton(mode === "visible", "#9FC5D8")}
+          >
+            Show ranking logic
+          </button>
+        </div>
+      </header>
+
+      <div style={{ minHeight: 383, display: "grid", gridTemplateColumns: "minmax(0,1fr) 235px" }}>
+        <main style={{ padding: "16px 17px 13px", borderRight: "1px solid #D9D4CC" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 14, marginBottom: 10 }}>
+            <div>
+              <div style={{ fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: mode === "hidden" ? "#A7623D" : "#315F78" }}>
+                {mode === "hidden" ? "TOP MATCHES FOR YOU" : "ORDERED BY A VISIBLE CRITERION"}
+              </div>
+              <div style={{ marginTop: 4, fontFamily: "Georgia,serif", fontSize: 20 }}>
+                Three plans, one influential order
+              </div>
+            </div>
+            {mode === "visible" && (
+              <div role="group" aria-label="Ranking criterion" style={{ display: "flex", gap: 4 }}>
+                {(["price", "coverage", "flexibility"] as const).map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    aria-pressed={criterion === item}
+                    onClick={() => {
+                      setCriterion(item)
+                      setChosen(null)
+                      setResult("")
+                    }}
+                    style={{
+                      minHeight: 29,
+                      padding: "0 8px",
+                      border: criterion === item ? "1px solid #527C93" : "1px solid #CEC8BF",
+                      borderRadius: 6,
+                      background: criterion === item ? "#E4EEF3" : "#FFFFFF",
+                      color: criterion === item ? "#315F78" : "#77736D",
+                      fontFamily: "Inter,sans-serif",
+                      fontSize: 8,
+                      fontWeight: 750,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {item === "flexibility" ? "FLEXIBILITY" : item.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div
+            aria-hidden="true"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "30px minmax(130px,1fr) 72px 86px 72px",
+              gap: 7,
+              padding: "0 9px 6px",
+              fontFamily: "Inter,sans-serif",
+              fontSize: 7.5,
+              fontWeight: 800,
+              color: "#8B867E",
+            }}
+          >
+            <span>#</span><span>PLAN</span><span>PRICE</span><span>COVERAGE</span><span>CANCEL</span>
+          </div>
+          <div style={{ display: "grid", gap: 6 }}>
+            {displayed.map((plan, index) => {
+              const active = chosen === plan.id
+              const recommended = index === 0
+              return (
+                <button
+                  key={plan.id}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => {
+                    setChosen(plan.id)
+                    setResult("")
+                  }}
+                  style={{
+                    minHeight: 66,
+                    padding: "8px 9px",
+                    display: "grid",
+                    gridTemplateColumns: "30px minmax(130px,1fr) 72px 86px 72px",
+                    alignItems: "center",
+                    gap: 7,
+                    textAlign: "left",
+                    border: active
+                      ? "1px solid #527C93"
+                      : recommended
+                        ? "1px solid #B99269"
+                        : "1px solid #D5CFC6",
+                    borderRadius: 8,
+                    background: active ? "#E9F1F4" : recommended ? "#FFF8EC" : "#FFFFFF",
+                    color: "#292E34",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span style={{ fontFamily: "Georgia,serif", fontSize: 21, color: recommended ? "#A7623D" : "#908A82" }}>
+                    {index + 1}
+                  </span>
+                  <span>
+                    <span style={{ display: "block", fontFamily: "Inter,sans-serif", fontSize: 11, fontWeight: 780 }}>{plan.name}</span>
+                    {recommended && (
+                      <span style={{ display: "block", marginTop: 3, fontFamily: "Inter,sans-serif", fontSize: 7.5, fontWeight: 800, color: mode === "hidden" ? "#A7623D" : "#315F78" }}>
+                        {mode === "hidden" ? "RECOMMENDED" : `BEST FOR ${criterionLabel.toUpperCase()}`}
+                      </span>
+                    )}
+                  </span>
+                  <span style={{ fontFamily: "Inter,sans-serif", fontSize: 11, fontWeight: 700 }}>${plan.price}</span>
+                  <span style={{ fontFamily: "Inter,sans-serif", fontSize: 10 }}>{plan.coverage}</span>
+                  <span style={{ fontFamily: "Inter,sans-serif", fontSize: 9, lineHeight: 1.25 }}>{plan.cancel}</span>
+                </button>
+              )
+            })}
+          </div>
+          <button
+            type="button"
+            disabled={!chosen}
+            onClick={() => {
+              const plan = COMPARISON_PLANS.find((item) => item.id === chosen)
+              if (!plan) return
+              setResult(
+                mode === "hidden"
+                  ? `${plan.name} selected from a ranking whose commercial basis was not visible.`
+                  : `${plan.name} selected after ordering by ${criterionLabel}; the trade-offs and ranking basis remained visible.`,
+              )
+            }}
+            style={{
+              width: "100%",
+              minHeight: 38,
+              marginTop: 9,
+              border: 0,
+              borderRadius: 8,
+              background: chosen ? "#315F78" : "#D5D3CF",
+              color: chosen ? "#FFFFFF" : "#8E8B86",
+              fontFamily: "Inter,sans-serif",
+              fontSize: 10,
+              fontWeight: 750,
+              cursor: chosen ? "pointer" : "not-allowed",
+            }}
+          >
+            Choose selected plan
+          </button>
+        </main>
+
+        <aside style={{ padding: 16, background: mode === "hidden" ? "#F3EBDF" : "#EAF1F4" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: "Inter,sans-serif", fontSize: 9, fontWeight: 800, color: mode === "hidden" ? "#A7623D" : "#315F78" }}>
+            {mode === "hidden" ? <AlertTriangle size={13} /> : <Scale size={13} />}
+            {mode === "hidden" ? "HIDDEN FRAME" : "WHY THIS ORDER"}
+          </div>
+          {mode === "hidden" ? (
+            <>
+              <div style={{ marginTop: 12, fontFamily: "Georgia,serif", fontSize: 21, lineHeight: 1.2 }}>
+                “Recommended” appears neutral.
+              </div>
+              <p style={{ margin: "9px 0 14px", fontFamily: "Inter,sans-serif", fontSize: 10.5, lineHeight: 1.5, color: "#756D63" }}>
+                Summit Plus is ranked first because it pays the marketplace a referral fee—not because it best matches the trip.
+              </p>
+              <div style={{ padding: "9px 10px", border: "1px solid #D8C3AA", borderRadius: 8, background: "#FFF9F1" }}>
+                <div style={{ fontFamily: "Inter,sans-serif", fontSize: 7.5, fontWeight: 800, color: "#9A7653" }}>DISCLOSURE</div>
+                <div style={{ marginTop: 4, fontFamily: "Inter,sans-serif", fontSize: 8.5, lineHeight: 1.4, color: "#8D8377" }}>
+                  Partners may compensate Wayfinder. Buried in terms.
+                </div>
+              </div>
               <button
-                key={option.id}
                 type="button"
-                onClick={() => setChosen(option.id)}
+                onClick={() => changeMode("visible")}
                 style={{
-                  minHeight: 64,
-                  display: "grid",
-                  gridTemplateColumns: "minmax(120px,1fr) repeat(3,minmax(62px,.55fr)) auto",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "10px 11px",
-                  textAlign: "left",
-                  border: isChosen
-                    ? "1px solid rgba(138,174,200,.72)"
-                    : isRecommended
-                      ? "1px solid rgba(232,200,109,.5)"
-                      : `1px solid ${BORDER}`,
-                  background: isChosen
-                    ? "rgba(138,174,200,.1)"
-                    : isRecommended
-                      ? "rgba(232,200,109,.06)"
-                      : "rgba(255,255,255,.015)",
-                  color: IVORY,
+                  width: "100%",
+                  minHeight: 38,
+                  marginTop: 13,
+                  border: "1px solid #BA9772",
+                  borderRadius: 8,
+                  background: "#FFF8EC",
+                  color: "#875936",
+                  fontFamily: "Inter,sans-serif",
+                  fontSize: 9.5,
+                  fontWeight: 750,
                   cursor: "pointer",
                 }}
               >
-                <span>
-                  <span
-                    style={{
-                      ...SERIF,
-                      display: "block",
-                      fontSize: 17,
-                      lineHeight: 1.1,
-                    }}
-                  >
-                    {option.name}
-                  </span>
-                  {isRecommended && (
-                    <span
-                      style={{
-                        ...MONO,
-                        display: "block",
-                        color: PURPOSE,
-                        fontSize: 7,
-                        marginTop: 5,
-                      }}
-                    >
-                      RECOMMENDED
-                    </span>
-                  )}
-                </span>
-                <Metric label="SPEED" value={option.speed} />
-                <Metric label="COST" value={option.cost} />
-                <Metric label="PRIVACY" value={option.privacy} />
-                <ChevronRight
-                  size={15}
-                  color={isRecommended ? PURPOSE : MUTED}
-                  aria-hidden="true"
-                />
+                Expose ranking logic
               </button>
-            );
-          })}
-        </div>
-      </div>
-      <SignalStrip
-        items={[
-          "Options unchanged",
-          `Criterion: ${criterionLabel}`,
-          "Recommendation is conditional",
-        ]}
-      />
-    </LabShell>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <span>
-      <span
-        style={{
-          ...MONO,
-          display: "block",
-          color: MUTED,
-          fontSize: 6.5,
-          marginBottom: 4,
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          ...SERIF,
-          display: "block",
-          color: SECONDARY,
-          fontSize: 13,
-        }}
-      >
-        {value}
-      </span>
-    </span>
-  );
-}
-
-function ReusablePrincipleLab({
-  principle,
-}: {
-  principle: FoundationPrinciple;
-}) {
-  const [mode, setMode] = useState<"system" | "held">("system");
-  const [result, setResult] = useState("");
-
-  const changeMode = (next: "system" | "held") => {
-    setMode(next);
-    setResult("");
-  };
-
-  return (
-    <LabShell
-      label={principle.illustration.context}
-      summary="Compare a system-first interaction with the same moment after the principle is held."
-      result={result}
-      controls={
-        <>
-          <button
-            type="button"
-            aria-pressed={mode === "system"}
-            onClick={() => changeMode("system")}
-            style={{
-              ...labToggleStyle,
-              color: mode === "system" ? STELLAR_PALETTE.risk : MUTED,
-              borderColor:
-                mode === "system"
-                  ? "rgba(216,108,97,.42)"
-                  : "rgba(200,180,130,.16)",
-            }}
-          >
-            SYSTEM-FIRST
-          </button>
-          <button
-            type="button"
-            aria-pressed={mode === "held"}
-            onClick={() => changeMode("held")}
-            style={{
-              ...labToggleStyle,
-              color: mode === "held" ? PURPOSE : MUTED,
-              borderColor:
-                mode === "held"
-                  ? "rgba(232,200,109,.5)"
-                  : "rgba(200,180,130,.16)",
-            }}
-          >
-            PRINCIPLE-HELD
-          </button>
-        </>
-      }
-    >
-      <div
-        style={{
-          minHeight: 285,
-          display: "grid",
-          placeItems: "center",
-          padding: 20,
-          border: `1px solid ${BORDER}`,
-          borderRadius: 10,
-          background:
-            "linear-gradient(145deg,rgba(16,20,31,.88),rgba(7,9,15,.96))",
-        }}
-      >
-        <div
-          style={{
-            width: "min(100%,450px)",
-            padding: 22,
-            border:
-              mode === "held"
-                ? "1px solid rgba(232,200,109,.3)"
-                : "1px solid rgba(216,108,97,.25)",
-            background: "rgba(8,11,18,.96)",
-            boxShadow: "0 20px 60px rgba(0,0,0,.42)",
-          }}
-        >
-          <div
-            style={{
-              ...MONO,
-              color: mode === "held" ? PURPOSE : STELLAR_PALETTE.risk,
-              fontSize: 8,
-              marginBottom: 10,
-            }}
-          >
-            {mode === "held"
-              ? "CONTEXT BEFORE COMMITMENT"
-              : "ACTION BEFORE CONTEXT"}
-          </div>
-          <div
-            style={{
-              ...SERIF,
-              color: IVORY,
-              fontSize: 25,
-              lineHeight: 1.15,
-              marginBottom: 10,
-            }}
-          >
-            {principle.illustration.heading}
-          </div>
-          <p
-            style={{
-              ...SERIF,
-              color: mode === "held" ? SECONDARY : "rgba(189,177,142,.56)",
-              fontSize: 14,
-              lineHeight: 1.45,
-              margin: "0 0 18px",
-            }}
-          >
-            {mode === "held"
-              ? principle.illustration.behavior
-              : "The system asks for commitment now and leaves the consequence, rationale, or exit to be discovered later."}
-          </p>
-          {mode === "held" ? (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 8,
-              }}
-            >
-              <button
-                type="button"
-                onClick={() =>
-                  setResult(
-                    "The person can proceed with relevant context and a visible boundary around the action.",
-                  )
-                }
-                style={labPrimaryAction}
-              >
-                Review and continue
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setResult(
-                    "The interaction preserves a legitimate pause or exit without treating it as failure.",
-                  )
-                }
-                style={labSecondaryAction}
-              >
-                Pause for now
-              </button>
-            </div>
+            </>
           ) : (
-            <button
-              type="button"
-              onClick={() =>
-                setResult(
-                  "The task may complete, but the person had to act before the system made its assumptions and consequences visible.",
-                )
-              }
-              style={{
-                ...labPrimaryAction,
-                width: "100%",
-                borderColor: "rgba(216,108,97,.5)",
-                background: "rgba(216,108,97,.12)",
-                color: "#FFD8D2",
-              }}
-            >
-              Continue
-            </button>
+            <>
+              <div style={{ marginTop: 12, fontFamily: "Georgia,serif", fontSize: 21, lineHeight: 1.2 }}>
+                Ordered by {criterionLabel}.
+              </div>
+              <p style={{ margin: "9px 0 13px", fontFamily: "Inter,sans-serif", fontSize: 10.5, lineHeight: 1.5, color: "#62747D" }}>
+                Changing the criterion changes the order. No plan is universally best.
+              </p>
+              {[
+                ["Price", criterion === "price" ? "Primary" : "Visible trade-off"],
+                ["Coverage", criterion === "coverage" ? "Primary" : "Visible trade-off"],
+                ["Cancellation", criterion === "flexibility" ? "Primary" : "Visible trade-off"],
+              ].map(([label, value]) => (
+                <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 8, padding: "8px 0", borderBottom: "1px solid #CCDADF", fontFamily: "Inter,sans-serif", fontSize: 9 }}>
+                  <span>{label}</span><span style={{ color: "#52788A" }}>{value}</span>
+                </div>
+              ))}
+              <div style={{ marginTop: 13, fontFamily: "Inter,sans-serif", fontSize: 8.5, lineHeight: 1.45, color: "#6C7E87" }}>
+                Commercial relationships do not affect this ordering.
+              </div>
+            </>
           )}
-        </div>
+        </aside>
       </div>
-      <SignalStrip
-        items={
-          mode === "held"
-            ? ["Context visible", "Choice remains reversible", "Exit is ordinary"]
-            : ["Context deferred", "Single emphasized path", "Agency inferred"]
+      <ExhibitStatus
+        result={result}
+        idle={
+          mode === "hidden"
+            ? "A ranked list shapes behavior even when the reason for the order is concealed."
+            : "Criteria, order, commercial influence, and trade-offs are visible before selection."
         }
-        risk={mode === "system"}
+        light
       />
-    </LabShell>
-  );
+    </section>
+  )
 }
 
-function SignalStrip({
-  items,
-  risk = false,
-}: {
-  items: readonly string[];
-  risk?: boolean;
-}) {
-  const color = risk ? STELLAR_PALETTE.risk : STELLAR_PALETTE.agentic;
-  return (
-    <div
-      aria-label="Observable interface signals"
-      style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${items.length},minmax(0,1fr))`,
-        gap: 6,
-        marginTop: 9,
-      }}
-    >
-      {items.map((item) => (
-        <div
-          key={item}
-          style={{
-            minHeight: 35,
-            padding: "8px 9px",
-            display: "flex",
-            alignItems: "center",
-            gap: 7,
-            border: `1px solid ${BORDER}`,
-            background: "rgba(255,255,255,.012)",
-            ...MONO,
-            color,
-            fontSize: 7,
-            lineHeight: 1.25,
-          }}
-        >
-          <span
-            aria-hidden="true"
-            style={{
-              width: 5,
-              height: 5,
-              flexShrink: 0,
-              borderRadius: "50%",
-              background: color,
-              boxShadow: `0 0 8px ${color}`,
-            }}
-          />
-          {item.toUpperCase()}
-        </div>
-      ))}
-    </div>
-  );
+function rankingModeButton(active: boolean, color: string): CSSProperties {
+  return {
+    minHeight: 30,
+    padding: "0 10px",
+    border: active ? `1px solid ${color}88` : "1px solid #496174",
+    borderRadius: 7,
+    background: active ? `${color}1A` : "transparent",
+    color: active ? color : "#A8BBC9",
+    fontFamily: "Inter,sans-serif",
+    fontSize: 9,
+    fontWeight: 750,
+    cursor: "pointer",
+  }
 }
 
 function CompactOverview({
