@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type ReactNode,
   type RefObject,
 } from "react";
 import {
@@ -551,6 +552,12 @@ export default function SovereignFoundationsCanvas({
       }
       if (compactField && lastSelectedRef.current) {
         overviewPrinciples.current.get(lastSelectedRef.current)?.focus();
+      } else if (lastSelectedRef.current) {
+        camera.viewportRef.current
+          ?.querySelector<HTMLButtonElement>(
+            `[data-spatial-node][aria-label^="Inspect principle ${lastSelectedRef.current}:"]`,
+          )
+          ?.focus({ preventScroll: true });
       }
     });
   }, [camera, compactField]);
@@ -612,7 +619,7 @@ export default function SovereignFoundationsCanvas({
         else requestClose();
         return;
       }
-      if (compactField || reflectionOpen) return;
+      if (compactField || reflectionOpen || selectedId === "01") return;
       if (event.key === "0") {
         event.preventDefault();
         resetField();
@@ -768,7 +775,15 @@ export default function SovereignFoundationsCanvas({
             />
           }
           overlay={
-            selected ? (
+            selected?.id === "01" ? (
+              <EvidenceFocusFrame
+                principle={selected}
+                selectedHeadingRef={selectedHeadingRef}
+                onClose={returnToField}
+              >
+                <SubmissionAwarenessEvidenceLab />
+              </EvidenceFocusFrame>
+            ) : selected ? (
               <SpatialDiveHud
                 key={selected.id}
                 selectedId={selected.id}
@@ -973,7 +988,7 @@ export default function SovereignFoundationsCanvas({
             })}
           </nav>
 
-          {selected && (
+          {selected && selected.id !== "01" && (
             <SpatialPrincipleDeepDive
               key={selected.id}
               principle={selected}
@@ -1142,6 +1157,61 @@ function FoundationsStyles() {
         color:#FFF8E9;
         text-shadow:0 0 16px rgba(var(--node-rgb),.34);
       }
+      .sux-foundation-root .foundation-focus-backdrop{
+        position:absolute;
+        inset:0;
+        z-index:60;
+        display:grid;
+        place-items:center;
+        padding:16px;
+        overflow:hidden;
+        pointer-events:auto;
+        background:
+          radial-gradient(ellipse at center,rgba(2,5,12,.46),rgba(2,5,12,.76) 72%),
+          rgba(1,3,8,.42);
+        backdrop-filter:saturate(.72) brightness(.68);
+        animation:foundationFocusScrim 280ms ease both;
+      }
+      .sux-foundation-root .foundation-focus-frame{
+        width:min(1020px,calc(100vw - 40px));
+        max-height:calc(100% - 4px);
+        overflow:auto;
+        display:grid;
+        grid-template-rows:auto auto auto;
+        border:1px solid rgba(99,167,242,.28);
+        border-radius:18px;
+        background:rgba(6,9,15,.985);
+        box-shadow:0 32px 110px rgba(0,0,0,.72),0 0 0 1px rgba(255,255,255,.025),0 0 72px rgba(99,167,242,.075);
+        animation:foundationFocusFrame 420ms 140ms cubic-bezier(.16,1,.3,1) both;
+      }
+      .sux-foundation-root .foundation-focus-header{
+        display:flex;
+        align-items:flex-start;
+        justify-content:space-between;
+        gap:22px;
+        padding:17px 21px 16px;
+        border-bottom:1px solid rgba(138,174,200,.16);
+        background:linear-gradient(115deg,rgba(99,167,242,.055),transparent 45%);
+      }
+      .sux-foundation-root .foundation-focus-exhibit{
+        padding:12px 14px;
+        background:#080C13;
+      }
+      .sux-foundation-root .foundation-focus-footer{
+        display:grid;
+        grid-template-columns:minmax(250px,.9fr) minmax(0,1.35fr);
+        align-items:start;
+        gap:20px;
+        padding:13px 20px 15px;
+        border-top:1px solid rgba(138,174,200,.16);
+        background:linear-gradient(110deg,rgba(166,139,212,.055),transparent 38%),rgba(7,10,17,.98);
+      }
+      .sux-foundation-root .foundation-focus-reflection{
+        padding-right:18px;
+        border-right:1px solid rgba(166,139,212,.18);
+      }
+      @keyframes foundationFocusScrim{from{opacity:0}to{opacity:1}}
+      @keyframes foundationFocusFrame{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
       .sux-foundation-root .foundation-spatial-trace{stroke-dashoffset:1.1;animation:foundationSpatialTrace 11s linear infinite}
       @keyframes foundationSpatialTrace{0%{stroke-dashoffset:1.1;opacity:0}8%{opacity:.7}34%{opacity:.42}42%{stroke-dashoffset:0;opacity:0}100%{stroke-dashoffset:0;opacity:0}}
       .sux-foundation-root .foundation-world-specimen{animation:foundationSpecimenResolve 620ms 360ms cubic-bezier(.16,1,.3,1) both;transform-origin:50% 18%}
@@ -1156,6 +1226,17 @@ function FoundationsStyles() {
       .sux-foundation-root .foundation-mobile-inspector{padding:46px max(32px,calc((100vw - 1120px)/2));overflow:auto}
       .sux-foundation-root .foundation-realignment-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
       .sux-foundation-root .foundation-dialog{width:min(680px,calc(100vw - 32px));max-height:min(87vh,820px);overflow:auto;background:#0D1019;border:1px solid rgba(232,200,109,.36);box-shadow:0 28px 120px rgba(0,0,0,.7);padding:30px}
+      @media(max-height:760px) and (min-width:1121px){
+        .sux-foundation-root .foundation-focus-backdrop{padding:10px}
+        .sux-foundation-root .foundation-focus-frame{width:min(1000px,calc(100vw - 28px));max-height:calc(100% - 2px);border-radius:14px}
+        .sux-foundation-root .foundation-focus-header{padding:10px 15px 9px}
+        .sux-foundation-root .foundation-focus-header p{font-size:14px!important;line-height:1.3!important;margin-top:5px!important}
+        .sux-foundation-root .foundation-focus-exhibit{padding:6px 8px}
+        .sux-foundation-root .foundation-focus-footer{padding:8px 14px 9px;gap:14px}
+        .sux-foundation-root .foundation-focus-reflection>div:last-child{font-size:15px!important}
+        .sux-foundation-root .foundation-submission-exhibit{min-height:422px!important}
+        .sux-foundation-root .foundation-submission-body{min-height:315px!important}
+      }
       @media(max-width:980px){
         .sux-foundation-root .foundation-detail-layout{display:flex;flex-direction:column}
         .sux-foundation-root .foundation-rail{flex-shrink:0;max-height:204px;border-right:none;border-bottom:1px solid ${BORDER};padding:12px 18px}
@@ -1291,6 +1372,252 @@ function PrinciplePreview({
       >
         {principle.belief}
       </div>
+    </div>
+  );
+}
+
+type FocusDisclosureId =
+  | "original"
+  | "belief"
+  | "responsibility"
+  | "agency";
+
+function EvidenceFocusFrame({
+  principle,
+  selectedHeadingRef,
+  onClose,
+  children,
+}: {
+  principle: FoundationPrinciple;
+  selectedHeadingRef: RefObject<HTMLHeadingElement | null>;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const [disclosure, setDisclosure] = useState<FocusDisclosureId | null>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const disclosures: Array<{
+    id: FocusDisclosureId;
+    label: string;
+    text: string;
+  }> = [
+    {
+      id: "original",
+      label: "Original principle",
+      text: principle.originalPrinciple,
+    },
+    {
+      id: "belief",
+      label: "Underlying belief",
+      text: principle.belief,
+    },
+    {
+      id: "responsibility",
+      label: "Design responsibility",
+      text: principle.designResponsibility,
+    },
+    {
+      id: "agency",
+      label: "Preserved agency",
+      text: principle.preservedAgency,
+    },
+  ];
+  const activeDisclosure = disclosures.find((item) => item.id === disclosure);
+
+  useEffect(() => {
+    requestAnimationFrame(() =>
+      selectedHeadingRef.current?.focus({ preventScroll: true }),
+    );
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+      const focusable = [
+        ...(frameRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? []),
+      ];
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!focusable.includes(document.activeElement as HTMLElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", trapFocus);
+    return () => document.removeEventListener("keydown", trapFocus);
+  }, [selectedHeadingRef]);
+
+  return (
+    <div
+      data-spatial-control
+      className="foundation-focus-backdrop"
+      role="presentation"
+      onPointerDown={(event) => event.stopPropagation()}
+      onWheel={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <section
+        ref={frameRef}
+        className="foundation-focus-frame"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="foundation-focus-title"
+        aria-describedby="foundation-focus-context"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="foundation-focus-header">
+          <div style={{ minWidth: 0 }}>
+            <div
+              style={{
+                ...MONO,
+                color: PRINCIPLE_VISUALS["01"].color,
+                fontSize: 9,
+                marginBottom: 7,
+              }}
+            >
+              PRINCIPLE 01 · AWARENESS
+            </div>
+            <h2
+              id="foundation-focus-title"
+              ref={selectedHeadingRef}
+              tabIndex={-1}
+              style={{
+                ...SERIF,
+                color: IVORY,
+                fontSize: "clamp(26px,2.4vw,36px)",
+                fontWeight: 400,
+                lineHeight: 1.08,
+                margin: 0,
+                textWrap: "balance",
+              }}
+            >
+              {principle.title}
+            </h2>
+            <p
+              id="foundation-focus-context"
+              style={{
+                ...SERIF,
+                maxWidth: 720,
+                color: SECONDARY,
+                fontSize: 16,
+                lineHeight: 1.4,
+                margin: "8px 0 0",
+              }}
+            >
+              What happens when someone is asked to submit before understanding
+              the consequences?
+            </p>
+          </div>
+          <button
+            type="button"
+            aria-label="Close Principle 01 evidence"
+            onClick={onClose}
+            style={{
+              ...controlButton,
+              width: 40,
+              minWidth: 40,
+              padding: 0,
+              borderRadius: "50%",
+              flexShrink: 0,
+            }}
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        </header>
+
+        <div className="foundation-focus-exhibit">{children}</div>
+
+        <footer className="foundation-focus-footer">
+          <div className="foundation-focus-reflection">
+            <div
+              style={{
+                ...MONO,
+                color: STELLAR_PALETTE.relational,
+                fontSize: 8,
+                marginBottom: 6,
+              }}
+            >
+              REFLECTION IN CONTEXT
+            </div>
+            <div
+              style={{
+                ...SERIF,
+                color: IVORY,
+                fontSize: 17,
+                lineHeight: 1.34,
+              }}
+            >
+              What information must be visible before this person can make an
+              informed decision?
+            </div>
+          </div>
+          <div className="foundation-focus-disclosure">
+            <div
+              role="group"
+              aria-label="Explore Principle 01 context"
+              style={{ display: "flex", flexWrap: "wrap", gap: 6 }}
+            >
+              {disclosures.map((item) => {
+                const active = disclosure === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    aria-expanded={active}
+                    onClick={() => setDisclosure(active ? null : item.id)}
+                    style={{
+                      ...MONO,
+                      minHeight: 31,
+                      padding: "0 9px",
+                      border: active
+                        ? `1px solid ${PRINCIPLE_VISUALS["01"].color}`
+                        : `1px solid ${BORDER}`,
+                      borderRadius: 999,
+                      background: active
+                        ? "rgba(99,167,242,.1)"
+                        : "rgba(255,255,255,.02)",
+                      color: active
+                        ? PRINCIPLE_VISUALS["01"].color
+                        : MUTED,
+                      fontSize: 7,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {item.label.toUpperCase()}
+                  </button>
+                );
+              })}
+            </div>
+            {activeDisclosure && (
+              <div
+                role="region"
+                aria-live="polite"
+                style={{
+                  marginTop: 8,
+                  padding: "9px 11px",
+                  borderLeft: `2px solid ${PRINCIPLE_VISUALS["01"].color}`,
+                  background: "rgba(99,167,242,.055)",
+                  ...SERIF,
+                  color: SECONDARY,
+                  fontSize: 13,
+                  lineHeight: 1.38,
+                }}
+              >
+                {activeDisclosure.text}
+              </div>
+            )}
+          </div>
+        </footer>
+      </section>
     </div>
   );
 }
@@ -1782,6 +2109,7 @@ function SubmissionAwarenessEvidenceLab() {
 
   return (
     <section
+      className="foundation-submission-exhibit"
       aria-label="Interactive submission and review interface"
       style={{
         minHeight: 492,
@@ -1858,7 +2186,14 @@ function SubmissionAwarenessEvidenceLab() {
         </div>
       </header>
 
-      <div style={{ minHeight: 384, display: "grid", gridTemplateColumns: "minmax(0,1fr) 292px" }}>
+      <div
+        className="foundation-submission-body"
+        style={{
+          minHeight: 384,
+          display: "grid",
+          gridTemplateColumns: "minmax(0,1fr) 292px",
+        }}
+      >
         <main style={{ padding: "18px 20px", borderRight: "1px solid #D9E0E8" }}>
           <div
             style={{
